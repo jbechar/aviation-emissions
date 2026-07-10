@@ -31,9 +31,36 @@
   .btn { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.03em; background: none; border: 1px solid var(--line-strong); color: var(--text-muted); padding: 9px 16px; cursor: pointer; border-radius: 3px; transition: color 0.3s cubic-bezier(.16,1,.3,1), border-color 0.3s cubic-bezier(.16,1,.3,1); }
   .btn:hover { color: var(--text); border-color: var(--teal); }
 
-  .hero { text-align: center; padding: 1.5rem 2rem 0; flex-shrink: 0; }
+  .blueprint-grid {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    opacity: 0.3;
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 42%, black 0%, transparent 78%);
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 42%, black 0%, transparent 78%);
+  }
+
+  .telemetry { display: flex; align-items: center; justify-content: center; gap: 1.5rem; flex-wrap: wrap; padding: 0.55rem 2rem 0; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-muted); flex-shrink: 0; }
+  .telemetry .tstat { display: inline-flex; align-items: center; gap: 6px; color: var(--teal); }
+  .telemetry .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
+  @media (prefers-reduced-motion: no-preference) {
+    .telemetry .dot { animation: pulseDot 2.4s infinite; }
+  }
+  @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(87,194,177,0.55); } 70% { box-shadow: 0 0 0 6px rgba(87,194,177,0); } 100% { box-shadow: 0 0 0 0 rgba(87,194,177,0); } }
+
+  .hero { text-align: center; padding: 1.1rem 2rem 0; flex-shrink: 0; }
+  .hero .eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal); margin: 0 0 8px; }
   .hero h1 { font-size: 24px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.01em; }
   .hero p { font-size: 13px; color: var(--text-muted); margin: 0 auto; max-width: 480px; line-height: 1.6; }
+
+  .hud-corner { position: absolute; width: 22px; height: 22px; border-color: var(--line-strong); opacity: 0.55; pointer-events: none; z-index: 4; }
+  .hud-corner.tl { top: 10px; left: 10px; border-top: 1px solid; border-left: 1px solid; }
+  .hud-corner.tr { top: 10px; right: 10px; border-top: 1px solid; border-right: 1px solid; }
+  .hud-corner.bl { bottom: 10px; left: 10px; border-bottom: 1px solid; border-left: 1px solid; }
+  .hud-corner.br { bottom: 10px; right: 10px; border-bottom: 1px solid; border-right: 1px solid; }
+
+  .ring-seg path { transition: filter 0.2s ease; }
+  .ring-seg:hover path { filter: brightness(1.18); }
 
   .viewport { position: relative; flex: 1; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
   .world { position: relative; width: 1px; height: 1px; transition: transform 2.2s cubic-bezier(.65,0,.35,1); transform: translate(0px, 0px); }
@@ -51,11 +78,13 @@
   .pan-card {
     position: absolute; left: 50%; top: 50%; width: 260px;
     background: var(--panel);
-    border: 1px solid var(--line-strong); border-radius: 8px;
+    border: 1px solid var(--line-strong); border-top-width: 3px; border-radius: 8px;
     padding: 1.1rem 1.3rem;
+    box-shadow: 0 24px 48px -24px rgba(0,0,0,0.55);
     opacity: 0; pointer-events: none; transition: opacity 0.9s cubic-bezier(.16,1,.3,1) 1.3s;
   }
   .pan-card.shown { opacity: 1; pointer-events: auto; }
+  .pan-card .eyebrow-mono { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 6px; }
   .pan-card .ctitle { font-size: 14px; font-weight: 600; margin: 0 0 6px; }
   .pan-card .csub { font-size: 12px; color: var(--text-muted); margin: 0; line-height: 1.6; }
   #card-nox { transform: translate(calc(-50% - 480px), calc(-50% - 320px)); }
@@ -66,10 +95,13 @@
   .empty-hint { font-size: 12px; color: var(--text-muted); text-align: center; padding-bottom: 0.5rem; flex-shrink: 0; }
 
   @keyframes spinOnce { from { transform: rotate(0deg); } to { transform: rotate(1080deg); } }
+  @keyframes radarSweep { from { transform: rotate(0deg); opacity: 0.5; } to { transform: rotate(360deg); opacity: 0; } }
   @media (prefers-reduced-motion: no-preference) {
     #fanAssembly { animation: spinOnce 3.4s cubic-bezier(.19,.85,.24,1) 1; }
+    #radarSweep { animation: radarSweep 1.6s cubic-bezier(.4,0,.2,1) 0.3s 1 forwards; }
   }
   #fanAssembly { transform-origin: 220px 220px; }
+  #radarSweep { transform-origin: 220px 220px; opacity: 0; }
 
   .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 10; }
   .drawer-overlay.open { opacity: 1; pointer-events: auto; }
@@ -93,6 +125,8 @@
 </head>
 <body>
 
+<div class="blueprint-grid"></div>
+
 <header>
   <div class="title mono">AVIATION EMISSIONS <span>// explained</span></div>
   <div class="header-actions">
@@ -102,26 +136,40 @@
   </div>
 </header>
 
+<div class="telemetry">
+  <span class="tstat"><span class="dot"></span>LIVE MODEL</span>
+  <span>SOURCE — LEE ET AL. 2021</span>
+  <span>METRIC — RF, NOT ERF</span>
+</div>
+
 <div class="hero">
+  <p class="eyebrow">RF BREAKDOWN // BY POLLUTANT</p>
   <h1>What's actually warming the planet, per pollutant</h1>
   <p>Share of aviation's radiative forcing (RF) by pollutant, Lee et al. (2021). Click a segment to see how it works.</p>
 </div>
 
 <div class="viewport" id="viewport">
+  <span class="hud-corner tl"></span>
+  <span class="hud-corner tr"></span>
+  <span class="hud-corner bl"></span>
+  <span class="hud-corner br"></span>
   <button class="back-btn" id="backBtn" onclick="resetPan()">&lsaquo; back to centre</button>
   <div class="world" id="world">
     <svg id="rings" width="440" height="440" viewBox="0 0 440 440" role="img" aria-label="A turbofan engine surrounded by a ring showing each pollutant's share of aviation radiative forcing. Contrail cirrus about 72 percent, CO2 about 22 percent, NOx net about 5 percent. Click a segment to see its explanation card."></svg>
 
-    <div class="pan-card" id="card-nox">
+    <div class="pan-card" id="card-nox" style="border-top-color:#e34948;">
+      <span class="eyebrow-mono">DATA SHEET // NOx</span>
       <p class="ctitle">NOx (net, ~5%)</p>
       <p class="csub">At cruise altitude, NOx speeds up ozone formation, a warming effect, but also raises hydroxyl radicals that break down methane, a cooling effect. The two nearly offset, leaving a small net warming, though the exact size is genuinely debated.</p>
     </div>
-    <div class="pan-card" id="card-contrail">
+    <div class="pan-card" id="card-contrail" style="border-top-color:#2a78d6;">
+      <span class="eyebrow-mono">DATA SHEET // CONTRAIL CIRRUS</span>
       <p class="ctitle">Contrail cirrus (~72%)</p>
       <p class="csub">Water vapour in engine exhaust freezes onto soot particles at cruise altitude, forming ice crystal trails that can spread into thin cirrus cloud cover. Like natural cirrus, they let sunlight through but trap outgoing heat, giving a net warming effect.</p>
       <p class="csub" style="margin-top:10px;">The 72% figure is a fleet-wide average: Teoh et al. (2020, 2024) find that roughly 2-3% of flights, mostly long-haul, high-altitude, night-time routes, drive about 80% of total contrail warming.</p>
     </div>
-    <div class="pan-card" id="card-co2">
+    <div class="pan-card" id="card-co2" style="border-top-color:#eda100;">
+      <span class="eyebrow-mono">DATA SHEET // CO2</span>
       <p class="ctitle">CO<sub>2</sub> (~22%)</p>
       <p class="csub">Burning jet fuel releases CO<sub>2</sub>, which traps outgoing heat the way a blanket traps body heat. It persists in the atmosphere for centuries, so its warming effect accumulates and lasts long after the flight itself.</p>
     </div>
@@ -271,6 +319,17 @@ function panTo(id) {
   pannedTo = id;
 }
 
+function animateCount(el, target, prefix, suffix, duration, delay) {
+  const startTime = performance.now() + delay;
+  function tick(now) {
+    const p = Math.min(1, Math.max(0, (now - startTime) / duration));
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = prefix + Math.round(target * eased) + suffix;
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
 (function() {
   const svg = document.getElementById('rings');
   const cx = 220, cy = 220;
@@ -310,12 +369,13 @@ function panTo(id) {
     if (rest) el.appendChild(document.createTextNode(rest));
   }
 
-  segments.forEach(function(seg) {
+  segments.forEach(function(seg, segIndex) {
     const sweep = (seg.share / total) * 360;
     const start = angle, end = angle + sweep;
     const mid = (start + end) / 2;
 
     const group = document.createElementNS(ns, 'g');
+    group.setAttribute('class', 'ring-seg');
     group.setAttribute('style', 'cursor:pointer;');
     group.addEventListener('click', function() { panTo(seg.id); });
 
@@ -360,12 +420,58 @@ function panTo(id) {
     pctText.setAttribute('font-size', '12');
     pctText.setAttribute('font-family', 'IBM Plex Mono, monospace');
     pctText.setAttribute('fill', seg.color);
-    pctText.textContent = seg.pct;
+    const pctMatch = seg.pct.match(/^(~?)(\d+)(%)$/);
+    if (pctMatch && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+      animateCount(pctText, parseInt(pctMatch[2], 10), pctMatch[1], pctMatch[3], 900, 300 + segIndex * 130);
+    } else {
+      pctText.textContent = seg.pct;
+    }
     group.appendChild(pctText);
 
     svg.appendChild(group);
     angle = end;
   });
+
+  const tickGroup = document.createElementNS(ns, 'g');
+  tickGroup.setAttribute('opacity', '0.55');
+  for (let d = 0; d < 360; d += 5) {
+    const major = d % 30 === 0;
+    const p1 = toXY(major ? 152 : 156, d);
+    const p2 = toXY(161, d);
+    const tick = document.createElementNS(ns, 'line');
+    tick.setAttribute('x1', p1.x); tick.setAttribute('y1', p1.y);
+    tick.setAttribute('x2', p2.x); tick.setAttribute('y2', p2.y);
+    tick.setAttribute('stroke', 'var(--line-strong)');
+    tick.setAttribute('stroke-width', major ? 1.25 : 0.6);
+    tickGroup.appendChild(tick);
+  }
+  svg.appendChild(tickGroup);
+
+  const bezel = document.createElementNS(ns, 'circle');
+  bezel.setAttribute('cx', cx); bezel.setAttribute('cy', cy); bezel.setAttribute('r', 165);
+  bezel.setAttribute('fill', 'none');
+  bezel.setAttribute('stroke', 'var(--line)');
+  bezel.setAttribute('stroke-width', '0.75');
+  svg.appendChild(bezel);
+
+  const sweepGrad = document.createElementNS(ns, 'linearGradient');
+  sweepGrad.setAttribute('id', 'sweepGrad');
+  sweepGrad.setAttribute('x1', '0%'); sweepGrad.setAttribute('y1', '0%');
+  sweepGrad.setAttribute('x2', '100%'); sweepGrad.setAttribute('y2', '0%');
+  const stopA = document.createElementNS(ns, 'stop');
+  stopA.setAttribute('offset', '0%'); stopA.setAttribute('stop-color', 'var(--teal)'); stopA.setAttribute('stop-opacity', '0');
+  const stopB = document.createElementNS(ns, 'stop');
+  stopB.setAttribute('offset', '100%'); stopB.setAttribute('stop-color', 'var(--teal)'); stopB.setAttribute('stop-opacity', '0.55');
+  sweepGrad.appendChild(stopA); sweepGrad.appendChild(stopB);
+  const defs = document.createElementNS(ns, 'defs');
+  defs.appendChild(sweepGrad);
+  svg.appendChild(defs);
+
+  const radarSweep = document.createElementNS(ns, 'path');
+  radarSweep.setAttribute('id', 'radarSweep');
+  radarSweep.setAttribute('d', sectorPath(0, 165, -90 - 22, -90));
+  radarSweep.setAttribute('fill', 'url(#sweepGrad)');
+  svg.appendChild(radarSweep);
 
   const fanAssembly = document.createElementNS(ns, 'g');
   fanAssembly.setAttribute('id', 'fanAssembly');
