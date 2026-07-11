@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -59,12 +60,19 @@
   .hud-corner.bl { bottom: 10px; left: 10px; border-bottom: 1px solid; border-left: 1px solid; }
   .hud-corner.br { bottom: 10px; right: 10px; border-bottom: 1px solid; border-right: 1px solid; }
 
+  .uncert-dial { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); overflow: hidden; }
+  .uncert-dial .dial-label { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+  .uncert-dial .dial-note { font-size: 11px; color: var(--text-muted); margin: 6px 0 0; line-height: 1.5; }
+  .uncert-dial .dial-note.flag { color: #e34948; }
+  .uncert-dial svg text { font-family: 'IBM Plex Mono', monospace; }
+
   .ring-seg path { transition: filter 0.2s ease; }
   .ring-seg:hover path { filter: brightness(1.18); }
 
   .viewport { position: relative; flex: 1; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
   .world { position: relative; width: 1px; height: 1px; transition: transform 2.2s cubic-bezier(.65,0,.35,1); transform: translate(0px, 0px); }
-  .world svg { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: block; }
+  .world > svg { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: block; }
+  .uncert-dial svg { position: static; display: block; }
 
   .back-btn {
     position: absolute; top: 16px; left: 16px;
@@ -76,7 +84,7 @@
   .back-btn.shown { opacity: 1; pointer-events: auto; }
 
   .pan-card {
-    position: absolute; left: 50%; top: 50%; width: 260px;
+    position: absolute; left: 50%; top: 50%; width: 300px;
     background: var(--panel);
     border: 1px solid var(--line-strong); border-top-width: 3px; border-radius: 8px;
     padding: 1.1rem 1.3rem;
@@ -161,17 +169,32 @@
       <span class="eyebrow-mono">DATA SHEET // NOx</span>
       <p class="ctitle">NOx (net, ~5%)</p>
       <p class="csub">At cruise altitude, NOx speeds up ozone formation, a warming effect, but also raises hydroxyl radicals that break down methane, a cooling effect. The two nearly offset, leaving a small net warming, though the exact size is genuinely debated.</p>
+      <div class="uncert-dial" id="dial-nox-wrap">
+        <span class="dial-label">95% confidence range — Lee et al. 2021</span>
+        <div id="ringdetail-nox"></div>
+        <p class="dial-note flag">The shaded wings show how much wider this slice could be at the high estimate (16 mW/m²). The tick mark sits right at the wedge's centre — the low estimate (−4.8) is negative, so the slice could shrink to nothing, or even flip to the other side.</p>
+      </div>
     </div>
     <div class="pan-card" id="card-contrail" style="border-top-color:#2a78d6;">
       <span class="eyebrow-mono">DATA SHEET // CONTRAIL CIRRUS</span>
       <p class="ctitle">Contrail cirrus (~72%)</p>
       <p class="csub">Water vapour in engine exhaust freezes onto soot particles at cruise altitude, forming ice crystal trails that can spread into thin cirrus cloud cover. Like natural cirrus, they let sunlight through but trap outgoing heat, giving a net warming effect.</p>
       <p class="csub" style="margin-top:10px;">The 72% figure is a fleet-wide average: Teoh et al. (2020, 2024) find that roughly 2-3% of flights, mostly long-haul, high-altitude, night-time routes, drive about 80% of total contrail warming.</p>
+      <div class="uncert-dial" id="dial-contrail-wrap">
+        <span class="dial-label">95% confidence range — Lee et al. 2021</span>
+        <div id="ringdetail-contrail"></div>
+        <p class="dial-note">The widest wings of any term here: at the high estimate (189 mW/m²) the slice would be so much bigger that its two wings meet and overlap on the far side of the ring — the darker patch where they cross. At the low estimate (33 mW/m²) the tick mark shows it could shrink to a fraction of what's shown. Contrail cirrus is the biggest slice of aviation's warming and the least precisely known.</p>
+      </div>
     </div>
     <div class="pan-card" id="card-co2" style="border-top-color:#eda100;">
       <span class="eyebrow-mono">DATA SHEET // CO2</span>
       <p class="ctitle">CO<sub>2</sub> (~22%)</p>
       <p class="csub">Burning jet fuel releases CO<sub>2</sub>, which traps outgoing heat the way a blanket traps body heat. It persists in the atmosphere for centuries, so its warming effect accumulates and lasts long after the flight itself.</p>
+      <div class="uncert-dial" id="dial-co2-wrap">
+        <span class="dial-label">95% confidence range — Lee et al. 2021</span>
+        <div id="ringdetail-co2"></div>
+        <p class="dial-note">The narrowest wings of any term here: 31 to 38 mW/m². CO2's physics are well understood, so the slice barely moves either side of the solid wedge. This is the number regulators build policy on.</p>
+      </div>
     </div>
   </div>
 </div>
@@ -330,13 +353,106 @@ function animateCount(el, target, prefix, suffix, duration, delay) {
   requestAnimationFrame(tick);
 }
 
+function buildSegmentDetail(containerId, seg) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const ns = 'http://www.w3.org/2000/svg';
+  const cx = 220, cy = 220;
+  const ringInner = 100, ringOuter = 150;
+  const start = seg.startAngle, end = seg.endAngle;
+  const mid = (start + end) / 2;
+  const halfActual = (end - start) / 2;
+
+  function toXY(r, angleDeg) {
+    const rad = angleDeg * Math.PI / 180;
+    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+  }
+  function sectorPath(rInner, rOuter, startAngle, endAngle) {
+    const so = toXY(rOuter, startAngle), eo = toXY(rOuter, endAngle);
+    const si = toXY(rInner, endAngle), ei = toXY(rInner, startAngle);
+    const large = (endAngle - startAngle) > 180 ? 1 : 0;
+    return 'M ' + so.x + ' ' + so.y + ' A ' + rOuter + ' ' + rOuter + ' 0 ' + large + ' 1 ' + eo.x + ' ' + eo.y + ' L ' + si.x + ' ' + si.y + ' A ' + rInner + ' ' + rInner + ' 0 ' + large + ' 0 ' + ei.x + ' ' + ei.y + ' Z';
+  }
+  // Half-angle for a hypothetical value, scaled relative to this wedge's own actual
+  // half-angle - a true linear scale. For a term as uncertain as contrail cirrus, the
+  // high-estimate wings are wide enough that they'll meet and cross on the far side of
+  // the ring - that's not a bug to hide, it's the honest size of the error bar.
+  function halfAngleFor(v) {
+    if (v <= 0) return 0;
+    return halfActual * (v / seg.share);
+  }
+  const halfHigh = halfAngleFor(seg.high);
+  const halfLow = halfAngleFor(seg.low);
+
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '0 0 440 440');
+  svg.setAttribute('width', '230');
+  svg.setAttribute('height', '230');
+  svg.setAttribute('style', 'display:block;margin:0 auto;');
+
+  // Wings either side: the slice as it would look at the high estimate.
+  const wingL = document.createElementNS(ns, 'path');
+  wingL.setAttribute('d', sectorPath(ringInner, ringOuter, mid - halfHigh, start));
+  wingL.setAttribute('fill', seg.color);
+  wingL.setAttribute('opacity', '0.22');
+  svg.appendChild(wingL);
+
+  const wingR = document.createElementNS(ns, 'path');
+  wingR.setAttribute('d', sectorPath(ringInner, ringOuter, end, mid + halfHigh));
+  wingR.setAttribute('fill', seg.color);
+  wingR.setAttribute('opacity', '0.22');
+  svg.appendChild(wingR);
+
+  // The actual wedge, solid, exactly as it appears on the home ring.
+  const solid = document.createElementNS(ns, 'path');
+  solid.setAttribute('d', sectorPath(ringInner, ringOuter, start, end));
+  solid.setAttribute('fill', seg.color);
+  svg.appendChild(solid);
+
+  // Error-bar style caps marking the low-estimate edges, sitting inside the solid wedge
+  // (or coinciding at the centre if the low estimate is zero or negative).
+  [mid - halfLow, mid + halfLow].forEach(function(capAngle) {
+    const p1 = toXY(ringInner - 8, capAngle);
+    const p2 = toXY(ringOuter + 8, capAngle);
+    const cap = document.createElementNS(ns, 'line');
+    cap.setAttribute('x1', p1.x); cap.setAttribute('y1', p1.y);
+    cap.setAttribute('x2', p2.x); cap.setAttribute('y2', p2.y);
+    cap.setAttribute('stroke', 'var(--text)');
+    cap.setAttribute('stroke-width', '1.5');
+    cap.setAttribute('opacity', '0.75');
+    svg.appendChild(cap);
+  });
+
+  const highPt = toXY(ringOuter + 22, mid + halfHigh);
+  const highLabel = document.createElementNS(ns, 'text');
+  highLabel.setAttribute('x', highPt.x); highLabel.setAttribute('y', highPt.y);
+  highLabel.setAttribute('font-size', '12');
+  highLabel.setAttribute('font-family', 'IBM Plex Mono, monospace');
+  highLabel.setAttribute('fill', seg.color);
+  highLabel.setAttribute('text-anchor', 'middle');
+  highLabel.textContent = (seg.high > 0 ? '+' : '') + seg.high;
+  svg.appendChild(highLabel);
+
+  const lowPt = toXY(ringInner - 22, seg.low <= 0 ? mid : mid - halfLow);
+  const lowLabel = document.createElementNS(ns, 'text');
+  lowLabel.setAttribute('x', lowPt.x); lowLabel.setAttribute('y', lowPt.y);
+  lowLabel.setAttribute('font-size', '12');
+  lowLabel.setAttribute('font-family', 'IBM Plex Mono, monospace');
+  lowLabel.setAttribute('fill', seg.color);
+  lowLabel.setAttribute('text-anchor', 'middle');
+  lowLabel.textContent = (seg.low > 0 ? '+' : '') + seg.low;
+  svg.appendChild(lowLabel);
+
+  container.appendChild(svg);
+}
+
 (function() {
   const svg = document.getElementById('rings');
   const cx = 220, cy = 220;
   const segments = [
-    { id: 'co2', label: 'CO2', pct: '~22%', share: 34.3, color: '#eda100' },
-    { id: 'contrail', label: 'Contrail cirrus', pct: '~72%', share: 111.4, color: '#2a78d6' },
-    { id: 'nox', label: 'NOx (net)', pct: '~5%', share: 8.2, color: '#e34948' }
+    { id: 'co2', label: 'CO2', pct: '~22%', share: 34.3, color: '#eda100', low: 31, high: 38 },
+    { id: 'contrail', label: 'Contrail cirrus', pct: '~72%', share: 111.4, color: '#2a78d6', low: 33, high: 189 },
+    { id: 'nox', label: 'NOx (net)', pct: '~5%', share: 8.2, color: '#e34948', low: -4.8, high: 16 }
   ];
   const total = segments.reduce(function(s, seg) { return s + seg.share; }, 0);
   const ns = 'http://www.w3.org/2000/svg';
@@ -373,6 +489,8 @@ function animateCount(el, target, prefix, suffix, duration, delay) {
     const sweep = (seg.share / total) * 360;
     const start = angle, end = angle + sweep;
     const mid = (start + end) / 2;
+    seg.startAngle = start;
+    seg.endAngle = end;
 
     const group = document.createElementNS(ns, 'g');
     group.setAttribute('class', 'ring-seg');
@@ -430,6 +548,10 @@ function animateCount(el, target, prefix, suffix, duration, delay) {
 
     svg.appendChild(group);
     angle = end;
+  });
+
+  segments.forEach(function(seg) {
+    buildSegmentDetail('ringdetail-' + seg.id, seg);
   });
 
   const tickGroup = document.createElementNS(ns, 'g');
