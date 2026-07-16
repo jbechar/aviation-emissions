@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTF grounding: non-CO2 exposure supplement</title>
+<style>
+  :root {
+    --ink: #1a1a19;
+    --ink-secondary: #52514e;
+    --ink-muted: #898781;
+    --surface: #fcfcfb;
+    --card: #f1efe8;
+    --border: rgba(11,11,11,0.10);
+    --accent: #2a78d6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--surface);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0 0 4px;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: var(--ink-secondary);
+    margin: 0 0 2rem;
+  }
+  h2 {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 2.5rem 0 4px;
+  }
+  .section-note {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin: 0 0 1rem;
+  }
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 560px) {
+    .grid2 { grid-template-columns: 1fr; }
+  }
+  .card {
+    background: var(--card);
+    border-radius: 8px;
+    padding: 1rem 1.1rem;
+  }
+  .card-label {
+    font-size: 13px;
+    color: var(--ink-secondary);
+    margin: 0 0 4px;
+  }
+  .card-value {
+    font-size: 26px;
+    font-weight: 500;
+    margin: 0;
+  }
+  .card-caption {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin: 6px 0 0;
+  }
+  .callout {
+    background: var(--card);
+    border-radius: 8px;
+    padding: 1rem 1.1rem;
+    font-size: 13px;
+    color: var(--ink-secondary);
+    margin-top: 0.5rem;
+  }
+  .footer-note {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 0.5px solid var(--border);
+  }
+  #multChart { max-width: 100%; }
+</style>
+</head>
+<body>
+<div style="background:#05070a;color:#9aa5b1;font-family:'IBM Plex Mono',monospace;font-size:11px;padding:12px 24px;display:flex;gap:22px;flex-wrap:wrap;letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid #222;">
+  <a href="/aviation-emissions/" style="color:#9aa5b1;text-decoration:none;">&larr; Home</a>
+  <a href="/aviation-emissions/smbc-jsa-brief/" style="color:#9aa5b1;text-decoration:none;">SMBC / JSA Brief</a>
+  <a href="/aviation-emissions/gtf-non-co2-supplement/" style="color:#9aa5b1;text-decoration:none;">Non-CO2 Supplement</a>
+  <a href="/aviation-emissions/gtf-exposure-calculator/" style="color:#9aa5b1;text-decoration:none;">Exposure Calculator</a>
+</div>
+<div class="wrap">
+
+  <h1>GTF grounding: non-CO2 exposure supplement</h1>
+  <p class="subtitle">Fleet context, emissions exposure, certified excess NOx, and non-CO2 model uncertainty. Companion to the GTF grounding tracker.</p>
+
+  <h2>Fleet context</h2>
+  <p class="section-note">Not a modelled figure, reported fleet status.</p>
+  <div class="card">
+    <p class="card-label">Grounded share of A320neo-family GTF fleet</p>
+    <p class="card-value">37.7%</p>
+    <p class="card-caption">720 of 1,912 PW1100G-powered A320neo-family aircraft, ~May 2026 (down from a late-2025 peak, per Pratt & Whitney/Cirium reporting)</p>
+  </div>
+
+  <h2>Raw certified comparison: one aircraft, one LTO cycle</h2>
+  <p class="section-note">PW1127G-JM (neo, GTF, the grounded engine) vs two certified ceo engine options. Per aircraft (2 engines), ICAO EEDB. No fleet or excess-flying assumptions, this is what the certificates say for one aircraft, once.</p>
+  <p class="section-note">Percent change from the neo baseline. Two scenarios shown side by side because the answer genuinely depends on which ceo engine picks up the replacement flying, not resolved to a single number. Colour shows direction: orange is more than the neo baseline, teal is less.</p>
+
+  <div style="position:relative; width:100%; height:340px; margin-bottom:0.5rem;">
+    <canvas id="storyChart" role="img" aria-label="Percent change from neo GTF baseline, two ceo scenarios, across fuel burn, NOx, HC, CO and nvPM"></canvas>
+  </div>
+
+  <table style="width:100%; border-collapse:collapse; font-size:12px; margin-top:1.5rem;">
+    <thead>
+      <tr style="border-bottom:1px solid var(--border);">
+        <th style="text-align:left; padding:6px 4px; color:var(--ink-secondary); font-weight:500;">Per aircraft, per LTO cycle</th>
+        <th style="text-align:right; padding:6px 4px; color:var(--ink-secondary); font-weight:500;">Neo (GTF)</th>
+        <th style="text-align:right; padding:6px 4px; color:var(--ink-secondary); font-weight:500;">Scenario A: CFM56-5B</th>
+        <th style="text-align:right; padding:6px 4px; color:var(--ink-secondary); font-weight:500;">Scenario B: V2500</th>
+      </tr>
+    </thead>
+    <tbody id="rawTable" style="color:var(--ink);"></tbody>
+  </table>
+
+  <div class="callout" style="margin-top:1.25rem;">
+    Fuel burn and NOx increase under either scenario, that holds regardless of which ceo fleet absorbs the flying. HC and CO move in opposite directions depending on scenario: not ambiguous data, a genuine engine-specific difference. nvPM is only certified for the CFM56-5B scenario, V2527-A5 predates the nvPM certification requirement, so no comparable figure exists for that engine.
+  </div>
+
+  <h2>Non-CO2 multiplier: why we show a range, not a number</h2>
+  <p class="section-note">Evidence for model uncertainty. Not used to derive any figure on this page.</p>
+  <canvas id="multChart" role="img" aria-label="Range chart showing three published non-CO2 multiplier estimates: Johansson et al 2025 at 1.23x, Lee et al 2020/21 at 1.63x, EASA RFI at 1.7x" height="140"></canvas>
+
+  <div class="callout">
+    Fleet share and CO2 exposure are scenario ceilings, not measured outcomes. NOx is certification-grade at climb-out; cruise correction via the Boeing Fuel Flow Method is the documented next step. The multiplier range exists to show why non-CO2 effects aren't collapsed into a single figure here, not to produce one.
+  </div>
+
+  <p class="footer-note">Sources: ICAO Aircraft Engine Emissions Databank v32 (EASA). Fleet figure: Pratt & Whitney / Cirium reporting via FlightGlobal and industry press, ~May 2026. Lee et al. 2020/21, EASA RFI, Johansson et al. 2025. Engine identifiers: PW1127G-JM, CFM56-5B4/3, V2527-A5, current certified entries. Working document, not for redistribution without context.</p>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+new Chart(document.getElementById('multChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Johansson et al. 2025', 'Lee et al. 2020/21', 'EASA RFI'],
+    datasets: [{ data: [1.23, 1.63, 1.7], backgroundColor: '#2a78d6', borderRadius: 4, barThickness: 22 }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { min: 0, max: 2, grid: { color: '#e1e0d9' }, ticks: { color: '#898781', font: { size: 11 } } },
+      y: { grid: { display: false }, ticks: { color: '#52514e', font: { size: 12 } } }
+    }
+  }
+});
+
+// Raw per-aircraft certified comparison
+const variables = [
+  { key: 'fuel', label: 'Fuel burn (kg)',          neo: 605.0,  a: 814.0,  b: 874.0 },
+  { key: 'nox',  label: 'NOx (g)',                  neo: 6875.8, a: 9022.0, b: 10764.0 },
+  { key: 'hc',   label: 'HC (g)',                   neo: 137.4,  a: 628.0,  b: 64.0 },
+  { key: 'co',   label: 'CO (g)',                   neo: 6747.9, a: 10772.0, b: 5528.0 },
+  { key: 'nvpm', label: 'nvPM, soot mass (mg)',      neo: 6465.1, a: 16608.0, b: null },
+];
+
+const orange = '#c9622a';
+const teal = '#2a9d8f';
+
+const pctA = variables.map(v => ((v.a - v.neo) / v.neo) * 100);
+const pctB = variables.map(v => v.b === null ? null : ((v.b - v.neo) / v.neo) * 100);
+
+new Chart(document.getElementById('storyChart'), {
+  type: 'bar',
+  data: {
+    labels: variables.map(v => v.label),
+    datasets: [
+      {
+        label: 'Scenario A: CFM56-5B ceo',
+        data: pctA,
+        backgroundColor: pctA.map(v => v >= 0 ? orange : teal),
+        borderRadius: 4,
+        barPercentage: 0.7,
+      },
+      {
+        label: 'Scenario B: V2500 ceo',
+        data: pctB,
+        backgroundColor: pctB.map(v => v === null ? 'transparent' : (v >= 0 ? '#e0a074' : '#7fc4bb')),
+        borderRadius: 4,
+        barPercentage: 0.7,
+      }
+    ]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        align: 'start',
+        labels: { color: '#52514e', font: { size: 12 }, boxWidth: 12, usePointStyle: true, pointStyle: 'rect' }
+      },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => {
+            if (ctx.parsed.x === null) return `${ctx.dataset.label}: no certified data`;
+            const sign = ctx.parsed.x >= 0 ? '+' : '';
+            return `${ctx.dataset.label}: ${sign}${ctx.parsed.x.toFixed(0)}% vs neo`;
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: (ctx) => ctx.tick.value === 0 ? '#a8a69f' : '#e1e0d9' },
+        ticks: { color: '#898781', font: { size: 11 }, callback: (v) => v + '%' }
+      },
+      y: { grid: { display: false }, ticks: { color: '#1a1a19', font: { size: 12, weight: '500' } } }
+    }
+  }
+});
+
+// Raw data table
+const tbody = document.getElementById('rawTable');
+variables.forEach((v, i) => {
+  const row = document.createElement('tr');
+  row.style.borderBottom = '1px solid var(--border)';
+  const bVal = v.b === null ? 'no data' : v.b.toLocaleString(undefined, {maximumFractionDigits:1});
+  row.innerHTML = `
+    <td style="padding:6px 4px;">${v.label}</td>
+    <td style="text-align:right; padding:6px 4px;">${v.neo.toLocaleString(undefined, {maximumFractionDigits:1})}</td>
+    <td style="text-align:right; padding:6px 4px;">${v.a.toLocaleString(undefined, {maximumFractionDigits:1})}</td>
+    <td style="text-align:right; padding:6px 4px;">${bVal}</td>
+  `;
+  tbody.appendChild(row);
+});
+</script>
+
+</body>
+</html>

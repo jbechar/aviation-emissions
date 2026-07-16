@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fleet Re-placement Exposure - SMBC / JSA</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+:root{
+  --navy-deep:#0B1524;
+  --navy:#122036;
+  --navy-mid:#1C3050;
+  --steel:#5B7A9D;
+  --paper:#EDE7DA;
+  --copper:#C87D3A;
+  --copper-bright:#E0A458;
+  --ceo-dim:#3A506B;
+  --neo-accent:#C87D3A;
+  --line:rgba(237,231,218,0.14);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{
+  background:var(--navy-deep);
+  color:var(--paper);
+  font-family:'Inter',sans-serif;
+  line-height:1.55;
+}
+.wrap{max-width:920px; margin:0 auto; padding:0 40px;}
+
+/* HEADER */
+header{
+  padding:56px 0 40px;
+  border-bottom:1px solid var(--line);
+}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11.5px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--copper-bright);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:18px;
+}
+.eyebrow::before{
+  content:"";
+  width:22px; height:1px;
+  background:var(--copper-bright);
+}
+h1{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  font-size:44px;
+  line-height:1.08;
+  letter-spacing:-0.01em;
+  max-width:760px;
+}
+.sub{
+  font-size:16px;
+  color:var(--steel);
+  margin-top:16px;
+  max-width:600px;
+}
+.meta-row{
+  display:flex;
+  gap:32px;
+  margin-top:28px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  color:var(--steel);
+}
+.meta-row span b{color:var(--paper); font-weight:500;}
+
+/* SECTION LABEL */
+.section{padding:52px 0; border-bottom:1px solid var(--line);}
+.section:last-of-type{border-bottom:none;}
+.slabel{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--steel);
+  margin-bottom:20px;
+}
+.stitle{
+  font-family:'Fraunces',serif;
+  font-size:26px;
+  font-weight:600;
+  margin-bottom:22px;
+  max-width:640px;
+}
+
+/* MANIFEST GRID (signature element) */
+.manifest-intro{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px; flex-wrap:wrap; gap:16px;}
+.manifest-total{font-family:'Fraunces',serif; font-size:56px; font-weight:700; color:var(--copper-bright); line-height:1;}
+.manifest-total sup{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--steel); font-weight:400; margin-left:8px;}
+.legend{display:flex; gap:22px; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--steel);}
+.legend-item{display:flex; align-items:center; gap:8px;}
+.swatch{width:11px; height:11px; border-radius:2px;}
+.sw-neo{background:var(--neo-accent);}
+.sw-ceo{background:var(--ceo-dim); border:1px solid var(--steel);}
+
+.manifest{display:flex; flex-direction:column; gap:26px;}
+.lessor-row{}
+.lessor-head{
+  display:flex; justify-content:space-between; align-items:baseline;
+  font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--steel);
+  margin-bottom:10px; letter-spacing:0.04em;
+}
+.lessor-head b{color:var(--paper); font-family:'Inter',sans-serif; font-size:14.5px; font-weight:600; letter-spacing:0;}
+.grid{display:grid; grid-template-columns:repeat(25,1fr); gap:4px; max-width:600px;}
+.tile{
+  aspect-ratio:1; border-radius:2px;
+  transition:transform .15s ease;
+}
+.tile:hover{transform:scale(1.25);}
+.tile.neo{background:var(--neo-accent);}
+.tile.ceo{background:var(--ceo-dim); border:1px solid rgba(237,231,218,0.25);}
+
+/* EXPOSURE GAUGE (finance) */
+.gauge-block{display:flex; gap:48px; flex-wrap:wrap; align-items:flex-start;}
+.gauge-figure{min-width:220px;}
+.gauge-num{font-family:'Fraunces',serif; font-size:48px; font-weight:700; color:var(--copper-bright); line-height:1;}
+.gauge-cap{font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--steel); margin-top:8px; letter-spacing:0.04em;}
+.bar-track{flex:1; min-width:280px; padding-top:8px;}
+.bar-rail{position:relative; height:10px; background:var(--navy-mid); border-radius:5px; margin-top:34px;}
+.bar-fill{position:absolute; top:0; left:0; height:100%; background:linear-gradient(90deg,var(--ceo-dim),var(--copper)); border-radius:5px;}
+.bar-mark{position:absolute; top:-26px; transform:translateX(-50%); text-align:center;}
+.bar-mark .v{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--copper-bright);}
+.bar-mark::after{content:""; position:absolute; bottom:-30px; left:50%; width:2px; height:36px; background:var(--copper-bright); transform:translateX(-50%);}
+.bar-ends{display:flex; justify-content:space-between; margin-top:12px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--steel);}
+
+/* EMISSIONS RANGE */
+.range-row{display:flex; gap:0; margin-top:12px; border-radius:6px; overflow:hidden; height:64px;}
+.range-seg{flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; border-right:1px solid var(--navy-deep);}
+.range-seg:last-child{border-right:none;}
+.range-seg .val{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:15px;}
+.range-seg .lbl{font-family:'IBM Plex Mono',monospace; font-size:10px; opacity:0.75; margin-top:3px;}
+.seg-low{background:var(--navy-mid); color:var(--steel);}
+.seg-mid{background:var(--copper); color:var(--navy-deep);}
+.seg-high{background:var(--navy-mid); color:var(--steel);}
+.pending-tag{
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em;
+  color:var(--copper-bright); border:1px solid var(--copper); border-radius:20px;
+  padding:6px 14px; margin-top:20px; text-transform:uppercase;
+}
+.pending-tag::before{content:"●"; font-size:8px;}
+
+/* MARKET CONTEXT DUAL ARROW */
+.dual{display:flex; gap:2px; margin-top:8px;}
+.dual-half{flex:1; padding:22px 22px 24px; border-radius:6px;}
+.dual-half.risk{background:rgba(91,122,157,0.14); border-left:3px solid var(--steel);}
+.dual-half.support{background:rgba(200,125,58,0.12); border-left:3px solid var(--copper);}
+.dual-half h3{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:10px;}
+.dual-half.risk h3{color:var(--steel);}
+.dual-half.support h3{color:var(--copper-bright);}
+.dual-half p{font-size:14px; color:var(--paper); opacity:0.9;}
+
+footer{
+  padding:40px 0 60px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  color:var(--steel);
+  display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;
+}
+footer a{color:var(--copper-bright); text-decoration:none;}
+
+@media(max-width:640px){
+  h1{font-size:32px;}
+  .grid{grid-template-columns:repeat(13,1fr);}
+  .gauge-block{flex-direction:column; gap:28px;}
+}
+</style>
+</head>
+<body>
+<div style="background:#05070a;color:#9aa5b1;font-family:'IBM Plex Mono',monospace;font-size:11px;padding:12px 24px;display:flex;gap:22px;flex-wrap:wrap;letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid #222;">
+  <a href="/aviation-emissions/" style="color:#9aa5b1;text-decoration:none;">&larr; Home</a>
+  <a href="/aviation-emissions/smbc-jsa-brief/" style="color:#9aa5b1;text-decoration:none;">SMBC / JSA Brief</a>
+  <a href="/aviation-emissions/gtf-non-co2-supplement/" style="color:#9aa5b1;text-decoration:none;">Non-CO2 Supplement</a>
+  <a href="/aviation-emissions/gtf-exposure-calculator/" style="color:#9aa5b1;text-decoration:none;">Exposure Calculator</a>
+</div>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Exposure Summary</div>
+    <h1>44 aircraft, one bankruptcy, two lessors carrying the exposure.</h1>
+    <p class="sub">SMBC Aviation Capital and Jackson Square Aviation's combined re-placement position following Spirit Aviation Holdings' Chapter 11 lease rejections and May 2026 shutdown.</p>
+    <div class="meta-row">
+      <span>FILING <b>Oct 2025</b></span>
+      <span>SURRENDER <b>27 Oct 2025</b></span>
+      <span>SHUTDOWN <b>May 2026</b></span>
+      <span>STATUS <b>Illustrative draft</b></span>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="slabel">01. Fleet Manifest</div>
+    <div class="stitle">Every rejected tail, grouped by lessor.</div>
+    <div class="manifest-intro">
+      <div class="manifest-total">44<sup>aircraft rejected</sup></div>
+      <div class="legend">
+        <div class="legend-item"><span class="swatch sw-neo"></span>A320-200N (neo)</div>
+        <div class="legend-item"><span class="swatch sw-ceo"></span>A320-200 (ceo)</div>
+      </div>
+    </div>
+    <div class="manifest">
+      <div class="lessor-row">
+        <div class="lessor-head"><b>SMBC Aviation Capital</b><span>25 aircraft - 21 neo / 4 ceo</span></div>
+        <div class="grid" id="grid-smbc"></div>
+      </div>
+      <div class="lessor-row">
+        <div class="lessor-head"><b>Jackson Square Aviation</b><span>19 aircraft - 18 neo / 1 ceo</span></div>
+        <div class="grid" id="grid-jsa"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="slabel">02. Financial Exposure</div>
+    <div class="stitle">Annualised rental value requiring re-placement.</div>
+    <div class="gauge-block">
+      <div class="gauge-figure">
+        <div class="gauge-num">$173.5M</div>
+        <div class="gauge-cap">MID-CASE ANNUAL VALUE<br>AT RE-PLACEMENT</div>
+      </div>
+      <div class="bar-track">
+        <div class="bar-rail">
+          <div class="bar-fill" style="width:100%;"></div>
+          <div class="bar-mark" style="left:50%;"><span class="v">$173.5M</span></div>
+        </div>
+        <div class="bar-ends"><span>$142.3M low</span><span>$204.6M high</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="slabel">03. Emissions Context</div>
+    <div class="stitle">Fuel-burn penalty if neo capacity is backfilled by ceo-equivalent aircraft.</div>
+    <div class="range-row">
+      <div class="range-seg seg-low"><div class="val">~194,000 t</div><div class="lbl">LOW · 16%</div></div>
+      <div class="range-seg seg-mid"><div class="val">~213,000 t</div><div class="lbl">MID · 17.5%</div></div>
+      <div class="range-seg seg-high"><div class="val">~243,000 t</div><div class="lbl">HIGH · 20%</div></div>
+    </div>
+    <div class="pending-tag">Pending independent validation</div>
+  </section>
+
+  <section class="section">
+    <div class="slabel">04. Market Context</div>
+    <div class="stitle">The same crisis cuts both ways.</div>
+    <div class="dual">
+      <div class="dual-half risk">
+        <h3>Source of risk</h3>
+        <p>~700 GTF-powered frames grounded globally - the program delays that pressured Spirit's economics in the first place.</p>
+      </div>
+      <div class="dual-half support">
+        <h3>Support for value</h3>
+        <p>That same scarcity of available young narrowbody capacity is propping up lease rates - a natural placement channel for these 44 airframes.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Sample brief - illustrative figures, prepared for discussion</span>
+    <span><a href="https://jbechar.github.io/gtf-grounding-tracker/">jbechar.github.io/gtf-grounding-tracker</a></span>
+  </footer>
+
+</div>
+
+<script>
+function buildGrid(id, neo, ceo){
+  const el = document.getElementById(id);
+  const total = neo + ceo;
+  for(let i=0;i<total;i++){
+    const t = document.createElement('div');
+    t.className = 'tile ' + (i < neo ? 'neo' : 'ceo');
+    el.appendChild(t);
+  }
+}
+buildGrid('grid-smbc', 21, 4);
+buildGrid('grid-jsa', 18, 1);
+</script>
+
+</body>
+</html>
