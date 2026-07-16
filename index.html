@@ -1,670 +1,436 @@
-
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aviation emissions explained</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<title>GTF Fleet Exposure Calculator</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
   :root[data-theme="dark"] {
     --bg: #0e1417; --panel: #161d22; --panel-raised: #1c242a;
     --line: #2c383f; --line-strong: #435159;
     --text: #eef0ee; --text-muted: #8ea3ac;
-    --amber: #eeab4c; --teal: #57c2b1; --blueprint: #1a4a5c;
-  }
-  :root[data-theme="light"] {
-    --bg: #f6f5f0; --panel: #ffffff; --panel-raised: #ffffff;
-    --line: #dcdad0; --line-strong: #b7b4a6;
-    --text: #16191a; --text-muted: #5c6a6f;
-    --amber: #b8791f; --teal: #1f8a79; --blueprint: #cfe3e8;
+    --amber: #eeab4c; --teal: #57c2b1; --rust: #e0724a; --blueprint: #1a4a5c;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; }
-  body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', sans-serif; transition: background 0.2s, color 0.2s; display: flex; flex-direction: column; min-height: 100vh; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    line-height: 1.6;
+  }
   .mono { font-family: 'IBM Plex Mono', monospace; }
-  header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2rem; border-bottom: 1px solid var(--line); flex-shrink: 0; }
-  .title { font-size: 14px; font-weight: 600; letter-spacing: 0.06em; }
-  .title span { color: var(--text-muted); font-weight: 400; letter-spacing: 0; }
-  .header-actions { display: flex; align-items: center; gap: 10px; }
-  .btn { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.03em; background: none; border: 1px solid var(--line-strong); color: var(--text-muted); padding: 9px 16px; cursor: pointer; border-radius: 3px; transition: color 0.3s cubic-bezier(.16,1,.3,1), border-color 0.3s cubic-bezier(.16,1,.3,1); }
-  .btn:hover { color: var(--text); border-color: var(--teal); }
 
   .blueprint-grid {
     position: fixed; inset: 0; z-index: -1; pointer-events: none;
     background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
     background-size: 48px 48px;
-    opacity: 0.3;
-    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 42%, black 0%, transparent 78%);
-    mask-image: radial-gradient(ellipse 70% 60% at 50% 42%, black 0%, transparent 78%);
+    opacity: 0.25;
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 0%, transparent 78%);
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 0%, transparent 78%);
   }
 
-  .telemetry { display: flex; align-items: center; justify-content: center; gap: 1.5rem; flex-wrap: wrap; padding: 0.55rem 2rem 0; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-muted); flex-shrink: 0; }
-  .telemetry .tstat { display: inline-flex; align-items: center; gap: 6px; color: var(--teal); }
-  .telemetry .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
-  @media (prefers-reduced-motion: no-preference) {
-    .telemetry .dot { animation: pulseDot 2.4s infinite; }
-  }
-  @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(87,194,177,0.55); } 70% { box-shadow: 0 0 0 6px rgba(87,194,177,0); } 100% { box-shadow: 0 0 0 0 rgba(87,194,177,0); } }
-
-  .hero { text-align: center; padding: 1.1rem 2rem 0; flex-shrink: 0; }
-  .hero .eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal); margin: 0 0 8px; }
-  .hero h1 { font-size: 24px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.01em; }
-  .hero p { font-size: 13px; color: var(--text-muted); margin: 0 auto; max-width: 480px; line-height: 1.6; }
-
-  .hud-corner { position: absolute; width: 22px; height: 22px; border-color: var(--line-strong); opacity: 0.55; pointer-events: none; z-index: 4; }
-  .hud-corner.tl { top: 10px; left: 10px; border-top: 1px solid; border-left: 1px solid; }
-  .hud-corner.tr { top: 10px; right: 10px; border-top: 1px solid; border-right: 1px solid; }
-  .hud-corner.bl { bottom: 10px; left: 10px; border-bottom: 1px solid; border-left: 1px solid; }
-  .hud-corner.br { bottom: 10px; right: 10px; border-bottom: 1px solid; border-right: 1px solid; }
-
-  .uncert-dial { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); overflow: hidden; }
-  .uncert-dial .dial-label { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
-  .uncert-dial .dial-note { font-size: 11px; color: var(--text-muted); margin: 6px 0 0; line-height: 1.5; }
-  .uncert-dial .dial-note.flag { color: #e34948; }
-  .uncert-dial svg text { font-family: 'IBM Plex Mono', monospace; }
-
-  .ring-seg path { transition: filter 0.2s ease; }
-  .ring-seg:hover path { filter: brightness(1.18); }
-
-  .viewport { position: relative; flex: 1; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-  .world { position: relative; width: 1px; height: 1px; transition: transform 2.2s cubic-bezier(.65,0,.35,1); transform: translate(0px, 0px); }
-  .world > svg { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: block; }
-  .uncert-dial svg { position: static; display: block; }
-
-  .back-btn {
-    position: absolute; top: 16px; left: 16px;
+  .navbar {
+    background: #05070a; color: #9aa5b1;
     font-family: 'IBM Plex Mono', monospace; font-size: 11px;
-    background: var(--panel); border: 1px solid var(--line-strong); color: var(--text-muted);
-    padding: 7px 14px; border-radius: 3px; cursor: pointer;
-    opacity: 0; pointer-events: none; transition: opacity 0.5s cubic-bezier(.16,1,.3,1); z-index: 6;
+    padding: 12px 24px; display: flex; gap: 22px; flex-wrap: wrap;
+    letter-spacing: 0.05em; text-transform: uppercase; border-bottom: 1px solid #222;
   }
-  .back-btn.shown { opacity: 1; pointer-events: auto; }
+  .navbar a { color: #9aa5b1; text-decoration: none; }
+  .navbar a:hover { color: var(--teal); }
 
-  .pan-card {
-    position: absolute; left: 50%; top: 50%; width: 300px;
-    background: var(--panel);
-    border: 1px solid var(--line-strong); border-top-width: 3px; border-radius: 8px;
-    padding: 1.1rem 1.3rem;
-    box-shadow: 0 24px 48px -24px rgba(0,0,0,0.55);
-    opacity: 0; pointer-events: none; transition: opacity 0.9s cubic-bezier(.16,1,.3,1) 1.3s;
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 32px 100px; }
+
+  header.hero {
+    padding: 56px 0 36px; border-bottom: 1px solid var(--line);
   }
-  .pan-card.shown { opacity: 1; pointer-events: auto; }
-  .pan-card .eyebrow-mono { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 6px; }
-  .pan-card .ctitle { font-size: 14px; font-weight: 600; margin: 0 0 6px; }
-  .pan-card .csub { font-size: 12px; color: var(--text-muted); margin: 0; line-height: 1.6; }
-  #card-nox { transform: translate(calc(-50% - 480px), calc(-50% - 320px)); }
-  #card-contrail { transform: translate(calc(-50% - 480px), calc(-50% + 320px)); }
-  #card-co2 { transform: translate(calc(-50% + 480px), calc(-50%)); }
-
-  .source-note { font-size: 11px; color: var(--text-muted); text-align: center; max-width: 520px; margin: 0 auto; line-height: 1.6; padding: 0.5rem 2rem 1.5rem; flex-shrink: 0; }
-  .empty-hint { font-size: 12px; color: var(--text-muted); text-align: center; padding-bottom: 0.5rem; flex-shrink: 0; }
-
-  @keyframes spinOnce { from { transform: rotate(0deg); } to { transform: rotate(1080deg); } }
-  @keyframes radarSweep { from { transform: rotate(0deg); opacity: 0.5; } to { transform: rotate(360deg); opacity: 0; } }
-  @media (prefers-reduced-motion: no-preference) {
-    #fanAssembly { animation: spinOnce 3.4s cubic-bezier(.19,.85,.24,1) 1; }
-    #radarSweep { animation: radarSweep 1.6s cubic-bezier(.4,0,.2,1) 0.3s 1 forwards; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--teal);
+    display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
   }
-  #fanAssembly { transform-origin: 220px 220px; }
-  #radarSweep { transform-origin: 220px 220px; opacity: 0; }
+  .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--teal); }
+  h1 { font-size: 32px; font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; margin: 0 0 14px; max-width: 620px; }
+  .sub { font-size: 15px; color: var(--text-muted); max-width: 560px; margin: 0; }
 
-  .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 10; }
-  .drawer-overlay.open { opacity: 1; pointer-events: auto; }
-  .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: 420px; max-width: 92vw; background: var(--panel); border-left: 1px solid var(--line); transform: translateX(100%); transition: transform 0.28s ease; z-index: 11; display: flex; flex-direction: column; }
-  .drawer.open { transform: translateX(0); }
-  .drawer-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--line); }
-  .drawer-header h2 { font-size: 15px; font-weight: 600; margin: 0; }
-  .drawer-close { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; line-height: 1; padding: 4px; }
-  .drawer-close:hover { color: var(--text); }
-  .drawer-body { flex: 1; overflow-y: auto; padding: 0.5rem 0; }
-  .policy-row { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 1.5rem; cursor: pointer; border-bottom: 1px solid var(--line); transition: background 0.15s; }
-  .policy-row:hover { background: var(--panel-raised); }
-  .policy-row .pname { font-size: 13px; font-weight: 500; }
-  .policy-row .chev { color: var(--text-muted); font-size: 13px; }
-  .policy-detail { padding: 1.5rem; }
-  .back-link { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--teal); background: none; border: none; cursor: pointer; padding: 0 0 1.25rem; display: block; }
-  .policy-detail h3 { font-size: 16px; font-weight: 600; margin: 0 0 12px; }
-  .policy-detail .section-label { font-size: 11px; font-family: 'IBM Plex Mono', monospace; color: var(--teal); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 4px; }
-  .policy-detail p { font-size: 13px; color: var(--text-muted); line-height: 1.7; margin: 0 0 16px; }
+  section { padding: 44px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: none; }
+  .slabel {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted);
+    margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
+  }
+  .slabel::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .stitle { font-size: 20px; font-weight: 600; margin: 0 0 18px; max-width: 560px; }
+
+  /* Methodology */
+  .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+  @media (max-width: 640px) { .method-grid { grid-template-columns: 1fr; } }
+  .method-card {
+    background: var(--panel); border: 1px solid var(--line); border-top: 2px solid var(--teal);
+    border-radius: 6px; padding: 18px 20px;
+  }
+  .method-card.layer2 { border-top-color: var(--amber); }
+  .method-card h3 {
+    font-size: 13px; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.04em;
+    text-transform: uppercase; margin: 0 0 10px; color: var(--text);
+  }
+  .method-card.layer2 h3 { color: var(--amber); }
+  .method-card p { font-size: 13px; color: var(--text-muted); margin: 0; line-height: 1.65; }
+  .method-note {
+    font-size: 12.5px; color: var(--text-muted); background: var(--panel-raised);
+    border-left: 3px solid var(--rust); border-radius: 0 6px 6px 0; padding: 12px 16px; line-height: 1.6;
+  }
+  .method-note strong { color: var(--text); font-weight: 500; }
+
+  /* Inputs */
+  .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 640px) { .input-grid { grid-template-columns: 1fr; } }
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-muted);
+  }
+  .field input[type="text"], .field input[type="number"] {
+    background: var(--panel); border: 1px solid var(--line-strong); border-radius: 4px;
+    color: var(--text); font-family: 'IBM Plex Mono', monospace; font-size: 14px; padding: 10px 12px;
+  }
+  .field input:focus { outline: none; border-color: var(--teal); }
+  .scenario-toggle { display: flex; gap: 8px; flex-wrap: wrap; }
+  .scenario-btn {
+    flex: 1; min-width: 120px; background: var(--panel); border: 1px solid var(--line-strong);
+    color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; font-size: 11.5px;
+    letter-spacing: 0.03em; padding: 10px 12px; border-radius: 4px; cursor: pointer;
+    text-align: center; transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .scenario-btn.active { color: var(--bg); background: var(--teal); border-color: var(--teal); font-weight: 600; }
+  .scenario-btn:hover:not(.active) { border-color: var(--teal); color: var(--text); }
+  .field textarea {
+    background: var(--panel); border: 1px solid var(--line-strong); border-radius: 4px;
+    color: var(--text); font-family: 'IBM Plex Mono', monospace; font-size: 13px; padding: 10px 12px;
+    resize: vertical; min-height: 44px;
+  }
+  .field .hint { font-size: 11px; color: var(--text-muted); opacity: 0.8; }
+
+  /* Outputs */
+  .out-block { margin-bottom: 30px; }
+  .out-block:last-child { margin-bottom: 0; }
+  .out-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px;
+  }
+  .range-row { display: flex; gap: 0; border-radius: 6px; overflow: hidden; }
+  .range-seg {
+    flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 16px 8px; border-right: 1px solid var(--bg); text-align: center;
+  }
+  .range-seg:last-child { border-right: none; }
+  .range-seg .val { font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 17px; }
+  .range-seg .lbl { font-family: 'IBM Plex Mono', monospace; font-size: 10px; opacity: 0.8; margin-top: 4px; }
+  .seg-low { background: var(--panel-raised); color: var(--text-muted); }
+  .seg-mid { background: var(--teal); color: var(--bg); }
+  .seg-high { background: var(--panel-raised); color: var(--text-muted); }
+
+  .co2e-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .co2e-card {
+    flex: 1; min-width: 150px; background: var(--panel); border: 1px solid var(--line);
+    border-top: 2px solid var(--amber); border-radius: 0 0 6px 6px; padding: 14px 16px;
+  }
+  .co2e-card .val { font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 20px; color: var(--amber); }
+  .co2e-card .lbl { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--text-muted); margin-top: 6px; line-height: 1.5; }
+
+  #chartWrap { position: relative; width: 100%; height: 300px; margin-top: 8px; }
+
+  .pending-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em;
+    color: var(--amber); border: 1px solid var(--amber); border-radius: 20px;
+    padding: 6px 14px; margin-top: 16px; text-transform: uppercase;
+  }
+  .pending-tag::before { content: "●"; font-size: 8px; }
+
+  /* Footnote */
+  #footnote {
+    font-size: 12px; color: var(--text-muted); background: var(--panel);
+    border: 1px solid var(--line); border-radius: 6px; padding: 16px 20px; line-height: 1.8;
+  }
+  #footnote .fn-title {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--teal); margin-bottom: 10px; display: block;
+  }
+  #footnote ul { margin: 0; padding-left: 18px; }
+  #footnote li { margin-bottom: 6px; }
+
+  footer.page-footer {
+    padding: 36px 0 0; font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    color: var(--text-muted);
+  }
 </style>
 </head>
 <body>
 
 <div class="blueprint-grid"></div>
 
-<header>
-  <div class="title mono">AVIATION EMISSIONS <span>// explained</span></div>
-  <div class="header-actions">
-    <button class="btn" onclick="openDrawer('news')">CURRENT NEWS</button>
-    <button class="btn" onclick="openDrawer('policies')">CLIMATE POLICIES</button>
-    <button class="btn" id="themeBtn" onclick="toggleTheme()">DARK MODE</button>
-    <a class="btn" href="engagement-overview.pdf" target="_blank" rel="noopener" style="text-decoration:none; display:inline-flex; align-items:center;">ENGAGEMENT OVERVIEW</a>
-  </div>
-</header>
-
-<div class="telemetry">
-  <span class="tstat"><span class="dot"></span>LIVE MODEL</span>
-  <span>SOURCE — LEE ET AL. 2021</span>
-  <span>METRIC — RF, NOT ERF</span>
+<div class="navbar">
+  <a href="/aviation-emissions/">&larr; Home</a>
+  <a href="/aviation-emissions/smbc-jsa-brief/">SMBC / JSA Brief</a>
+  <a href="/aviation-emissions/spirit-lease-exposure/">Spirit Lease Exposure</a>
+  <a href="/aviation-emissions/gtf-non-co2-supplement/">Non-CO2 Supplement</a>
 </div>
 
-<div class="hero">
-  <p class="eyebrow">RF BREAKDOWN // BY POLLUTANT</p>
-  <h1>What's actually warming the planet, per pollutant</h1>
-  <p>Share of aviation's radiative forcing (RF) by pollutant, Lee et al. (2021). Click a segment to see how it works.</p>
-</div>
+<div class="wrap">
 
-<div class="viewport" id="viewport">
-  <span class="hud-corner tl"></span>
-  <span class="hud-corner tr"></span>
-  <span class="hud-corner bl"></span>
-  <span class="hud-corner br"></span>
-  <button class="back-btn" id="backBtn" onclick="resetPan()">&lsaquo; back to centre</button>
-  <div class="world" id="world">
-    <svg id="rings" width="440" height="440" viewBox="0 0 440 440" role="img" aria-label="A turbofan engine surrounded by a ring showing each pollutant's share of aviation radiative forcing. Contrail cirrus about 72 percent, CO2 about 22 percent, NOx net about 5 percent. Click a segment to see its explanation card."></svg>
+  <header class="hero">
+    <div class="eyebrow">Live Instrument</div>
+    <h1>GTF Fleet Exposure Calculator</h1>
+    <p class="sub">Enter any fleet size and replacement scenario. Get the same exposure methodology used in the SMBC/JSA and Spirit briefs, generated live - CO2, CO2e, and certified non-CO2 pollutant deltas, each labeled by how solid the underlying number is.</p>
+  </header>
 
-    <div class="pan-card" id="card-nox" style="border-top-color:#e34948;">
-      <span class="eyebrow-mono">DATA SHEET // NOx</span>
-      <p class="ctitle">NOx (net, ~5%)</p>
-      <p class="csub">At cruise altitude, NOx speeds up ozone formation, a warming effect, but also raises hydroxyl radicals that break down methane, a cooling effect. The two nearly offset, leaving a small net warming, though the exact size is genuinely debated.</p>
-      <div class="uncert-dial" id="dial-nox-wrap">
-        <span class="dial-label">95% confidence range — Lee et al. 2021</span>
-        <div id="ringdetail-nox"></div>
-        <p class="dial-note flag">The shaded wings show how much wider this slice could be at the high estimate (16 mW/m²). The tick mark sits right at the wedge's centre — the low estimate (−4.8) is negative, so the slice could shrink to nothing, or even flip to the other side.</p>
+  <section id="methodology">
+    <div class="slabel">Methodology</div>
+    <div class="stitle">Two layers, kept deliberately separate.</div>
+    <div class="method-grid">
+      <div class="method-card">
+        <h3>Layer 1 - CO2 &amp; CO2e</h3>
+        <p>Annualized, fleet-wide. A fuel-burn penalty (16-20%, from published OEM/industry range) applied to each aircraft's estimated annual baseline fuel burn, then converted to CO2 via IATA's 3.16 kg CO2/kg fuel factor. CO2e applies published non-CO2 multipliers on top - an approximation of total climate effect, not a regulatory figure.</p>
+      </div>
+      <div class="method-card layer2">
+        <h3>Layer 2 - Certified pollutants</h3>
+        <p>Per-aircraft, per-landing-takeoff-cycle deltas taken directly from the ICAO Engine Emissions Databank (v32), comparing the grounded neo engine against two certified ceo alternatives. Scaled by an estimated annual cycle count. No fleet-wide assumption beyond that scaling - this is what the certificates say, multiplied by how often a cycle happens.</p>
       </div>
     </div>
-    <div class="pan-card" id="card-contrail" style="border-top-color:#2a78d6;">
-      <span class="eyebrow-mono">DATA SHEET // CONTRAIL CIRRUS</span>
-      <p class="ctitle">Contrail cirrus (~72%)</p>
-      <p class="csub">Water vapour in engine exhaust freezes onto soot particles at cruise altitude, forming ice crystal trails that can spread into thin cirrus cloud cover. Like natural cirrus, they let sunlight through but trap outgoing heat, giving a net warming effect.</p>
-      <p class="csub" style="margin-top:10px;">The 72% figure is a fleet-wide average: Teoh et al. (2020, 2024) find that roughly 2-3% of flights, mostly long-haul, high-altitude, night-time routes, drive about 80% of total contrail warming.</p>
-      <div class="uncert-dial" id="dial-contrail-wrap">
-        <span class="dial-label">95% confidence range — Lee et al. 2021</span>
-        <div id="ringdetail-contrail"></div>
-        <p class="dial-note">The widest wings of any term here: at the high estimate (189 mW/m²) the slice would be so much bigger that its two wings meet and overlap on the far side of the ring — the darker patch where they cross. At the low estimate (33 mW/m²) the tick mark shows it could shrink to a fraction of what's shown. Contrail cirrus is the biggest slice of aviation's warming and the least precisely known.</p>
+    <div class="method-note">
+      <strong>Why kept apart:</strong> Layer 1 estimates a climate-cost number a lessor or insurer prices risk on. Layer 2 is a local air-quality effect (NOx, HC, CO, soot) at airport level - a different exposure category, with different regulation, and it stays in absolute mass rather than being folded into CO2e. Certified numbers are never blended with estimated ones into a single unlabeled figure.
+    </div>
+  </section>
+
+  <section id="inputs">
+    <div class="slabel">01. Inputs</div>
+    <div class="stitle">Describe the fleet and the scenario.</div>
+    <div class="input-grid">
+      <div class="field">
+        <label for="fleetSize">Fleet size (aircraft)</label>
+        <input type="number" id="fleetSize" value="44" min="1" step="1">
+      </div>
+      <div class="field">
+        <label for="duration">Duration (months of exposure)</label>
+        <input type="number" id="duration" value="18" min="1" step="1">
+      </div>
+      <div class="field" style="grid-column: 1 / -1;">
+        <label>Replacement scenario</label>
+        <div class="scenario-toggle" id="scenarioToggle">
+          <div class="scenario-btn active" data-scenario="both">Both, side by side</div>
+          <div class="scenario-btn" data-scenario="A">Scenario A - CFM56-5B</div>
+          <div class="scenario-btn" data-scenario="B">Scenario B - V2500</div>
+        </div>
+      </div>
+      <div class="field" style="grid-column: 1 / -1;">
+        <label for="portfolioLabel">Portfolio label (optional)</label>
+        <input type="text" id="portfolioLabel" placeholder="e.g. SMBC Aviation Capital - 25 aircraft">
       </div>
     </div>
-    <div class="pan-card" id="card-co2" style="border-top-color:#eda100;">
-      <span class="eyebrow-mono">DATA SHEET // CO2</span>
-      <p class="ctitle">CO<sub>2</sub> (~22%)</p>
-      <p class="csub">Burning jet fuel releases CO<sub>2</sub>, which traps outgoing heat the way a blanket traps body heat. It persists in the atmosphere for centuries, so its warming effect accumulates and lasts long after the flight itself.</p>
-      <div class="uncert-dial" id="dial-co2-wrap">
-        <span class="dial-label">95% confidence range — Lee et al. 2021</span>
-        <div id="ringdetail-co2"></div>
-        <p class="dial-note">The narrowest wings of any term here: 31 to 38 mW/m². CO2's physics are well understood, so the slice barely moves either side of the solid wedge. This is the number regulators build policy on.</p>
+  </section>
+
+  <section id="layer1">
+    <div class="slabel">02. Layer 1 - CO2 &amp; CO2e exposure</div>
+    <div class="stitle">Annualized climate-cost exposure for the selected fleet.</div>
+
+    <div class="out-block">
+      <div class="out-label">CO2, tonnes/year (physical)</div>
+      <div class="range-row">
+        <div class="range-seg seg-low"><div class="val" id="co2Low">-</div><div class="lbl">LOW &middot; 16%</div></div>
+        <div class="range-seg seg-mid"><div class="val" id="co2Mid">-</div><div class="lbl">MID &middot; 17.5%</div></div>
+        <div class="range-seg seg-high"><div class="val" id="co2High">-</div><div class="lbl">HIGH &middot; 20%</div></div>
       </div>
     </div>
-  </div>
+
+    <div class="out-block">
+      <div class="out-label">CO2e, tonnes/year (mid-case CO2 &times; published non-CO2 multiplier)</div>
+      <div class="co2e-row">
+        <div class="co2e-card"><div class="val" id="co2eJohansson">-</div><div class="lbl">&times;1.23 &middot; Johansson et al. 2025</div></div>
+        <div class="co2e-card"><div class="val" id="co2eLee">-</div><div class="lbl">&times;1.63 &middot; Lee et al. 2020/21</div></div>
+        <div class="co2e-card"><div class="val" id="co2eEasa">-</div><div class="lbl">&times;1.7 &middot; EASA RFI</div></div>
+      </div>
+    </div>
+    <div class="pending-tag">Baseline fuel burn per aircraft: estimated, pending independent validation</div>
+  </section>
+
+  <section id="layer2">
+    <div class="slabel">03. Layer 2 - Certified pollutant deltas</div>
+    <div class="stitle">Fleet-scaled NOx, HC, CO and nvPM, per scenario.</div>
+    <div id="chartWrap">
+      <canvas id="pollutantChart"></canvas>
+    </div>
+  </section>
+
+  <section id="footnoteSection">
+    <div class="slabel">04. Methodology footnote</div>
+    <div id="footnote">
+      <span class="fn-title">This calculation used</span>
+      <ul id="footnoteList"></ul>
+    </div>
+  </section>
+
+  <footer class="page-footer">
+    Built from ICAO Engine Emissions Databank v32, published non-CO2 multiplier estimates, and industry fleet-utilization commentary. Working instrument - figures pending independent validation.
+  </footer>
+
 </div>
-<p class="empty-hint" id="emptyHint">Click a ring segment or its label to see its card.</p>
 
-
-
-<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
-<div class="drawer" id="drawer">
-  <div class="drawer-header">
-    <h2 id="drawerTitle">Climate policies</h2>
-    <button class="drawer-close" onclick="closeDrawer()">&times;</button>
-  </div>
-  <p id="drawerNote" style="font-size: 12px; color: var(--text-muted); line-height: 1.6; padding: 1rem 1.5rem 0.25rem; margin: 0;">Almost everything below prices or regulates CO2 specifically. Non-CO2 effects, contrail cirrus and NOx, are a larger share of aviation's actual warming, but are only newly and partially addressed, see the EU non-CO2 MRV entry.</p>
-  <div class="drawer-body" id="drawerList"></div>
-</div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-const policies = [
-  { name: 'EU ETS, aviation',
-    desc: 'Covers intra-EEA flights. Free allowances fully phased out from 2026. Third-country scope extension under review, decision due July 2026.',
-    fin: 'Airlines must surrender one EU allowance (EUA) per tonne of CO<sub>2</sub> emitted. With free allocation gone from 2026, this is now a full cost exposure, not a partial one. EUAs have traded roughly EUR 72-81/tCO<sub>2</sub> through 2026, up from around EUR 60 a year earlier. For a narrowbody burning roughly 2.5 tonnes of fuel per hour (about 7.9 tonnes CO<sub>2</sub>), that is on the order of EUR 570-640 of carbon cost per flight hour at current prices, before any other fuel cost.' },
-  { name: 'UK ETS',
-    desc: 'Mirrors EU ETS structure. Same small-emitter thresholds. EU-UK linkage under negotiation.',
-    fin: 'Same per-tonne surrender mechanism as the EU scheme, priced on a separate UK market that can diverge from EUA prices. A future EU-UK linkage, under discussion, would make allowances interchangeable and likely narrow any price gap, which matters for any operator currently arbitraging between the two schemes.' },
-  { name: 'Swiss ETS',
-    desc: 'Linked to EU ETS since 2020, shared reporting regime.',
-    fin: 'Because it is linked to the EU scheme, Swiss ETS allowances track EUA pricing directly, so the same EUR 72-81/tCO<sub>2</sub> range applies. No separate price exposure to model beyond the EU figure.' },
-  { name: 'CORSIA',
-    desc: 'ICAO global offsetting scheme. First phase (2024-2026) voluntary. Second phase mandatory for nearly all states from January 2027. Baseline redefined as 85% of 2019 emissions.',
-    fin: 'Operators buy eligible emissions units for growth above the baseline, rather than surrendering an allowance for every tonne like EU ETS. Offset unit prices have historically traded far below EUA prices, though eligible-unit supply and pricing remain less mature and more volatile. The financial exposure is smaller per tonne than EU ETS today, but it applies globally and becomes mandatory for most states from 2027, which is the real change to underwrite for.' },
-  { name: 'EU non-CO<sub>2</sub> MRV, Directive 2023/958',
-    desc: 'Mandatory monitoring and reporting of non-CO<sub>2</sub> effects, contrails and NOx, from January 2025. Commission report due by end of 2027, may propose pricing non-CO<sub>2</sub> effects into EU ETS from 2028.',
-    fin: 'Currently a monitoring and reporting cost only, data collection and third-party verification, not a priced obligation. The financial exposure that matters is forward-looking: if the Commission proposes pricing non-CO<sub>2</sub> effects into EU ETS from 2028, that would roughly double or more the effective carbon cost per flight, since non-CO<sub>2</sub> effects are estimated at a larger share of aviation warming than CO<sub>2</sub> itself. Worth underwriting as a probable, not hypothetical, future cost line.' },
-  { name: 'ReFuelEU Aviation',
-    desc: 'SAF blending mandate, starts at 2% in 2025, rising progressively toward 70% by 2050.',
-    fin: 'This is a direct fuel cost, not a permit cost. EASA put 2024 average SAF prices around EUR 2,085/tonne against roughly EUR 734/tonne for conventional jet fuel, close to a 3x premium, with e-fuel pathways costing far more. At a 2% blend, the premium is diluted across the whole fuel bill, but it rises mechanically as the mandate percentage climbs over the coming decades, and the premium itself is not expected to close through any currently available production pathway.' },
-  { name: 'UK SAF Mandate',
-    desc: 'Separate blending mandate, 2% from 2025, own sub-caps and eligibility criteria, differs from the EU on crop-derived biofuel rules.',
-    fin: 'Same cost mechanics as ReFuelEU, a fuel price premium rather than a permit cost, but tracked and reported separately from the EU mandate. For any operator flying both UK and EU routes, this means maintaining two parallel compliance and cost-tracking regimes rather than one.' },
-  { name: 'Small emitter and de minimis thresholds',
-    desc: 'Commercial operators exempt below 10,000 t CO<sub>2</sub>/yr or 243 flights per period. Non-commercial, most business jets, exempt below 1,000 t CO<sub>2</sub>/yr, or simplified reporting below 25,000 t CO<sub>2</sub>/yr.',
-    fin: 'Staying under these thresholds avoids EU/UK ETS obligations entirely, which is a material planning input for smaller operators and fleet structuring decisions. This is the single most consequential number in this list for a business jet operator specifically, since it can be the difference between full compliance cost exposure and none.' },
-  { name: 'CSRD',
-    desc: 'Drives corporate flight-department Scope 3 reporting, relevant to companies operating or chartering jets, separate from airline-facing ETS/CORSIA.',
-    fin: 'Not a fuel or carbon cost directly, it is a disclosure and assurance cost, data collection, and third-party audit spend for the corporate flight department. The indirect financial exposure is through ESG ratings and access to green financing, poor Scope 3 aviation data can affect a company\'s wider cost of capital, not just its compliance budget.' }
-];
+// ---- Certified per-aircraft, per-LTO-cycle figures (ICAO EEDB v32, validated) ----
+const NEO = { fuel: 605.0, nox: 6875.8, hc: 137.4, co: 6747.9, nvpm: 6465.1 };
+const SCEN_A = { fuel: 814.0, nox: 9022.0, hc: 628.0, co: 10772.0, nvpm: 16608.0 }; // CFM56-5B
+const SCEN_B = { fuel: 874.0, nox: 10764.0, hc: 64.0, co: 5528.0, nvpm: null };     // V2500, no nvPM cert
 
-function renderDrawerList() {
-  const list = document.getElementById('drawerList');
-  list.innerHTML = '';
-  policies.forEach(function(p, i) {
-    const row = document.createElement('div');
-    row.className = 'policy-row';
-    row.innerHTML = '<span class="pname">' + p.name + '</span><span class="chev">&rsaquo;</span>';
-    row.onclick = function() { showPolicyDetail(i); };
-    list.appendChild(row);
-  });
-}
-function showPolicyDetail(i) {
-  const list = document.getElementById('drawerList');
-  const p = policies[i];
-  list.innerHTML =
-    '<div class="policy-detail">' +
-    '<button class="back-link" onclick="renderDrawerList()">&lsaquo; all policies</button>' +
-    '<h3>' + p.name + '</h3>' +
-    '<p class="section-label">How it works</p>' +
-    '<p>' + p.desc + '</p>' +
-    '<p class="section-label">Financial perspective</p>' +
-    '<p>' + p.fin + '</p>' +
-    '</div>';
-}
-const newsItems = [
-  { name: 'GTF grounding: certified pollutant exposure',
-    desc: 'Certified engine data quantifying the emissions consequences of the Pratt and Whitney GTF grounding: fuel burn, NOx, and soot compared across the grounded neo engine and both certified ceo alternatives. NOx and soot findings are solid; CO and HC are flagged as genuinely uncertain rather than claimed either way.',
-    url: 'https://mellifluous-heliotrope-3665a2.netlify.app/' },
-  { name: 'GTF fleet exposure calculator',
-    desc: 'Live instrument: enter any fleet size and replacement scenario, get CO2, CO2e, and certified non-CO2 pollutant deltas generated on the fly, using the same methodology as the certified pollutant exposure page above.',
-    url: '/aviation-emissions/gtf-exposure-calculator/' }
-];
+const CYCLES_PER_YEAR = 1460; // ~4 cycles/day, industry commentary estimate (AviationFile/Ascend via SimpleFlying), not certified
 
-function renderNewsList() {
-  const list = document.getElementById('drawerList');
-  list.innerHTML = '';
-  newsItems.forEach(function(n) {
-    const card = document.createElement('div');
-    card.className = 'policy-detail';
-    card.innerHTML =
-      '<button class="back-link" onclick="closeDrawer()">&lsaquo; back to homepage</button>' +
-      '<h3>' + n.name + '</h3>' +
-      '<p>' + n.desc + '</p>' +
-      '<a href="' + n.url + '" target="_blank" rel="noopener" class="back-link" style="padding:0;">Open exposure page &rsaquo;</a>';
-    list.appendChild(card);
-  });
+// Baseline annual CO2 per aircraft (tonnes), back-derived from the SMBC/JSA brief's
+// published mid-case figures (213,000t CO2 / 39 aircraft / 17.5% penalty), held constant
+// as a per-aircraft baseline pending a directly-sourced fleet fuel-burn figure.
+const BASELINE_CO2_PER_AIRCRAFT_YEAR = 31208;
+const FUEL_PENALTY = { low: 0.16, mid: 0.175, high: 0.20 };
+const IATA_CO2_FACTOR = 3.16;
+const MULTIPLIERS = { johansson: 1.23, lee: 1.63, easa: 1.70 };
+
+let currentScenario = 'both';
+
+function fmt(n, decimals=0) {
+  return Number(n).toLocaleString(undefined, { maximumFractionDigits: decimals, minimumFractionDigits: decimals });
 }
 
-function openDrawer(mode) {
-  const title = document.getElementById('drawerTitle');
-  const note = document.getElementById('drawerNote');
-  if (mode === 'news') {
-    title.textContent = 'Current news';
-    note.style.display = 'none';
-    renderNewsList();
-  } else {
-    title.textContent = 'Climate policies';
-    note.style.display = 'block';
-    renderDrawerList();
-  }
-  document.getElementById('drawer').classList.add('open');
-  document.getElementById('drawerOverlay').classList.add('open');
-}
-function closeDrawer() { document.getElementById('drawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('open'); }
-
-function toggleTheme() {
-  const root = document.documentElement;
-  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  root.setAttribute('data-theme', next);
-  document.getElementById('themeBtn').textContent = next === 'dark' ? 'DARK MODE' : 'LIGHT MODE';
-  localStorage.setItem('theme', next);
-}
-(function() {
-  const saved = localStorage.getItem('theme');
-  if (saved) { document.documentElement.setAttribute('data-theme', saved); document.getElementById('themeBtn').textContent = saved === 'dark' ? 'DARK MODE' : 'LIGHT MODE'; }
-})();
-
-const PAN_TARGETS = {
-  nox: 'translate(480px, 320px)',
-  contrail: 'translate(480px, -320px)',
-  co2: 'translate(-480px, 0px)'
-};
-let pannedTo = null;
-
-function resetPan() {
-  document.getElementById('world').style.transform = 'translate(0px, 0px)';
-  document.querySelectorAll('.pan-card').forEach(function(c) { c.classList.remove('shown'); });
-  document.getElementById('backBtn').classList.remove('shown');
-  document.getElementById('emptyHint').style.display = 'block';
-  pannedTo = null;
-}
-function panTo(id) {
-  if (pannedTo === id) { resetPan(); return; }
-  document.getElementById('world').style.transform = PAN_TARGETS[id];
-  document.querySelectorAll('.pan-card').forEach(function(c) {
-    c.classList.toggle('shown', c.id === 'card-' + id);
-  });
-  document.getElementById('backBtn').classList.add('shown');
-  document.getElementById('emptyHint').style.display = 'none';
-  pannedTo = id;
+function scenarioDelta(scenKey) {
+  const scen = scenKey === 'A' ? SCEN_A : SCEN_B;
+  return {
+    fuel: scen.fuel - NEO.fuel,
+    nox: scen.nox - NEO.nox,
+    hc: scen.hc - NEO.hc,
+    co: scen.co - NEO.co,
+    nvpm: scen.nvpm === null ? null : scen.nvpm - NEO.nvpm
+  };
 }
 
-function animateCount(el, target, prefix, suffix, duration, delay) {
-  const startTime = performance.now() + delay;
-  function tick(now) {
-    const p = Math.min(1, Math.max(0, (now - startTime) / duration));
-    const eased = 1 - Math.pow(1 - p, 3);
-    el.textContent = prefix + Math.round(target * eased) + suffix;
-    if (p < 1) requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
-}
+function recalc() {
+  const N = Math.max(1, parseInt(document.getElementById('fleetSize').value) || 0);
+  const months = Math.max(1, parseInt(document.getElementById('duration').value) || 0);
+  const durationFactor = months / 12;
 
-function buildSegmentDetail(containerId, seg) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  const ns = 'http://www.w3.org/2000/svg';
-  const cx = 220, cy = 220;
-  const ringInner = 100, ringOuter = 150;
-  const start = seg.startAngle, end = seg.endAngle;
-  const mid = (start + end) / 2;
-  const halfActual = (end - start) / 2;
+  // Layer 1: CO2 / CO2e
+  const co2Low = N * BASELINE_CO2_PER_AIRCRAFT_YEAR * FUEL_PENALTY.low * durationFactor;
+  const co2Mid = N * BASELINE_CO2_PER_AIRCRAFT_YEAR * FUEL_PENALTY.mid * durationFactor;
+  const co2High = N * BASELINE_CO2_PER_AIRCRAFT_YEAR * FUEL_PENALTY.high * durationFactor;
 
-  function toXY(r, angleDeg) {
-    const rad = angleDeg * Math.PI / 180;
-    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
-  }
-  function sectorPath(rInner, rOuter, startAngle, endAngle) {
-    const so = toXY(rOuter, startAngle), eo = toXY(rOuter, endAngle);
-    const si = toXY(rInner, endAngle), ei = toXY(rInner, startAngle);
-    const large = (endAngle - startAngle) > 180 ? 1 : 0;
-    return 'M ' + so.x + ' ' + so.y + ' A ' + rOuter + ' ' + rOuter + ' 0 ' + large + ' 1 ' + eo.x + ' ' + eo.y + ' L ' + si.x + ' ' + si.y + ' A ' + rInner + ' ' + rInner + ' 0 ' + large + ' 0 ' + ei.x + ' ' + ei.y + ' Z';
-  }
-  // Half-angle for a hypothetical value, scaled relative to this wedge's own actual
-  // half-angle - a true linear scale. For a term as uncertain as contrail cirrus, the
-  // high-estimate wings are wide enough that they'll meet and cross on the far side of
-  // the ring - that's not a bug to hide, it's the honest size of the error bar.
-  function halfAngleFor(v) {
-    if (v <= 0) return 0;
-    return halfActual * (v / seg.share);
-  }
-  const halfHigh = halfAngleFor(seg.high);
-  const halfLow = halfAngleFor(seg.low);
+  document.getElementById('co2Low').textContent = '~' + fmt(co2Low) + ' t';
+  document.getElementById('co2Mid').textContent = '~' + fmt(co2Mid) + ' t';
+  document.getElementById('co2High').textContent = '~' + fmt(co2High) + ' t';
 
-  const svg = document.createElementNS(ns, 'svg');
-  svg.setAttribute('viewBox', '0 0 440 440');
-  svg.setAttribute('width', '230');
-  svg.setAttribute('height', '230');
-  svg.setAttribute('style', 'display:block;margin:0 auto;');
+  document.getElementById('co2eJohansson').textContent = '~' + fmt(co2Mid * MULTIPLIERS.johansson) + ' t';
+  document.getElementById('co2eLee').textContent = '~' + fmt(co2Mid * MULTIPLIERS.lee) + ' t';
+  document.getElementById('co2eEasa').textContent = '~' + fmt(co2Mid * MULTIPLIERS.easa) + ' t';
 
-  // Wings either side: the slice as it would look at the high estimate.
-  const wingL = document.createElementNS(ns, 'path');
-  wingL.setAttribute('d', sectorPath(ringInner, ringOuter, mid - halfHigh, start));
-  wingL.setAttribute('fill', seg.color);
-  wingL.setAttribute('opacity', '0.22');
-  svg.appendChild(wingL);
+  // Layer 2: certified pollutant deltas, scaled
+  const scenarios = currentScenario === 'both' ? ['A', 'B'] : [currentScenario];
+  const labels = ['NOx (kg)', 'HC (kg)', 'CO (kg)', 'nvPM (kg)'];
 
-  const wingR = document.createElementNS(ns, 'path');
-  wingR.setAttribute('d', sectorPath(ringInner, ringOuter, end, mid + halfHigh));
-  wingR.setAttribute('fill', seg.color);
-  wingR.setAttribute('opacity', '0.22');
-  svg.appendChild(wingR);
-
-  // The actual wedge, solid, exactly as it appears on the home ring.
-  const solid = document.createElementNS(ns, 'path');
-  solid.setAttribute('d', sectorPath(ringInner, ringOuter, start, end));
-  solid.setAttribute('fill', seg.color);
-  svg.appendChild(solid);
-
-  // Error-bar style caps marking the low-estimate edges, sitting inside the solid wedge
-  // (or coinciding at the centre if the low estimate is zero or negative).
-  [mid - halfLow, mid + halfLow].forEach(function(capAngle) {
-    const p1 = toXY(ringInner - 8, capAngle);
-    const p2 = toXY(ringOuter + 8, capAngle);
-    const cap = document.createElementNS(ns, 'line');
-    cap.setAttribute('x1', p1.x); cap.setAttribute('y1', p1.y);
-    cap.setAttribute('x2', p2.x); cap.setAttribute('y2', p2.y);
-    cap.setAttribute('stroke', 'var(--text)');
-    cap.setAttribute('stroke-width', '1.5');
-    cap.setAttribute('opacity', '0.75');
-    svg.appendChild(cap);
+  const datasets = scenarios.map(function(s) {
+    const d = scenarioDelta(s);
+    const scale = N * CYCLES_PER_YEAR * durationFactor;
+    const vals = [
+      (d.nox * scale) / 1000,
+      (d.hc * scale) / 1000,
+      (d.co * scale) / 1000,
+      d.nvpm === null ? null : (d.nvpm * scale) / 1000 / 1000 // mg -> g -> kg
+    ];
+    return {
+      label: s === 'A' ? 'Scenario A: CFM56-5B' : 'Scenario B: V2500',
+      data: vals,
+      backgroundColor: vals.map(function(v) {
+        if (v === null) return 'transparent';
+        return v >= 0 ? '#e0724a' : '#57c2b1';
+      }),
+      borderRadius: 4,
+      barPercentage: 0.7
+    };
   });
 
-  const highPt = toXY(ringOuter + 22, mid + halfHigh);
-  const highLabel = document.createElementNS(ns, 'text');
-  highLabel.setAttribute('x', highPt.x); highLabel.setAttribute('y', highPt.y);
-  highLabel.setAttribute('font-size', '12');
-  highLabel.setAttribute('font-family', 'IBM Plex Mono, monospace');
-  highLabel.setAttribute('fill', seg.color);
-  highLabel.setAttribute('text-anchor', 'middle');
-  highLabel.textContent = (seg.high > 0 ? '+' : '') + seg.high;
-  svg.appendChild(highLabel);
-
-  const lowPt = toXY(ringInner - 22, seg.low <= 0 ? mid : mid - halfLow);
-  const lowLabel = document.createElementNS(ns, 'text');
-  lowLabel.setAttribute('x', lowPt.x); lowLabel.setAttribute('y', lowPt.y);
-  lowLabel.setAttribute('font-size', '12');
-  lowLabel.setAttribute('font-family', 'IBM Plex Mono, monospace');
-  lowLabel.setAttribute('fill', seg.color);
-  lowLabel.setAttribute('text-anchor', 'middle');
-  lowLabel.textContent = (seg.low > 0 ? '+' : '') + seg.low;
-  svg.appendChild(lowLabel);
-
-  container.appendChild(svg);
+  updateChart(labels, datasets);
+  updateFootnote(N, months, scenarios);
 }
 
-(function() {
-  const svg = document.getElementById('rings');
-  const cx = 220, cy = 220;
-  const segments = [
-    { id: 'co2', label: 'CO2', pct: '~22%', share: 34.3, color: '#eda100', low: 31, high: 38 },
-    { id: 'contrail', label: 'Contrail cirrus', pct: '~72%', share: 111.4, color: '#2a78d6', low: 33, high: 189 },
-    { id: 'nox', label: 'NOx (net)', pct: '~5%', share: 8.2, color: '#e34948', low: -4.8, high: 16 }
-  ];
-  const total = segments.reduce(function(s, seg) { return s + seg.share; }, 0);
-  const ns = 'http://www.w3.org/2000/svg';
-
-  function toXY(r, angleDeg) {
-    const rad = angleDeg * Math.PI / 180;
-    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
-  }
-  function sectorPath(rInner, rOuter, startAngle, endAngle) {
-    const so = toXY(rOuter, startAngle), eo = toXY(rOuter, endAngle);
-    const si = toXY(rInner, endAngle), ei = toXY(rInner, startAngle);
-    const large = (endAngle - startAngle) > 180 ? 1 : 0;
-    return 'M ' + so.x + ' ' + so.y + ' A ' + rOuter + ' ' + rOuter + ' 0 ' + large + ' 1 ' + eo.x + ' ' + eo.y + ' L ' + si.x + ' ' + si.y + ' A ' + rInner + ' ' + rInner + ' 0 ' + large + ' 0 ' + ei.x + ' ' + ei.y + ' Z';
-  }
-
-  let angle = -90;
-  const ringInner = 100, ringOuter = 150;
-
-  function renderLabel(el, label) {
-    const idx = label.indexOf('CO2');
-    if (idx === -1) { el.textContent = label; return; }
-    if (idx > 0) el.appendChild(document.createTextNode(label.slice(0, idx)));
-    el.appendChild(document.createTextNode('CO'));
-    const sub = document.createElementNS(ns, 'tspan');
-    sub.setAttribute('baseline-shift', 'sub');
-    sub.setAttribute('font-size', '9');
-    sub.textContent = '2';
-    el.appendChild(sub);
-    const rest = label.slice(idx + 3);
-    if (rest) el.appendChild(document.createTextNode(rest));
-  }
-
-  segments.forEach(function(seg, segIndex) {
-    const sweep = (seg.share / total) * 360;
-    const start = angle, end = angle + sweep;
-    const mid = (start + end) / 2;
-    seg.startAngle = start;
-    seg.endAngle = end;
-
-    const group = document.createElementNS(ns, 'g');
-    group.setAttribute('class', 'ring-seg');
-    group.setAttribute('style', 'cursor:pointer;');
-    group.addEventListener('click', function() { panTo(seg.id); });
-
-    const p = document.createElementNS(ns, 'path');
-    p.setAttribute('d', sectorPath(ringInner, ringOuter, start, end));
-    p.setAttribute('fill', seg.color);
-    group.appendChild(p);
-
-    const leaderStart = toXY(ringOuter, mid);
-    const leaderBend = toXY(ringOuter + 20, mid);
-    const labelSide = Math.cos(mid * Math.PI / 180) >= 0 ? 1 : -1;
-    const leaderEnd = { x: leaderBend.x + labelSide * 40, y: leaderBend.y };
-
-    const leader = document.createElementNS(ns, 'path');
-    leader.setAttribute('d', 'M ' + leaderStart.x + ' ' + leaderStart.y + ' L ' + leaderBend.x + ' ' + leaderBend.y + ' L ' + leaderEnd.x + ' ' + leaderEnd.y);
-    leader.setAttribute('fill', 'none');
-    leader.setAttribute('stroke', seg.color);
-    leader.setAttribute('stroke-width', '1');
-    leader.setAttribute('opacity', '0.7');
-    group.appendChild(leader);
-
-    const dot = document.createElementNS(ns, 'circle');
-    dot.setAttribute('cx', leaderStart.x); dot.setAttribute('cy', leaderStart.y); dot.setAttribute('r', 2.5);
-    dot.setAttribute('fill', seg.color);
-    group.appendChild(dot);
-
-    const nameText = document.createElementNS(ns, 'text');
-    nameText.setAttribute('x', leaderEnd.x);
-    nameText.setAttribute('y', leaderEnd.y - 6);
-    nameText.setAttribute('text-anchor', labelSide > 0 ? 'start' : 'end');
-    nameText.setAttribute('font-size', '13');
-    nameText.setAttribute('font-family', 'IBM Plex Sans, sans-serif');
-    nameText.setAttribute('font-weight', '500');
-    nameText.setAttribute('fill', 'var(--text)');
-    renderLabel(nameText, seg.label);
-    group.appendChild(nameText);
-
-    const pctText = document.createElementNS(ns, 'text');
-    pctText.setAttribute('x', leaderEnd.x);
-    pctText.setAttribute('y', leaderEnd.y + 12);
-    pctText.setAttribute('text-anchor', labelSide > 0 ? 'start' : 'end');
-    pctText.setAttribute('font-size', '12');
-    pctText.setAttribute('font-family', 'IBM Plex Mono, monospace');
-    pctText.setAttribute('fill', seg.color);
-    const pctMatch = seg.pct.match(/^(~?)(\d+)(%)$/);
-    if (pctMatch && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
-      animateCount(pctText, parseInt(pctMatch[2], 10), pctMatch[1], pctMatch[3], 900, 300 + segIndex * 130);
-    } else {
-      pctText.textContent = seg.pct;
+let chartInstance = null;
+function updateChart(labels, datasets) {
+  const ctx = document.getElementById('pollutantChart');
+  if (chartInstance) { chartInstance.destroy(); }
+  chartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: labels, datasets: datasets },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top', align: 'start',
+          labels: { color: '#8ea3ac', font: { size: 12, family: 'IBM Plex Sans' }, boxWidth: 12, usePointStyle: true, pointStyle: 'rect' }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(c) {
+              if (c.parsed.x === null) return c.dataset.label + ': no certified nvPM data (V2527-A5 predates requirement)';
+              const sign = c.parsed.x >= 0 ? '+' : '';
+              return c.dataset.label + ': ' + sign + c.parsed.x.toLocaleString(undefined, {maximumFractionDigits:1}) + ' kg/year';
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: function(ctx2) { return ctx2.tick.value === 0 ? '#435159' : '#2c383f'; } },
+          ticks: { color: '#8ea3ac', font: { size: 11 } }
+        },
+        y: { grid: { display: false }, ticks: { color: '#eef0ee', font: { size: 12, weight: '500' } } }
+      }
     }
-    group.appendChild(pctText);
-
-    svg.appendChild(group);
-    angle = end;
   });
+}
 
-  segments.forEach(function(seg) {
-    buildSegmentDetail('ringdetail-' + seg.id, seg);
+function updateFootnote(N, months, scenarios) {
+  const label = document.getElementById('portfolioLabel').value.trim();
+  const list = document.getElementById('footnoteList');
+  list.innerHTML = '';
+  const items = [];
+  if (label) items.push('Portfolio: <strong style="color:var(--text)">' + label + '</strong>');
+  items.push(N + ' aircraft, over ' + months + ' months of exposure');
+  items.push('Scenario(s): ' + scenarios.map(function(s){ return s === 'A' ? 'CFM56-5B (Scenario A)' : 'V2500 (Scenario B)'; }).join(' and '));
+  items.push('Fuel burn penalty band: 16% / 17.5% / 20% (published OEM/industry range)');
+  items.push('Baseline annual CO2/aircraft: ~31,208 t, back-derived from the SMBC/JSA brief\'s published mid-case - not yet an independently sourced fleet fuel-burn figure');
+  items.push('IATA conversion factor: 3.16 kg CO2 per kg fuel');
+  items.push('Non-CO2 multipliers applied to mid-case CO2 only: Johansson et al. 2025 (1.23&times;), Lee et al. 2020/21 (1.63&times;), EASA RFI (1.7&times;)');
+  items.push('Cycles/year: ~1,460 (about 4/day), industry-commentary estimate, not certified');
+  items.push('Certified per-cycle pollutant deltas: ICAO Engine Emissions Databank v32');
+  items.forEach(function(t) {
+    const li = document.createElement('li');
+    li.innerHTML = t;
+    list.appendChild(li);
   });
+}
 
-  const tickGroup = document.createElementNS(ns, 'g');
-  tickGroup.setAttribute('opacity', '0.55');
-  for (let d = 0; d < 360; d += 5) {
-    const major = d % 30 === 0;
-    const p1 = toXY(major ? 152 : 156, d);
-    const p2 = toXY(161, d);
-    const tick = document.createElementNS(ns, 'line');
-    tick.setAttribute('x1', p1.x); tick.setAttribute('y1', p1.y);
-    tick.setAttribute('x2', p2.x); tick.setAttribute('y2', p2.y);
-    tick.setAttribute('stroke', 'var(--line-strong)');
-    tick.setAttribute('stroke-width', major ? 1.25 : 0.6);
-    tickGroup.appendChild(tick);
-  }
-  svg.appendChild(tickGroup);
+document.querySelectorAll('.scenario-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.scenario-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    currentScenario = btn.getAttribute('data-scenario');
+    recalc();
+  });
+});
 
-  const bezel = document.createElementNS(ns, 'circle');
-  bezel.setAttribute('cx', cx); bezel.setAttribute('cy', cy); bezel.setAttribute('r', 165);
-  bezel.setAttribute('fill', 'none');
-  bezel.setAttribute('stroke', 'var(--line)');
-  bezel.setAttribute('stroke-width', '0.75');
-  svg.appendChild(bezel);
+['fleetSize', 'duration', 'portfolioLabel'].forEach(function(id) {
+  document.getElementById(id).addEventListener('input', recalc);
+});
 
-  const sweepGrad = document.createElementNS(ns, 'linearGradient');
-  sweepGrad.setAttribute('id', 'sweepGrad');
-  sweepGrad.setAttribute('x1', '0%'); sweepGrad.setAttribute('y1', '0%');
-  sweepGrad.setAttribute('x2', '100%'); sweepGrad.setAttribute('y2', '0%');
-  const stopA = document.createElementNS(ns, 'stop');
-  stopA.setAttribute('offset', '0%'); stopA.setAttribute('stop-color', 'var(--teal)'); stopA.setAttribute('stop-opacity', '0');
-  const stopB = document.createElementNS(ns, 'stop');
-  stopB.setAttribute('offset', '100%'); stopB.setAttribute('stop-color', 'var(--teal)'); stopB.setAttribute('stop-opacity', '0.55');
-  sweepGrad.appendChild(stopA); sweepGrad.appendChild(stopB);
-  const defs = document.createElementNS(ns, 'defs');
-  defs.appendChild(sweepGrad);
-  svg.appendChild(defs);
-
-  const radarSweep = document.createElementNS(ns, 'path');
-  radarSweep.setAttribute('id', 'radarSweep');
-  radarSweep.setAttribute('d', sectorPath(0, 165, -90 - 22, -90));
-  radarSweep.setAttribute('fill', 'url(#sweepGrad)');
-  svg.appendChild(radarSweep);
-
-  const fanAssembly = document.createElementNS(ns, 'g');
-  fanAssembly.setAttribute('id', 'fanAssembly');
-
-  const blades = 18;
-  const slot = 360 / blades;
-  const rootArc = slot * 0.75;
-  const sweep = 27;
-  for (let i = 0; i < blades; i++) {
-    const a1 = i * slot;
-    const a2 = a1 + rootArc;
-    const rootLead = toXY(20, a1);
-    const rootTrail = toXY(20, a2);
-    const tipLead = toXY(76, a1 - sweep);
-    const tipTrail = toXY(76, a2 - sweep);
-    const ctrlLead = toXY(48, a1 - sweep * 0.3);
-    const ctrlTrail = toXY(48, a2 - sweep * 0.3);
-    const blade = document.createElementNS(ns, 'path');
-    blade.setAttribute('d',
-      'M ' + rootLead.x + ' ' + rootLead.y +
-      ' Q ' + ctrlLead.x + ' ' + ctrlLead.y + ' ' + tipLead.x + ' ' + tipLead.y +
-      ' L ' + tipTrail.x + ' ' + tipTrail.y +
-      ' Q ' + ctrlTrail.x + ' ' + ctrlTrail.y + ' ' + rootTrail.x + ' ' + rootTrail.y +
-      ' Z');
-    blade.setAttribute('fill', 'var(--blueprint)');
-    blade.setAttribute('fill-opacity', '0.6');
-    blade.setAttribute('stroke', 'var(--line-strong)');
-    blade.setAttribute('stroke-width', '0.75');
-    fanAssembly.appendChild(blade);
-  }
-
-  const hubOuter = document.createElementNS(ns, 'circle');
-  hubOuter.setAttribute('cx', cx); hubOuter.setAttribute('cy', cy); hubOuter.setAttribute('r', 20);
-  hubOuter.setAttribute('fill', 'var(--panel)');
-  hubOuter.setAttribute('stroke', 'var(--line-strong)');
-  hubOuter.setAttribute('stroke-width', '1');
-  fanAssembly.appendChild(hubOuter);
-
-  const spiral = document.createElementNS(ns, 'path');
-  let sd = '';
-  for (let t = 0; t <= 540; t += 12) {
-    const r = 2 + (t / 540) * 14;
-    const sp = toXY(r, t - 90);
-    sd += (t === 0 ? 'M' : 'L') + ' ' + sp.x + ' ' + sp.y + ' ';
-  }
-  spiral.setAttribute('d', sd);
-  spiral.setAttribute('fill', 'none');
-  spiral.setAttribute('stroke', 'var(--teal)');
-  spiral.setAttribute('stroke-width', '1.25');
-  fanAssembly.appendChild(spiral);
-
-  svg.appendChild(fanAssembly);
-
-  const nacelleOuter = document.createElementNS(ns, 'circle');
-  nacelleOuter.setAttribute('cx', cx); nacelleOuter.setAttribute('cy', cy); nacelleOuter.setAttribute('r', 88);
-  nacelleOuter.setAttribute('fill', 'none');
-  nacelleOuter.setAttribute('stroke', 'var(--line-strong)');
-  nacelleOuter.setAttribute('stroke-width', '1');
-  svg.appendChild(nacelleOuter);
-
-  const nacelleInner = document.createElementNS(ns, 'circle');
-  nacelleInner.setAttribute('cx', cx); nacelleInner.setAttribute('cy', cy); nacelleInner.setAttribute('r', 82);
-  nacelleInner.setAttribute('fill', 'none');
-  nacelleInner.setAttribute('stroke', 'var(--line)');
-  nacelleInner.setAttribute('stroke-width', '0.5');
-  svg.appendChild(nacelleInner);
-})();
+recalc();
 </script>
 
 </body>
