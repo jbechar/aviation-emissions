@@ -1,4 +1,6 @@
 
+
+Index · HTML
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -7,7 +9,7 @@
 <title>GTF Fleet Exposure Calculator</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
-
+ 
   :root[data-theme="dark"] {
     --bg: #0e1417; --panel: #161d22; --panel-raised: #1c242a;
     --line: #2c383f; --line-strong: #435159;
@@ -22,7 +24,7 @@
     line-height: 1.6;
   }
   .mono { font-family: 'IBM Plex Mono', monospace; }
-
+ 
   .blueprint-grid {
     position: fixed; inset: 0; z-index: -1; pointer-events: none;
     background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
@@ -31,7 +33,7 @@
     -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 0%, transparent 78%);
     mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 0%, transparent 78%);
   }
-
+ 
   .navbar {
     background: #05070a; color: #9aa5b1;
     font-family: 'IBM Plex Mono', monospace; font-size: 11px;
@@ -40,9 +42,9 @@
   }
   .navbar a { color: #9aa5b1; text-decoration: none; }
   .navbar a:hover { color: var(--teal); }
-
+ 
   .wrap { max-width: 880px; margin: 0 auto; padding: 0 32px 100px; }
-
+ 
   header.hero {
     padding: 56px 0 36px; border-bottom: 1px solid var(--line);
   }
@@ -54,7 +56,7 @@
   .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--teal); }
   h1 { font-size: 32px; font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; margin: 0 0 14px; max-width: 620px; }
   .sub { font-size: 15px; color: var(--text-muted); max-width: 560px; margin: 0; }
-
+ 
   section { padding: 44px 0; border-bottom: 1px solid var(--line); }
   section:last-of-type { border-bottom: none; }
   .slabel {
@@ -64,7 +66,7 @@
   }
   .slabel::after { content: ""; flex: 1; height: 1px; background: var(--line); }
   .stitle { font-size: 20px; font-weight: 600; margin: 0 0 18px; max-width: 560px; }
-
+ 
   /* Methodology */
   .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
   @media (max-width: 640px) { .method-grid { grid-template-columns: 1fr; } }
@@ -84,7 +86,7 @@
     border-left: 3px solid var(--rust); border-radius: 0 6px 6px 0; padding: 12px 16px; line-height: 1.6;
   }
   .method-note strong { color: var(--text); font-weight: 500; }
-
+ 
   /* Inputs */
   .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
   @media (max-width: 640px) { .input-grid { grid-template-columns: 1fr; } }
@@ -113,7 +115,7 @@
     resize: vertical; min-height: 44px;
   }
   .field .hint { font-size: 11px; color: var(--text-muted); opacity: 0.8; }
-
+ 
   /* Outputs */
   .out-block { margin-bottom: 30px; }
   .out-block:last-child { margin-bottom: 0; }
@@ -132,7 +134,7 @@
   .seg-low { background: var(--panel-raised); color: var(--text-muted); }
   .seg-mid { background: var(--teal); color: var(--bg); }
   .seg-high { background: var(--panel-raised); color: var(--text-muted); }
-
+ 
   .co2e-row { display: flex; gap: 10px; flex-wrap: wrap; }
   .co2e-card {
     flex: 1; min-width: 150px; background: var(--panel); border: 1px solid var(--line);
@@ -140,9 +142,9 @@
   }
   .co2e-card .val { font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 20px; color: var(--amber); }
   .co2e-card .lbl { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--text-muted); margin-top: 6px; line-height: 1.5; }
-
+ 
   #chartWrap { position: relative; width: 100%; height: 300px; margin-top: 8px; }
-
+ 
   .pending-tag {
     display: inline-flex; align-items: center; gap: 8px;
     font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em;
@@ -150,7 +152,7 @@
     padding: 6px 14px; margin-top: 16px; text-transform: uppercase;
   }
   .pending-tag::before { content: "●"; font-size: 8px; }
-
+ 
   /* Footnote */
   #footnote {
     font-size: 12px; color: var(--text-muted); background: var(--panel);
@@ -162,7 +164,7 @@
   }
   #footnote ul { margin: 0; padding-left: 18px; }
   #footnote li { margin-bottom: 6px; }
-
+ 
   footer.page-footer {
     padding: 36px 0 0; font-family: 'IBM Plex Mono', monospace; font-size: 11px;
     color: var(--text-muted);
@@ -170,24 +172,24 @@
 </style>
 </head>
 <body>
-
+ 
 <div class="blueprint-grid"></div>
-
+ 
 <div class="navbar">
   <a href="/aviation-emissions/">&larr; Home</a>
   <a href="/aviation-emissions/smbc-jsa-brief/">SMBC / JSA Brief</a>
   <a href="/aviation-emissions/gtf-non-co2-supplement/">Non-CO2 Supplement</a>
   <a href="/aviation-emissions/gtf-exposure-calculator/">Exposure Calculator</a>
 </div>
-
+ 
 <div class="wrap">
-
+ 
   <header class="hero">
     <div class="eyebrow">Live Instrument</div>
     <h1>GTF Fleet Exposure Calculator</h1>
     <p class="sub">Enter any fleet size and replacement scenario. Get the same exposure methodology used in the SMBC/JSA and Spirit briefs, generated live - CO2, CO2e, and certified non-CO2 pollutant deltas, each labeled by how solid the underlying number is.</p>
   </header>
-
+ 
   <section id="methodology">
     <div class="slabel">Methodology</div>
     <div class="stitle">Two layers, kept deliberately separate.</div>
@@ -205,7 +207,7 @@
       <strong>Why kept apart:</strong> Layer 1 estimates a climate-cost number a lessor or insurer prices risk on. Layer 2 is a local air-quality effect (NOx, HC, CO, soot) at airport level - a different exposure category, with different regulation, and it stays in absolute mass rather than being folded into CO2e. Certified numbers are never blended with estimated ones into a single unlabeled figure.
     </div>
   </section>
-
+ 
   <section id="fieldNote">
     <div class="slabel">Field correction</div>
     <div class="stitle">This model's core assumption doesn't hold in every portfolio.</div>
@@ -219,7 +221,7 @@
       This doesn't invalidate the ceo-backfill scenario as one possible outcome across a fleet this size - it means the calculator's default assumption should be treated as one scenario among several, not the confirmed mechanism. Whether ceo-backfill, re-leasing, or teardown dominates likely depends on engine type, spare part availability, and each lessor's specific negotiating position - not a single global pattern.
     </div>
   </section>
-
+ 
   <section id="inputs">
     <div class="slabel">01. Inputs</div>
     <div class="stitle">Describe the fleet and the scenario.</div>
@@ -246,11 +248,11 @@
       </div>
     </div>
   </section>
-
+ 
   <section id="layer1">
     <div class="slabel">02. Layer 1 - CO2 &amp; CO2e exposure</div>
     <div class="stitle">Annualized climate-cost exposure for the selected fleet.</div>
-
+ 
     <div class="out-block">
       <div class="out-label">CO2, tonnes/year (physical)</div>
       <div class="range-row">
@@ -259,7 +261,7 @@
         <div class="range-seg seg-high"><div class="val" id="co2High">-</div><div class="lbl">HIGH &middot; 20%</div></div>
       </div>
     </div>
-
+ 
     <div class="out-block">
       <div class="out-label">CO2e, tonnes/year (mid-case CO2 &times; published non-CO2 multiplier)</div>
       <div class="co2e-row">
@@ -270,7 +272,7 @@
     </div>
     <div class="pending-tag">Baseline fuel burn per aircraft: estimated, pending independent validation</div>
   </section>
-
+ 
   <section id="layer2">
     <div class="slabel">03. Layer 2 - Certified pollutant deltas</div>
     <div class="stitle">Fleet-scaled NOx, HC, CO and nvPM, per scenario.</div>
@@ -278,7 +280,7 @@
       <canvas id="pollutantChart"></canvas>
     </div>
   </section>
-
+ 
   <section id="footnoteSection">
     <div class="slabel">04. Methodology footnote</div>
     <div id="footnote">
@@ -286,22 +288,22 @@
       <ul id="footnoteList"></ul>
     </div>
   </section>
-
+ 
   <footer class="page-footer">
     Built from ICAO Engine Emissions Databank v32, published non-CO2 multiplier estimates, and industry fleet-utilization commentary. Working instrument - figures pending independent validation.
   </footer>
-
+ 
 </div>
-
+ 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
 // ---- Certified per-aircraft, per-LTO-cycle figures (ICAO EEDB v32, validated) ----
 const NEO = { fuel: 605.0, nox: 6875.8, hc: 137.4, co: 6747.9, nvpm: 6465.1 };
 const SCEN_A = { fuel: 814.0, nox: 9022.0, hc: 628.0, co: 10772.0, nvpm: 16608.0 }; // CFM56-5B
 const SCEN_B = { fuel: 874.0, nox: 10764.0, hc: 64.0, co: 5528.0, nvpm: null };     // V2500, no nvPM cert
-
+ 
 const CYCLES_PER_YEAR = 1460; // ~4 cycles/day, industry commentary estimate (AviationFile/Ascend via SimpleFlying), not certified
-
+ 
 // Baseline annual CO2 per aircraft (tonnes), back-derived from the SMBC/JSA brief's
 // published mid-case figures (213,000t CO2 / 44 aircraft / 17.5% penalty), held constant
 // as a per-aircraft baseline pending a directly-sourced fleet fuel-burn figure.
@@ -309,13 +311,13 @@ const BASELINE_CO2_PER_AIRCRAFT_YEAR = 27662;
 const FUEL_PENALTY = { low: 0.16, mid: 0.175, high: 0.20 };
 const IATA_CO2_FACTOR = 3.16;
 const MULTIPLIERS = { johansson: 1.23, lee: 1.63, easa: 1.70 };
-
+ 
 let currentScenario = 'both';
-
+ 
 function fmt(n, decimals=0) {
   return Number(n).toLocaleString(undefined, { maximumFractionDigits: decimals, minimumFractionDigits: decimals });
 }
-
+ 
 function scenarioDelta(scenKey) {
   const scen = scenKey === 'A' ? SCEN_A : SCEN_B;
   return {
@@ -326,29 +328,29 @@ function scenarioDelta(scenKey) {
     nvpm: scen.nvpm === null ? null : scen.nvpm - NEO.nvpm
   };
 }
-
+ 
 function recalc() {
   const N = Math.max(1, parseInt(document.getElementById('fleetSize').value) || 0);
   const months = Math.max(1, parseInt(document.getElementById('duration').value) || 0);
   const durationFactor = months / 12;
-
+ 
   // Layer 1: CO2 / CO2e
   const co2Low = N * BASELINE_CO2_PER_AIRCRAFT_YEAR * FUEL_PENALTY.low * durationFactor;
   const co2Mid = N * BASELINE_CO2_PER_AIRCRAFT_YEAR * FUEL_PENALTY.mid * durationFactor;
   const co2High = N * BASELINE_CO2_PER_AIRCRAFT_YEAR * FUEL_PENALTY.high * durationFactor;
-
+ 
   document.getElementById('co2Low').textContent = '~' + fmt(co2Low) + ' t';
   document.getElementById('co2Mid').textContent = '~' + fmt(co2Mid) + ' t';
   document.getElementById('co2High').textContent = '~' + fmt(co2High) + ' t';
-
+ 
   document.getElementById('co2eJohansson').textContent = '~' + fmt(co2Mid * MULTIPLIERS.johansson) + ' t';
   document.getElementById('co2eLee').textContent = '~' + fmt(co2Mid * MULTIPLIERS.lee) + ' t';
   document.getElementById('co2eEasa').textContent = '~' + fmt(co2Mid * MULTIPLIERS.easa) + ' t';
-
+ 
   // Layer 2: certified pollutant deltas, scaled
   const scenarios = currentScenario === 'both' ? ['A', 'B'] : [currentScenario];
   const labels = ['NOx (kg)', 'HC (kg)', 'CO (kg)', 'nvPM (kg)'];
-
+ 
   const datasets = scenarios.map(function(s) {
     const d = scenarioDelta(s);
     const scale = N * CYCLES_PER_YEAR * durationFactor;
@@ -369,11 +371,11 @@ function recalc() {
       barPercentage: 0.7
     };
   });
-
+ 
   updateChart(labels, datasets);
   updateFootnote(N, months, scenarios);
 }
-
+ 
 let chartInstance = null;
 function updateChart(labels, datasets) {
   const ctx = document.getElementById('pollutantChart');
@@ -410,7 +412,7 @@ function updateChart(labels, datasets) {
     }
   });
 }
-
+ 
 function updateFootnote(N, months, scenarios) {
   const label = document.getElementById('portfolioLabel').value.trim();
   const list = document.getElementById('footnoteList');
@@ -432,7 +434,7 @@ function updateFootnote(N, months, scenarios) {
     list.appendChild(li);
   });
 }
-
+ 
 document.querySelectorAll('.scenario-btn').forEach(function(btn) {
   btn.addEventListener('click', function() {
     document.querySelectorAll('.scenario-btn').forEach(function(b){ b.classList.remove('active'); });
@@ -441,13 +443,29 @@ document.querySelectorAll('.scenario-btn').forEach(function(btn) {
     recalc();
   });
 });
-
+ 
 ['fleetSize', 'duration', 'portfolioLabel'].forEach(function(id) {
   document.getElementById(id).addEventListener('input', recalc);
 });
-
+ 
 recalc();
 </script>
-
+ 
 </body>
 </html>
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
