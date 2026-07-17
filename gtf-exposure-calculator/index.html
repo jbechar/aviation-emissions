@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -202,6 +203,18 @@
     </div>
     <div class="method-note">
       <strong>Why kept apart:</strong> Layer 1 estimates a climate-cost number a lessor or insurer prices risk on. Layer 2 is a local air-quality effect (NOx, HC, CO, soot) at airport level - a different exposure category, with different regulation, and it stays in absolute mass rather than being folded into CO2e. Certified numbers are never blended with estimated ones into a single unlabeled figure.
+    </div>
+  </section>
+
+  <section id="fieldNote">
+    <div class="slabel">Field correction</div>
+    <div class="stitle">This model's core assumption doesn't hold in every portfolio.</div>
+    <div class="method-note" style="border-left: 3px solid var(--rust);">
+      <strong>What this calculator assumes:</strong> that grounded capacity gets backfilled with older ceo-generation aircraft, producing a fuel-burn and emissions penalty.
+      <br><br>
+      <strong>What at least one credit risk practitioner reports actually happened:</strong> in one portfolio affected by the Spirit Chapter 11 process, no ceo backfill occurred. Instead, a tripartite agreement between the airline, Pratt &amp; Whitney, and Spirit's estate allowed engine "green time" to be used, secured priority restoration slots for 2026-2027, and saw affected aircraft either re-leased to other operators (where the engine wasn't powder-metal affected) or torn down. Freed-up capacity was absorbed directly by market demand rather than replaced with older, less efficient airframes. The credit impact in that case came from a different mechanism entirely: eleven aircraft returned below book value, a direct accounting loss unrelated to the fuel-burn/emissions pathway modeled here.
+      <br><br>
+      This doesn't invalidate the ceo-backfill scenario as one possible outcome across a fleet this size - it means the calculator's default assumption should be treated as one scenario among several, not the confirmed mechanism. Whether ceo-backfill, re-leasing, or teardown dominates likely depends on engine type, spare part availability, and each lessor's specific negotiating position - not a single global pattern.
     </div>
   </section>
 
@@ -410,6 +423,7 @@ function updateFootnote(N, months, scenarios) {
   items.push('Non-CO2 multipliers applied to mid-case CO2 only: Johansson et al. 2025 (1.23&times;), Lee et al. 2020/21 (1.63&times;), EASA RFI (1.7&times;)');
   items.push('Cycles/year: ~1,460 (about 4/day), industry-commentary estimate, not certified');
   items.push('Certified per-cycle pollutant deltas: ICAO Engine Emissions Databank v32');
+  items.push('Ceo-backfill assumption: one reported real-world case saw no backfill - re-leasing, engine restoration and teardown instead. Treat as one scenario, not a confirmed mechanism.');
   items.forEach(function(t) {
     const li = document.createElement('li');
     li.innerHTML = t;
