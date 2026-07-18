@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aviation Emissions Policy Map</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+  :root[data-theme="dark"] {
+    --bg: #0e1417; --panel: #161d22; --panel-raised: #1c242a;
+    --line: #2c383f; --line-strong: #435159;
+    --text: #eef0ee; --text-muted: #8ea3ac;
+    --amber: #eeab4c; --teal: #57c2b1; --rust: #e0724a; --blueprint: #1a4a5c;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber);
+    margin-bottom: 10px;
+  }
+  h1 { font-size: 26px; font-weight: 600; margin: 0 0 8px; }
+  .subtitle { font-size: 14.5px; color: var(--text-muted); margin: 0 0 2rem; max-width: 620px; }
+  h2 {
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted);
+    margin: 2.2rem 0 10px;
+  }
+
+  .map-panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 1.5rem; position: relative;
+  }
+  #worldMap { width: 100%; height: auto; display: block; }
+  .country {
+    stroke: var(--line-strong); stroke-width: 0.5; cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .country:hover { opacity: 0.75; }
+  .country.regime-eu-ets { fill: #1a4a5c; }
+  .country.regime-uk-ets { fill: #57c2b1; }
+  .country.regime-ch-ets { fill: #eeab4c; }
+  .country.regime-corsia-only { fill: #435159; }
+  .country.regime-none { fill: #262f35; }
+  .loading-note { font-size: 13px; color: var(--text-muted); text-align: center; padding: 3rem 0; }
+
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 1rem; font-size: 12px; color: var(--text-muted); }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .swatch { width: 12px; height: 12px; border-radius: 2px; }
+
+  #tooltip {
+    position: absolute; background: var(--panel-raised); border: 1px solid var(--line-strong);
+    border-radius: 6px; padding: 10px 12px; font-size: 12.5px; pointer-events: none;
+    display: none; max-width: 240px; z-index: 10;
+  }
+  #tooltip .t-name { font-weight: 600; margin-bottom: 4px; }
+  #tooltip .t-regime { color: var(--amber); font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
+
+  .route-panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 1.5rem; margin-top: 1.5rem;
+  }
+  .route-row { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; margin-bottom: 1rem; }
+  .route-field { flex: 1; min-width: 180px; }
+  .route-field label { display: block; font-size: 11.5px; color: var(--text-muted); margin-bottom: 4px; font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.04em; }
+  select {
+    width: 100%; background: var(--panel-raised); color: var(--text); border: 1px solid var(--line-strong);
+    border-radius: 6px; padding: 8px 10px; font-size: 14px; font-family: inherit;
+  }
+  .route-result { margin-top: 1rem; }
+  .reg-card {
+    background: var(--panel-raised); border: 1px solid var(--line-strong); border-radius: 6px;
+    padding: 12px 14px; margin-bottom: 8px;
+  }
+  .reg-card .r-name { font-weight: 600; font-size: 14px; margin-bottom: 3px; }
+  .reg-card .r-desc { font-size: 13px; color: var(--text-muted); }
+  .no-reg { font-size: 13.5px; color: var(--text-muted); font-style: italic; }
+
+  .footer-note {
+    font-size: 12px; color: var(--text-muted); margin-top: 3rem; padding-top: 1rem;
+    border-top: 1px solid var(--line);
+  }
+</style>
+</head>
+<body>
+<div style="background:#05070a;color:#9aa5b1;font-family:'IBM Plex Mono',monospace;font-size:11px;padding:12px 24px;display:flex;gap:22px;flex-wrap:wrap;letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid #222;">
+  <a href="/aviation-emissions/" style="color:#9aa5b1;text-decoration:none;">&larr; Home</a>
+  <a href="/aviation-emissions/smbc-jsa-brief/" style="color:#9aa5b1;text-decoration:none;">SMBC / JSA Brief</a>
+  <a href="/aviation-emissions/gtf-non-co2-supplement/" style="color:#9aa5b1;text-decoration:none;">Non-CO2 Supplement</a>
+  <a href="/aviation-emissions/gtf-exposure-calculator/" style="color:#9aa5b1;text-decoration:none;">Exposure Calculator</a>
+  <a href="/aviation-emissions/engagement-overview/" style="color:#9aa5b1;text-decoration:none;">Engagement Overview</a>
+  <a href="/aviation-emissions/policy-map/" style="color:#eeab4c;text-decoration:none;">Policy Map</a>
+</div>
+
+<div class="wrap">
+  <div class="eyebrow">Prototype &middot; work in progress</div>
+  <h1>Aviation Emissions Policy Map</h1>
+  <p class="subtitle">Hover a country to see which emissions regimes apply. Select a city pair to see which regulations apply to that specific route. Coverage is currently limited to EU ETS, UK ETS, Swiss ETS and CORSIA - this is an early prototype, not a complete or authoritative regulatory reference.</p>
+
+  <h2>Coverage by country</h2>
+  <div class="map-panel">
+    <svg id="worldMap" viewBox="0 0 960 500" xmlns="http://www.w3.org/2000/svg">
+      <text x="480" y="250" text-anchor="middle" fill="#8ea3ac" font-size="13" font-family="IBM Plex Mono, monospace" id="mapLoadingText">Loading map...</text>
+    </svg>
+    <div id="tooltip"></div>
+    <div class="legend">
+      <div class="legend-item"><span class="swatch" style="background:#1a4a5c;"></span>EU ETS</div>
+      <div class="legend-item"><span class="swatch" style="background:#57c2b1;"></span>UK ETS</div>
+      <div class="legend-item"><span class="swatch" style="background:#eeab4c;"></span>Swiss ETS</div>
+      <div class="legend-item"><span class="swatch" style="background:#435159;"></span>CORSIA only</div>
+      <div class="legend-item"><span class="swatch" style="background:#262f35;"></span>No scheme mapped yet</div>
+    </div>
+  </div>
+
+  <h2>Check a route</h2>
+  <div class="route-panel">
+    <div class="route-row">
+      <div class="route-field">
+        <label>Departure country</label>
+        <select id="fromCountry"></select>
+      </div>
+      <div class="route-field">
+        <label>Arrival country</label>
+        <select id="toCountry"></select>
+      </div>
+    </div>
+    <div class="route-result" id="routeResult"></div>
+  </div>
+
+  <p class="footer-note">
+    Prototype coverage: EU ETS, UK ETS, Swiss ETS, CORSIA. Country boundaries are simplified placeholder shapes for this early version, not precise geography. Regulation text drawn from the same sourcing as the Climate Policies reference on the homepage. This does not constitute compliance advice - for filing or penalty decisions specific to a route or operator, consult a qualified compliance advisor.<br><br>
+    Jaymal Bechar &middot; PhD Researcher, Aviation Emissions, University of Manchester
+  </p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson-client/3.1.0/topojson-client.min.js"></script>
+<script>
+const eeaCountries = [
+  'France', 'Germany', 'Spain', 'Italy', 'Netherlands', 'Ireland', 'Belgium',
+  'Portugal', 'Austria', 'Poland', 'Sweden', 'Denmark', 'Finland', 'Greece',
+  'Czechia', 'Romania', 'Hungary', 'Bulgaria', 'Croatia', 'Slovakia', 'Slovenia',
+  'Lithuania', 'Latvia', 'Estonia', 'Luxembourg', 'Malta', 'Cyprus', 'Iceland', 'Norway'
+];
+const ukCountries = ['United Kingdom'];
+const chCountries = ['Switzerland'];
+
+const countryRegime = {};
+eeaCountries.forEach(c => countryRegime[c] = 'eu-ets');
+ukCountries.forEach(c => countryRegime[c] = 'uk-ets');
+chCountries.forEach(c => countryRegime[c] = 'ch-ets');
+[
+  'United States of America', 'Brazil', 'China', 'Japan', 'India', 'Turkey',
+  'United Arab Emirates', 'Canada', 'Australia', 'South Korea', 'Mexico',
+  'Saudi Arabia', 'Qatar', 'Singapore', 'South Africa', 'Indonesia',
+  'Argentina', 'Egypt', 'Nigeria', 'Thailand', 'Vietnam', 'Malaysia',
+  'Philippines', 'Israel', 'Russia', 'New Zealand'
+].forEach(c => countryRegime[c] = 'corsia-only');
+
+const regimeLabel = {
+  'eu-ets': 'EU ETS (EEA member)',
+  'uk-ets': 'UK ETS',
+  'ch-ets': 'Swiss ETS',
+  'corsia-only': 'CORSIA only (non-EEA/UK/CH)',
+  'none': 'No scheme mapped yet'
+};
+
+const svg = d3.select('#worldMap');
+const width = 960, height = 500;
+const projection = d3.geoNaturalEarth1().scale(155).translate([width / 2, height / 2 - 20]);
+const path = d3.geoPath(projection);
+const tooltip = document.getElementById('tooltip');
+
+fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+  .then(res => res.json())
+  .then(topology => {
+    const countries = topojson.feature(topology, topology.objects.countries);
+    document.getElementById('mapLoadingText').remove();
+
+    svg.selectAll('path.country')
+      .data(countries.features)
+      .enter()
+      .append('path')
+      .attr('class', d => {
+        const regime = countryRegime[d.properties.name] || 'none';
+        return 'country regime-' + regime;
+      })
+      .attr('data-country', d => d.properties.name)
+      .attr('d', path)
+      .on('mousemove', (event, d) => {
+        const name = d.properties.name;
+        const regime = countryRegime[name] || 'none';
+        const rect = svg.node().getBoundingClientRect();
+        const panelRect = svg.node().parentElement.getBoundingClientRect();
+        tooltip.style.display = 'block';
+        tooltip.style.left = (event.clientX - panelRect.left + 16) + 'px';
+        tooltip.style.top = (event.clientY - panelRect.top + 10) + 'px';
+        tooltip.innerHTML = '<div class="t-name">' + name + '</div><div class="t-regime">' + regimeLabel[regime] + '</div>';
+      })
+      .on('mouseleave', () => { tooltip.style.display = 'none'; });
+  })
+  .catch(err => {
+    document.getElementById('mapLoadingText').textContent = 'Map failed to load - check network connection';
+  });
+
+const countries = Object.keys(countryRegime).sort();
+const fromSel = document.getElementById('fromCountry');
+const toSel = document.getElementById('toCountry');
+countries.forEach(c => {
+  fromSel.innerHTML += '<option value="' + c + '">' + c + '</option>';
+  toSel.innerHTML += '<option value="' + c + '">' + c + '</option>';
+});
+fromSel.value = 'France';
+toSel.value = 'United States of America';
+
+const isEEA = eeaCountries;
+
+function evaluateRoute(from, to) {
+  const regs = [];
+  const fromEEA = isEEA.includes(from);
+  const toEEA = isEEA.includes(to);
+  const fromUK = from === 'United Kingdom';
+  const toUK = to === 'United Kingdom';
+  const fromCH = from === 'Switzerland';
+  const toCH = to === 'Switzerland';
+
+  if (fromCH || toCH) {
+    regs.push({ name: 'Swiss ETS', desc: 'Route touches Switzerland. Swiss ETS is linked to the EU scheme and tracks EUA pricing directly - this applies in place of a separate EU ETS or CORSIA classification for the Swiss leg.' });
+  } else if (fromEEA && toEEA) {
+    regs.push({ name: 'EU ETS', desc: 'Intra-EEA flight. Full EU ETS obligation applies - one EUA surrendered per tonne of CO2, no free allocation from 2026.' });
+  } else if ((fromEEA && !toEEA) || (!fromEEA && toEEA)) {
+    regs.push({ name: 'CORSIA', desc: 'EEA-to-third-country flight. Falls under CORSIA rather than full EU ETS scope, subject to the EEA extension decision under review as of July 2026.' });
+  }
+
+  if (fromUK && toUK) {
+    regs.push({ name: 'UK ETS', desc: 'Domestic UK flight. Full UK ETS obligation applies, mirroring the EU ETS structure on a separate market.' });
+  } else if ((fromUK && !toUK) || (!fromUK && toUK)) {
+    regs.push({ name: 'CORSIA', desc: 'UK-to-third-country flight. Falls under CORSIA rather than UK ETS scope.' });
+  }
+
+  if (regs.length === 0) {
+    regs.push({ name: 'CORSIA', desc: 'Neither departure nor arrival falls under EU ETS, UK ETS or Swiss ETS scope. CORSIA applies globally to international flights above the baseline once in its mandatory phase from 2027.' });
+  }
+  const seen = new Set();
+  return regs.filter(r => {
+    if (seen.has(r.name)) return false;
+    seen.add(r.name);
+    return true;
+  });
+}
+
+function renderRoute() {
+  const from = fromSel.value;
+  const to = toSel.value;
+  const regs = evaluateRoute(from, to);
+  const el = document.getElementById('routeResult');
+  el.innerHTML = regs.map(r =>
+    '<div class="reg-card"><div class="r-name">' + r.name + '</div><div class="r-desc">' + r.desc + '</div></div>'
+  ).join('');
+}
+
+fromSel.addEventListener('change', renderRoute);
+toSel.addEventListener('change', renderRoute);
+renderRoute();
+</script>
+</body>
+</html>
