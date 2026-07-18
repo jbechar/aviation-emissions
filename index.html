@@ -1,6 +1,4 @@
 
-
-Index · HTML
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -33,7 +31,7 @@ Index · HTML
   .header-actions { display: flex; align-items: center; gap: 10px; }
   .btn { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.03em; background: none; border: 1px solid var(--line-strong); color: var(--text-muted); padding: 9px 16px; cursor: pointer; border-radius: 3px; transition: color 0.3s cubic-bezier(.16,1,.3,1), border-color 0.3s cubic-bezier(.16,1,.3,1); }
   .btn:hover { color: var(--text); border-color: var(--teal); }
- 
+
   .blueprint-grid {
     position: fixed; inset: 0; z-index: -1; pointer-events: none;
     background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
@@ -42,7 +40,7 @@ Index · HTML
     -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 42%, black 0%, transparent 78%);
     mask-image: radial-gradient(ellipse 70% 60% at 50% 42%, black 0%, transparent 78%);
   }
- 
+
   .telemetry { display: flex; align-items: center; justify-content: center; gap: 1.5rem; flex-wrap: wrap; padding: 0.55rem 2rem 0; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-muted); flex-shrink: 0; }
   .telemetry .tstat { display: inline-flex; align-items: center; gap: 6px; color: var(--teal); }
   .telemetry .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
@@ -50,32 +48,32 @@ Index · HTML
     .telemetry .dot { animation: pulseDot 2.4s infinite; }
   }
   @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(87,194,177,0.55); } 70% { box-shadow: 0 0 0 6px rgba(87,194,177,0); } 100% { box-shadow: 0 0 0 0 rgba(87,194,177,0); } }
- 
+
   .hero { text-align: center; padding: 1.1rem 2rem 0; flex-shrink: 0; }
   .hero .eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal); margin: 0 0 8px; }
   .hero h1 { font-size: 24px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.01em; }
   .hero p { font-size: 13px; color: var(--text-muted); margin: 0 auto; max-width: 480px; line-height: 1.6; }
- 
+
   .hud-corner { position: absolute; width: 22px; height: 22px; border-color: var(--line-strong); opacity: 0.55; pointer-events: none; z-index: 4; }
   .hud-corner.tl { top: 10px; left: 10px; border-top: 1px solid; border-left: 1px solid; }
   .hud-corner.tr { top: 10px; right: 10px; border-top: 1px solid; border-right: 1px solid; }
   .hud-corner.bl { bottom: 10px; left: 10px; border-bottom: 1px solid; border-left: 1px solid; }
   .hud-corner.br { bottom: 10px; right: 10px; border-bottom: 1px solid; border-right: 1px solid; }
- 
+
   .uncert-dial { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); overflow: hidden; }
   .uncert-dial .dial-label { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
   .uncert-dial .dial-note { font-size: 11px; color: var(--text-muted); margin: 6px 0 0; line-height: 1.5; }
   .uncert-dial .dial-note.flag { color: #e34948; }
   .uncert-dial svg text { font-family: 'IBM Plex Mono', monospace; }
- 
+
   .ring-seg path { transition: filter 0.2s ease; }
   .ring-seg:hover path { filter: brightness(1.18); }
- 
+
   .viewport { position: relative; flex: 1; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
   .world { position: relative; width: 1px; height: 1px; transition: transform 2.2s cubic-bezier(.65,0,.35,1); transform: translate(0px, 0px); }
   .world > svg { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: block; }
   .uncert-dial svg { position: static; display: block; }
- 
+
   .back-btn {
     position: absolute; top: 16px; left: 16px;
     font-family: 'IBM Plex Mono', monospace; font-size: 11px;
@@ -84,7 +82,7 @@ Index · HTML
     opacity: 0; pointer-events: none; transition: opacity 0.5s cubic-bezier(.16,1,.3,1); z-index: 6;
   }
   .back-btn.shown { opacity: 1; pointer-events: auto; }
- 
+
   .pan-card {
     position: absolute; left: 50%; top: 50%; width: 300px;
     background: var(--panel);
@@ -100,10 +98,10 @@ Index · HTML
   #card-nox { transform: translate(calc(-50% - 480px), calc(-50% - 320px)); }
   #card-contrail { transform: translate(calc(-50% - 480px), calc(-50% + 320px)); }
   #card-co2 { transform: translate(calc(-50% + 480px), calc(-50%)); }
- 
+
   .source-note { font-size: 11px; color: var(--text-muted); text-align: center; max-width: 520px; margin: 0 auto; line-height: 1.6; padding: 0.5rem 2rem 1.5rem; flex-shrink: 0; }
   .empty-hint { font-size: 12px; color: var(--text-muted); text-align: center; padding-bottom: 0.5rem; flex-shrink: 0; }
- 
+
   @keyframes spinOnce { from { transform: rotate(0deg); } to { transform: rotate(1080deg); } }
   @keyframes radarSweep { from { transform: rotate(0deg); opacity: 0.5; } to { transform: rotate(360deg); opacity: 0; } }
   @media (prefers-reduced-motion: no-preference) {
@@ -112,7 +110,7 @@ Index · HTML
   }
   #fanAssembly { transform-origin: 220px 220px; }
   #radarSweep { transform-origin: 220px 220px; opacity: 0; }
- 
+
   .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 10; }
   .drawer-overlay.open { opacity: 1; pointer-events: auto; }
   .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: 420px; max-width: 92vw; background: var(--panel); border-left: 1px solid var(--line); transform: translateX(100%); transition: transform 0.28s ease; z-index: 11; display: flex; flex-direction: column; }
@@ -136,13 +134,12 @@ Index · HTML
 <body>
 <div style="background:#05070a;color:#9aa5b1;font-family:'IBM Plex Mono',monospace;font-size:11px;padding:12px 24px;display:flex;gap:22px;flex-wrap:wrap;letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid #222;position:relative;z-index:10;">
   <a href="/aviation-emissions/smbc-jsa-brief/" style="color:#9aa5b1;text-decoration:none;">SMBC / JSA Brief</a>
-  <a href="/aviation-emissions/spirit-lease-exposure/" style="color:#9aa5b1;text-decoration:none;">Spirit Lease Exposure</a>
   <a href="/aviation-emissions/gtf-non-co2-supplement/" style="color:#9aa5b1;text-decoration:none;">Non-CO2 Supplement</a>
   <a href="/aviation-emissions/gtf-exposure-calculator/" style="color:#eeab4c;text-decoration:none;">Exposure Calculator</a>
 </div>
- 
+
 <div class="blueprint-grid"></div>
- 
+
 <header>
   <div class="title mono">AVIATION EMISSIONS <span>// explained</span></div>
   <div class="header-actions">
@@ -150,21 +147,22 @@ Index · HTML
     <button class="btn" onclick="openDrawer('policies')">CLIMATE POLICIES</button>
     <button class="btn" id="themeBtn" onclick="toggleTheme()">DARK MODE</button>
     <a class="btn" href="/aviation-emissions/engagement-overview/" style="text-decoration:none; display:inline-flex; align-items:center;">ENGAGEMENT OVERVIEW</a>
+    <a class="btn" href="/aviation-emissions/policy-map/" style="text-decoration:none; display:inline-flex; align-items:center;">POLICY MAP</a>
   </div>
 </header>
- 
+
 <div class="telemetry">
   <span class="tstat"><span class="dot"></span>LIVE MODEL</span>
   <span>SOURCE — LEE ET AL. 2021</span>
   <span>METRIC — RF, NOT ERF</span>
 </div>
- 
+
 <div class="hero">
   <p class="eyebrow">RF BREAKDOWN // BY POLLUTANT</p>
   <h1>What's actually warming the planet, per pollutant</h1>
   <p>Share of aviation's radiative forcing (RF) by pollutant, Lee et al. (2021). Click a segment to see how it works.</p>
 </div>
- 
+
 <div class="viewport" id="viewport">
   <span class="hud-corner tl"></span>
   <span class="hud-corner tr"></span>
@@ -173,7 +171,7 @@ Index · HTML
   <button class="back-btn" id="backBtn" onclick="resetPan()">&lsaquo; back to centre</button>
   <div class="world" id="world">
     <svg id="rings" width="440" height="440" viewBox="0 0 440 440" role="img" aria-label="A turbofan engine surrounded by a ring showing each pollutant's share of aviation radiative forcing. Contrail cirrus about 72 percent, CO2 about 22 percent, NOx net about 5 percent. Click a segment to see its explanation card."></svg>
- 
+
     <div class="pan-card" id="card-nox" style="border-top-color:#e34948;">
       <span class="eyebrow-mono">DATA SHEET // NOx</span>
       <p class="ctitle">NOx (net, ~5%)</p>
@@ -208,9 +206,9 @@ Index · HTML
   </div>
 </div>
 <p class="empty-hint" id="emptyHint">Click a ring segment or its label to see its card.</p>
- 
- 
- 
+
+
+
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-header">
@@ -220,7 +218,7 @@ Index · HTML
   <p id="drawerNote" style="font-size: 12px; color: var(--text-muted); line-height: 1.6; padding: 1rem 1.5rem 0.25rem; margin: 0;">Almost everything below prices or regulates CO2 specifically. Non-CO2 effects, contrail cirrus and NOx, are a larger share of aviation's actual warming, but are only newly and partially addressed, see the EU non-CO2 MRV entry.</p>
   <div class="drawer-body" id="drawerList"></div>
 </div>
- 
+
 <script>
 const policies = [
   { name: 'EU ETS, aviation',
@@ -251,7 +249,7 @@ const policies = [
     desc: 'Drives corporate flight-department Scope 3 reporting, relevant to companies operating or chartering jets, separate from airline-facing ETS/CORSIA.',
     fin: 'Not a fuel or carbon cost directly, it is a disclosure and assurance cost, data collection, and third-party audit spend for the corporate flight department. The indirect financial exposure is through ESG ratings and access to green financing, poor Scope 3 aviation data can affect a company\'s wider cost of capital, not just its compliance budget.' }
 ];
- 
+
 function renderDrawerList() {
   const list = document.getElementById('drawerList');
   list.innerHTML = '';
@@ -284,7 +282,7 @@ const newsItems = [
     desc: 'An interactive tool for modelling fleet-wide financial exposure from the GTF grounding: lease drag, fuel-burn penalty, and direct disruption costs, with fleet-wide, Spirit-scale, and single-aircraft presets.',
     url: '/aviation-emissions/gtf-exposure-calculator/' }
 ];
- 
+
 function renderNewsList() {
   const list = document.getElementById('drawerList');
   list.innerHTML = '';
@@ -299,7 +297,7 @@ function renderNewsList() {
     list.appendChild(card);
   });
 }
- 
+
 function openDrawer(mode) {
   const title = document.getElementById('drawerTitle');
   const note = document.getElementById('drawerNote');
@@ -316,7 +314,7 @@ function openDrawer(mode) {
   document.getElementById('drawerOverlay').classList.add('open');
 }
 function closeDrawer() { document.getElementById('drawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('open'); }
- 
+
 function toggleTheme() {
   const root = document.documentElement;
   const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -328,14 +326,14 @@ function toggleTheme() {
   const saved = localStorage.getItem('theme');
   if (saved) { document.documentElement.setAttribute('data-theme', saved); document.getElementById('themeBtn').textContent = saved === 'dark' ? 'DARK MODE' : 'LIGHT MODE'; }
 })();
- 
+
 const PAN_TARGETS = {
   nox: 'translate(480px, 320px)',
   contrail: 'translate(480px, -320px)',
   co2: 'translate(-480px, 0px)'
 };
 let pannedTo = null;
- 
+
 function resetPan() {
   document.getElementById('world').style.transform = 'translate(0px, 0px)';
   document.querySelectorAll('.pan-card').forEach(function(c) { c.classList.remove('shown'); });
@@ -353,7 +351,7 @@ function panTo(id) {
   document.getElementById('emptyHint').style.display = 'none';
   pannedTo = id;
 }
- 
+
 function animateCount(el, target, prefix, suffix, duration, delay) {
   const startTime = performance.now() + delay;
   function tick(now) {
@@ -364,7 +362,7 @@ function animateCount(el, target, prefix, suffix, duration, delay) {
   }
   requestAnimationFrame(tick);
 }
- 
+
 function buildSegmentDetail(containerId, seg) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -374,7 +372,7 @@ function buildSegmentDetail(containerId, seg) {
   const start = seg.startAngle, end = seg.endAngle;
   const mid = (start + end) / 2;
   const halfActual = (end - start) / 2;
- 
+
   function toXY(r, angleDeg) {
     const rad = angleDeg * Math.PI / 180;
     return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
@@ -395,32 +393,32 @@ function buildSegmentDetail(containerId, seg) {
   }
   const halfHigh = halfAngleFor(seg.high);
   const halfLow = halfAngleFor(seg.low);
- 
+
   const svg = document.createElementNS(ns, 'svg');
   svg.setAttribute('viewBox', '0 0 440 440');
   svg.setAttribute('width', '230');
   svg.setAttribute('height', '230');
   svg.setAttribute('style', 'display:block;margin:0 auto;');
- 
+
   // Wings either side: the slice as it would look at the high estimate.
   const wingL = document.createElementNS(ns, 'path');
   wingL.setAttribute('d', sectorPath(ringInner, ringOuter, mid - halfHigh, start));
   wingL.setAttribute('fill', seg.color);
   wingL.setAttribute('opacity', '0.22');
   svg.appendChild(wingL);
- 
+
   const wingR = document.createElementNS(ns, 'path');
   wingR.setAttribute('d', sectorPath(ringInner, ringOuter, end, mid + halfHigh));
   wingR.setAttribute('fill', seg.color);
   wingR.setAttribute('opacity', '0.22');
   svg.appendChild(wingR);
- 
+
   // The actual wedge, solid, exactly as it appears on the home ring.
   const solid = document.createElementNS(ns, 'path');
   solid.setAttribute('d', sectorPath(ringInner, ringOuter, start, end));
   solid.setAttribute('fill', seg.color);
   svg.appendChild(solid);
- 
+
   // Error-bar style caps marking the low-estimate edges, sitting inside the solid wedge
   // (or coinciding at the centre if the low estimate is zero or negative).
   [mid - halfLow, mid + halfLow].forEach(function(capAngle) {
@@ -434,7 +432,7 @@ function buildSegmentDetail(containerId, seg) {
     cap.setAttribute('opacity', '0.75');
     svg.appendChild(cap);
   });
- 
+
   const highPt = toXY(ringOuter + 22, mid + halfHigh);
   const highLabel = document.createElementNS(ns, 'text');
   highLabel.setAttribute('x', highPt.x); highLabel.setAttribute('y', highPt.y);
@@ -444,7 +442,7 @@ function buildSegmentDetail(containerId, seg) {
   highLabel.setAttribute('text-anchor', 'middle');
   highLabel.textContent = (seg.high > 0 ? '+' : '') + seg.high;
   svg.appendChild(highLabel);
- 
+
   const lowPt = toXY(ringInner - 22, seg.low <= 0 ? mid : mid - halfLow);
   const lowLabel = document.createElementNS(ns, 'text');
   lowLabel.setAttribute('x', lowPt.x); lowLabel.setAttribute('y', lowPt.y);
@@ -454,10 +452,10 @@ function buildSegmentDetail(containerId, seg) {
   lowLabel.setAttribute('text-anchor', 'middle');
   lowLabel.textContent = (seg.low > 0 ? '+' : '') + seg.low;
   svg.appendChild(lowLabel);
- 
+
   container.appendChild(svg);
 }
- 
+
 (function() {
   const svg = document.getElementById('rings');
   const cx = 220, cy = 220;
@@ -468,7 +466,7 @@ function buildSegmentDetail(containerId, seg) {
   ];
   const total = segments.reduce(function(s, seg) { return s + seg.share; }, 0);
   const ns = 'http://www.w3.org/2000/svg';
- 
+
   function toXY(r, angleDeg) {
     const rad = angleDeg * Math.PI / 180;
     return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
@@ -479,10 +477,10 @@ function buildSegmentDetail(containerId, seg) {
     const large = (endAngle - startAngle) > 180 ? 1 : 0;
     return 'M ' + so.x + ' ' + so.y + ' A ' + rOuter + ' ' + rOuter + ' 0 ' + large + ' 1 ' + eo.x + ' ' + eo.y + ' L ' + si.x + ' ' + si.y + ' A ' + rInner + ' ' + rInner + ' 0 ' + large + ' 0 ' + ei.x + ' ' + ei.y + ' Z';
   }
- 
+
   let angle = -90;
   const ringInner = 100, ringOuter = 150;
- 
+
   function renderLabel(el, label) {
     const idx = label.indexOf('CO2');
     if (idx === -1) { el.textContent = label; return; }
@@ -496,29 +494,29 @@ function buildSegmentDetail(containerId, seg) {
     const rest = label.slice(idx + 3);
     if (rest) el.appendChild(document.createTextNode(rest));
   }
- 
+
   segments.forEach(function(seg, segIndex) {
     const sweep = (seg.share / total) * 360;
     const start = angle, end = angle + sweep;
     const mid = (start + end) / 2;
     seg.startAngle = start;
     seg.endAngle = end;
- 
+
     const group = document.createElementNS(ns, 'g');
     group.setAttribute('class', 'ring-seg');
     group.setAttribute('style', 'cursor:pointer;');
     group.addEventListener('click', function() { panTo(seg.id); });
- 
+
     const p = document.createElementNS(ns, 'path');
     p.setAttribute('d', sectorPath(ringInner, ringOuter, start, end));
     p.setAttribute('fill', seg.color);
     group.appendChild(p);
- 
+
     const leaderStart = toXY(ringOuter, mid);
     const leaderBend = toXY(ringOuter + 20, mid);
     const labelSide = Math.cos(mid * Math.PI / 180) >= 0 ? 1 : -1;
     const leaderEnd = { x: leaderBend.x + labelSide * 40, y: leaderBend.y };
- 
+
     const leader = document.createElementNS(ns, 'path');
     leader.setAttribute('d', 'M ' + leaderStart.x + ' ' + leaderStart.y + ' L ' + leaderBend.x + ' ' + leaderBend.y + ' L ' + leaderEnd.x + ' ' + leaderEnd.y);
     leader.setAttribute('fill', 'none');
@@ -526,12 +524,12 @@ function buildSegmentDetail(containerId, seg) {
     leader.setAttribute('stroke-width', '1');
     leader.setAttribute('opacity', '0.7');
     group.appendChild(leader);
- 
+
     const dot = document.createElementNS(ns, 'circle');
     dot.setAttribute('cx', leaderStart.x); dot.setAttribute('cy', leaderStart.y); dot.setAttribute('r', 2.5);
     dot.setAttribute('fill', seg.color);
     group.appendChild(dot);
- 
+
     const nameText = document.createElementNS(ns, 'text');
     nameText.setAttribute('x', leaderEnd.x);
     nameText.setAttribute('y', leaderEnd.y - 6);
@@ -542,7 +540,7 @@ function buildSegmentDetail(containerId, seg) {
     nameText.setAttribute('fill', 'var(--text)');
     renderLabel(nameText, seg.label);
     group.appendChild(nameText);
- 
+
     const pctText = document.createElementNS(ns, 'text');
     pctText.setAttribute('x', leaderEnd.x);
     pctText.setAttribute('y', leaderEnd.y + 12);
@@ -557,15 +555,15 @@ function buildSegmentDetail(containerId, seg) {
       pctText.textContent = seg.pct;
     }
     group.appendChild(pctText);
- 
+
     svg.appendChild(group);
     angle = end;
   });
- 
+
   segments.forEach(function(seg) {
     buildSegmentDetail('ringdetail-' + seg.id, seg);
   });
- 
+
   const tickGroup = document.createElementNS(ns, 'g');
   tickGroup.setAttribute('opacity', '0.55');
   for (let d = 0; d < 360; d += 5) {
@@ -580,14 +578,14 @@ function buildSegmentDetail(containerId, seg) {
     tickGroup.appendChild(tick);
   }
   svg.appendChild(tickGroup);
- 
+
   const bezel = document.createElementNS(ns, 'circle');
   bezel.setAttribute('cx', cx); bezel.setAttribute('cy', cy); bezel.setAttribute('r', 165);
   bezel.setAttribute('fill', 'none');
   bezel.setAttribute('stroke', 'var(--line)');
   bezel.setAttribute('stroke-width', '0.75');
   svg.appendChild(bezel);
- 
+
   const sweepGrad = document.createElementNS(ns, 'linearGradient');
   sweepGrad.setAttribute('id', 'sweepGrad');
   sweepGrad.setAttribute('x1', '0%'); sweepGrad.setAttribute('y1', '0%');
@@ -600,16 +598,16 @@ function buildSegmentDetail(containerId, seg) {
   const defs = document.createElementNS(ns, 'defs');
   defs.appendChild(sweepGrad);
   svg.appendChild(defs);
- 
+
   const radarSweep = document.createElementNS(ns, 'path');
   radarSweep.setAttribute('id', 'radarSweep');
   radarSweep.setAttribute('d', sectorPath(0, 165, -90 - 22, -90));
   radarSweep.setAttribute('fill', 'url(#sweepGrad)');
   svg.appendChild(radarSweep);
- 
+
   const fanAssembly = document.createElementNS(ns, 'g');
   fanAssembly.setAttribute('id', 'fanAssembly');
- 
+
   const blades = 18;
   const slot = 360 / blades;
   const rootArc = slot * 0.75;
@@ -636,14 +634,14 @@ function buildSegmentDetail(containerId, seg) {
     blade.setAttribute('stroke-width', '0.75');
     fanAssembly.appendChild(blade);
   }
- 
+
   const hubOuter = document.createElementNS(ns, 'circle');
   hubOuter.setAttribute('cx', cx); hubOuter.setAttribute('cy', cy); hubOuter.setAttribute('r', 20);
   hubOuter.setAttribute('fill', 'var(--panel)');
   hubOuter.setAttribute('stroke', 'var(--line-strong)');
   hubOuter.setAttribute('stroke-width', '1');
   fanAssembly.appendChild(hubOuter);
- 
+
   const spiral = document.createElementNS(ns, 'path');
   let sd = '';
   for (let t = 0; t <= 540; t += 12) {
@@ -656,16 +654,16 @@ function buildSegmentDetail(containerId, seg) {
   spiral.setAttribute('stroke', 'var(--teal)');
   spiral.setAttribute('stroke-width', '1.25');
   fanAssembly.appendChild(spiral);
- 
+
   svg.appendChild(fanAssembly);
- 
+
   const nacelleOuter = document.createElementNS(ns, 'circle');
   nacelleOuter.setAttribute('cx', cx); nacelleOuter.setAttribute('cy', cy); nacelleOuter.setAttribute('r', 88);
   nacelleOuter.setAttribute('fill', 'none');
   nacelleOuter.setAttribute('stroke', 'var(--line-strong)');
   nacelleOuter.setAttribute('stroke-width', '1');
   svg.appendChild(nacelleOuter);
- 
+
   const nacelleInner = document.createElementNS(ns, 'circle');
   nacelleInner.setAttribute('cx', cx); nacelleInner.setAttribute('cy', cy); nacelleInner.setAttribute('r', 82);
   nacelleInner.setAttribute('fill', 'none');
@@ -674,24 +672,6 @@ function buildSegmentDetail(containerId, seg) {
   svg.appendChild(nacelleInner);
 })();
 </script>
- 
+
 </body>
 </html>
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
