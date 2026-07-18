@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -42,6 +43,7 @@
   .country {
     stroke: var(--line-strong); stroke-width: 0.5; cursor: pointer;
     transition: opacity 0.15s;
+    fill: #2c383f;
   }
   .country:hover { opacity: 0.75; }
   .country.regime-eu-ets { fill: #1a4a5c; }
@@ -141,7 +143,7 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson-client/3.1.0/topojson-client.min.js"></script>
+<script src="https://unpkg.com/topojson-client@3"></script>
 <script>
 const eeaCountries = [
   'France', 'Germany', 'Spain', 'Italy', 'Netherlands', 'Ireland', 'Belgium',
@@ -179,12 +181,17 @@ const path = d3.geoPath(projection);
 const tooltip = document.getElementById('tooltip');
 
 fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
-  .then(res => res.json())
+  .then(res => {
+    console.log('fetch status:', res.status);
+    return res.json();
+  })
   .then(topology => {
+    console.log('topology loaded, objects:', Object.keys(topology.objects || {}));
     const countries = topojson.feature(topology, topology.objects.countries);
+    console.log('features count:', countries.features.length);
     document.getElementById('mapLoadingText').remove();
 
-    svg.selectAll('path.country')
+    const drawn = svg.selectAll('path.country')
       .data(countries.features)
       .enter()
       .append('path')
@@ -205,8 +212,10 @@ fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
         tooltip.innerHTML = '<div class="t-name">' + name + '</div><div class="t-regime">' + regimeLabel[regime] + '</div>';
       })
       .on('mouseleave', () => { tooltip.style.display = 'none'; });
+    console.log('paths drawn:', drawn.size());
   })
   .catch(err => {
+    console.error('map load error:', err);
     document.getElementById('mapLoadingText').textContent = 'Map failed to load - check network connection';
   });
 
