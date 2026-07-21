@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -7,7 +6,6 @@
 <title>Aviation Emissions Policy Map</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
-
   :root[data-theme="dark"] {
     --bg: #0e1417; --panel: #161d22; --panel-raised: #1c242a;
     --line: #2c383f; --line-strong: #435159;
@@ -34,7 +32,6 @@
     letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted);
     margin: 2.2rem 0 10px;
   }
-
   .map-panel {
     background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
     padding: 1.5rem; position: relative;
@@ -52,11 +49,9 @@
   .country.regime-corsia-only { fill: #435159; }
   .country.regime-none { fill: #262f35; }
   .loading-note { font-size: 13px; color: var(--text-muted); text-align: center; padding: 3rem 0; }
-
   .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 1rem; font-size: 12px; color: var(--text-muted); }
   .legend-item { display: flex; align-items: center; gap: 6px; }
   .swatch { width: 12px; height: 12px; border-radius: 2px; }
-
   #tooltip {
     position: absolute; background: var(--panel-raised); border: 1px solid var(--line-strong);
     border-radius: 6px; padding: 10px 12px; font-size: 12.5px; pointer-events: none;
@@ -64,7 +59,6 @@
   }
   #tooltip .t-name { font-weight: 600; margin-bottom: 4px; }
   #tooltip .t-regime { color: var(--amber); font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
-
   .route-panel {
     background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
     padding: 1.5rem; margin-top: 1.5rem;
@@ -84,7 +78,30 @@
   .reg-card .r-name { font-weight: 600; font-size: 14px; margin-bottom: 3px; }
   .reg-card .r-desc { font-size: 13px; color: var(--text-muted); }
   .no-reg { font-size: 13.5px; color: var(--text-muted); font-style: italic; }
-
+  .cost-panel {
+    background: var(--panel-raised); border: 1px solid var(--amber);
+    border-radius: 8px; padding: 1.25rem 1.5rem; margin-top: 1rem;
+  }
+  .cost-panel .cost-header {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber);
+    margin-bottom: 12px;
+  }
+  .cost-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px; margin-bottom: 12px;
+  }
+  .cost-stat .cs-label { font-size: 11px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+  .cost-stat .cs-value { font-size: 20px; font-weight: 600; color: var(--text); }
+  .cost-stat .cs-unit { font-size: 12px; color: var(--text-muted); margin-left: 3px; }
+  .cost-big {
+    border-top: 1px solid var(--line-strong); padding-top: 12px; margin-top: 4px;
+    display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  }
+  .cost-big .cb-label { font-size: 12px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.05em; }
+  .cost-big .cb-value { font-size: 28px; font-weight: 600; color: var(--amber); }
+  .cost-big .cb-note { font-size: 11.5px; color: var(--text-muted); margin-left: auto; }
+  .cost-disclaimer { font-size: 11.5px; color: var(--text-muted); margin-top: 10px; border-top: 1px solid var(--line); padding-top: 8px; }
   .footer-note {
     font-size: 12px; color: var(--text-muted); margin-top: 3rem; padding-top: 1rem;
     border-top: 1px solid var(--line);
@@ -100,12 +117,10 @@
   <a href="/aviation-emissions/engagement-overview/" style="color:#9aa5b1;text-decoration:none;">Engagement Overview</a>
   <a href="/aviation-emissions/policy-map/" style="color:#eeab4c;text-decoration:none;">Policy Map</a>
 </div>
-
 <div class="wrap">
   <div class="eyebrow">Prototype &middot; work in progress</div>
   <h1>Aviation Emissions Policy Map</h1>
-  <p class="subtitle">Hover a country to see which emissions regimes apply. Select a city pair to see which regulations apply to that specific route. Coverage is currently limited to EU ETS, UK ETS, Swiss ETS and CORSIA - this is an early prototype, not a complete or authoritative regulatory reference.</p>
-
+  <p class="subtitle">Hover a country to see which emissions regimes apply. Select a city pair and aircraft type to see which regulations apply and what the estimated carbon cost would be. Coverage is currently limited to EU ETS, UK ETS, Swiss ETS and CORSIA - this is an early prototype, not a complete or authoritative regulatory reference.</p>
   <h2>Coverage by country</h2>
   <div class="map-panel">
     <svg id="worldMap" viewBox="0 0 960 500" xmlns="http://www.w3.org/2000/svg">
@@ -120,7 +135,6 @@
       <div class="legend-item"><span class="swatch" style="background:#262f35;"></span>No scheme mapped yet</div>
     </div>
   </div>
-
   <h2>Check a route</h2>
   <div class="route-panel">
     <div class="route-row">
@@ -132,16 +146,40 @@
         <label>Arrival country</label>
         <select id="toCountry"></select>
       </div>
+      <div class="route-field">
+        <label>Aircraft type</label>
+        <select id="aircraftType">
+          <optgroup label="Narrow-body">
+            <option value="A319">Airbus A319</option>
+            <option value="A320" selected>Airbus A320</option>
+            <option value="A321neo">Airbus A321neo</option>
+            <option value="B737-800">Boeing 737-800</option>
+            <option value="B737MAX8">Boeing 737 MAX 8</option>
+            <option value="E190">Embraer E190</option>
+            <option value="E195E2">Embraer E195-E2</option>
+          </optgroup>
+          <optgroup label="Wide-body">
+            <option value="A330-300">Airbus A330-300</option>
+            <option value="A350-900">Airbus A350-900</option>
+            <option value="B787-9">Boeing 787-9</option>
+            <option value="B777-300ER">Boeing 777-300ER</option>
+            <option value="B747-8">Boeing 747-8</option>
+          </optgroup>
+          <optgroup label="Regional">
+            <option value="ATR72">ATR 72-600</option>
+            <option value="CRJ900">CRJ-900</option>
+            <option value="Q400">Q400 (Dash 8)</option>
+          </optgroup>
+        </select>
+      </div>
     </div>
     <div class="route-result" id="routeResult"></div>
   </div>
-
   <p class="footer-note">
-    Prototype coverage: EU ETS, UK ETS, Swiss ETS, CORSIA. Country boundaries are simplified placeholder shapes for this early version, not precise geography. Regulation text drawn from the same sourcing as the Climate Policies reference on the homepage. This does not constitute compliance advice - for filing or penalty decisions specific to a route or operator, consult a qualified compliance advisor.<br><br>
+    Prototype coverage: EU ETS, UK ETS, Swiss ETS, CORSIA. Country boundaries are simplified placeholder shapes for this early version, not precise geography. Regulation text drawn from the same sourcing as the Climate Policies reference on the homepage. Carbon prices are indicative spot rates (EU ETS ~€65/t, UK ETS ~£45/t, CORSIA ~$5/t). Fuel burn figures are approximate cruise-phase values derived from published ICAO BFFM2 methodology and manufacturer data — actual costs will vary by load factor, altitude, and route profile. This does not constitute compliance advice - for filing or penalty decisions specific to a route or operator, consult a qualified compliance advisor.<br><br>
     Jaymal Bechar &middot; PhD Researcher, Aviation Emissions, University of Manchester
   </p>
 </div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <script src="https://unpkg.com/topojson-client@3"></script>
 <script>
@@ -153,7 +191,6 @@ const eeaCountries = [
 ];
 const ukCountries = ['United Kingdom'];
 const chCountries = ['Switzerland'];
-
 const countryRegime = {};
 eeaCountries.forEach(c => countryRegime[c] = 'eu-ets');
 ukCountries.forEach(c => countryRegime[c] = 'uk-ets');
@@ -174,6 +211,90 @@ const regimeLabel = {
   'none': 'No scheme mapped yet'
 };
 
+const capitalCoords = {
+  'France':[48.86,2.35],'Germany':[52.52,13.41],'Spain':[40.42,-3.70],
+  'Italy':[41.90,12.48],'Netherlands':[52.37,4.90],'Ireland':[53.33,-6.25],
+  'Belgium':[50.85,4.35],'Portugal':[38.72,-9.14],'Austria':[48.21,16.37],
+  'Poland':[52.23,21.01],'Sweden':[59.33,18.07],'Denmark':[55.68,12.57],
+  'Finland':[60.17,24.94],'Greece':[37.98,23.73],'Czechia':[50.08,14.44],
+  'Romania':[44.43,26.10],'Hungary':[47.50,19.05],'Bulgaria':[42.70,23.32],
+  'Croatia':[45.81,15.98],'Slovakia':[48.15,17.11],'Slovenia':[46.05,14.51],
+  'Lithuania':[54.69,25.28],'Latvia':[56.95,24.11],'Estonia':[59.44,24.75],
+  'Luxembourg':[49.61,6.13],'Malta':[35.90,14.51],'Cyprus':[35.17,33.37],
+  'Iceland':[64.13,-21.94],'Norway':[59.91,10.75],
+  'United Kingdom':[51.51,-0.13],'Switzerland':[46.95,7.45],
+  'United States of America':[38.91,-77.04],'Brazil':[-15.78,-47.93],
+  'China':[39.91,116.39],'Japan':[35.69,139.69],'India':[28.61,77.21],
+  'Turkey':[39.93,32.86],'United Arab Emirates':[24.47,54.37],
+  'Canada':[45.42,-75.70],'Australia':[-35.28,149.13],'South Korea':[37.57,126.98],
+  'Mexico':[19.43,-99.13],'Saudi Arabia':[24.69,46.72],'Qatar':[25.29,51.53],
+  'Singapore':[1.35,103.82],'South Africa':[-25.75,28.19],
+  'Indonesia':[-6.21,106.85],'Argentina':[-34.61,-58.38],
+  'Egypt':[30.06,31.25],'Nigeria':[9.06,7.49],'Thailand':[13.75,100.52],
+  'Vietnam':[21.03,105.85],'Malaysia':[3.15,101.69],'Philippines':[14.60,120.98],
+  'Israel':[31.77,35.22],'Russia':[55.75,37.62],'New Zealand':[-41.29,174.78]
+};
+
+const aircraft = {
+  'A319':      { fuelKgPerHr:2200, cruiseKmH:840, label:'Airbus A319' },
+  'A320':      { fuelKgPerHr:2400, cruiseKmH:840, label:'Airbus A320' },
+  'A321neo':   { fuelKgPerHr:2700, cruiseKmH:840, label:'Airbus A321neo' },
+  'B737-800':  { fuelKgPerHr:2600, cruiseKmH:840, label:'Boeing 737-800' },
+  'B737MAX8':  { fuelKgPerHr:2300, cruiseKmH:840, label:'Boeing 737 MAX 8' },
+  'E190':      { fuelKgPerHr:1800, cruiseKmH:800, label:'Embraer E190' },
+  'E195E2':    { fuelKgPerHr:2000, cruiseKmH:800, label:'Embraer E195-E2' },
+  'A330-300':  { fuelKgPerHr:5800, cruiseKmH:910, label:'Airbus A330-300' },
+  'A350-900':  { fuelKgPerHr:5300, cruiseKmH:910, label:'Airbus A350-900' },
+  'B787-9':    { fuelKgPerHr:5200, cruiseKmH:910, label:'Boeing 787-9' },
+  'B777-300ER':{ fuelKgPerHr:7500, cruiseKmH:910, label:'Boeing 777-300ER' },
+  'B747-8':    { fuelKgPerHr:9000, cruiseKmH:910, label:'Boeing 747-8' },
+  'ATR72':     { fuelKgPerHr:680,  cruiseKmH:510, label:'ATR 72-600' },
+  'CRJ900':    { fuelKgPerHr:1500, cruiseKmH:780, label:'CRJ-900' },
+  'Q400':      { fuelKgPerHr:850,  cruiseKmH:510, label:'Q400 (Dash 8)' }
+};
+
+const carbonPrices = {
+  'EU ETS':    { price:65, currency:'EUR', symbol:'€' },
+  'Swiss ETS': { price:65, currency:'EUR', symbol:'€' },
+  'UK ETS':    { price:45, currency:'GBP', symbol:'£' },
+  'CORSIA':    { price:5,  currency:'USD', symbol:'$' }
+};
+
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function buildCostPanel(from, to, aircraftKey, regimes) {
+  const ac = aircraft[aircraftKey];
+  const fromC = capitalCoords[from], toC = capitalCoords[to];
+  if (!fromC || !toC) return '';
+  const distKm = Math.round(haversineKm(fromC[0], fromC[1], toC[0], toC[1]));
+  if (distKm < 50) return '';
+  const fuelKg = ac.fuelKgPerHr * (distKm / ac.cruiseKmH);
+  const co2Tonnes = parseFloat((fuelKg * 3.16 / 1000).toFixed(1));
+  const priceData = carbonPrices[regimes[0].name] || carbonPrices['CORSIA'];
+  const rawCost = co2Tonnes * priceData.price;
+  const cost = rawCost < 1000 ? priceData.symbol + rawCost.toFixed(0) : priceData.symbol + (rawCost/1000).toFixed(1) + 'k';
+  return `
+    <div class="cost-panel">
+      <div class="cost-header">Estimated carbon cost — ${ac.label}</div>
+      <div class="cost-grid">
+        <div class="cost-stat"><div class="cs-label">Route distance</div><div class="cs-value">${distKm.toLocaleString()}<span class="cs-unit">km</span></div></div>
+        <div class="cost-stat"><div class="cs-label">Fuel burn</div><div class="cs-value">${(fuelKg/1000).toFixed(1)}<span class="cs-unit">t</span></div></div>
+        <div class="cost-stat"><div class="cs-label">CO₂ emitted</div><div class="cs-value">${co2Tonnes}<span class="cs-unit">t</span></div></div>
+        <div class="cost-stat"><div class="cs-label">Carbon price</div><div class="cs-value">${priceData.symbol}${priceData.price}<span class="cs-unit">/${priceData.currency}</span></div></div>
+      </div>
+      <div class="cost-big">
+        <span class="cb-label">Estimated obligation</span>
+        <span class="cb-value">${cost}</span>
+        <span class="cb-note">Under ${regimes[0].name} · whole aircraft, one sector</span>
+      </div>
+      <div class="cost-disclaimer">Indicative only. Based on cruise-phase fuel burn, BFFM2 methodology, and spot carbon prices. Does not account for free allocation, load factor, non-CO₂ effects, or operator-specific exemptions.</div>
+    </div>`;
+}
+
 const svg = d3.select('#worldMap');
 const width = 960, height = 500;
 const projection = d3.geoNaturalEarth1().scale(155).translate([width / 2, height / 2 - 20]);
@@ -181,16 +302,10 @@ const path = d3.geoPath(projection);
 const tooltip = document.getElementById('tooltip');
 
 fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
-  .then(res => {
-    console.log('fetch status:', res.status);
-    return res.json();
-  })
+  .then(res => res.json())
   .then(topology => {
-    console.log('topology loaded, objects:', Object.keys(topology.objects || {}));
     const countries = topojson.feature(topology, topology.objects.countries);
-    console.log('features count:', countries.features.length);
     document.getElementById('mapLoadingText').remove();
-
     const drawn = svg.selectAll('path.country')
       .data(countries.features)
       .enter()
@@ -204,7 +319,6 @@ fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
       .on('mousemove', (event, d) => {
         const name = d.properties.name;
         const regime = countryRegime[name] || 'none';
-        const rect = svg.node().getBoundingClientRect();
         const panelRect = svg.node().parentElement.getBoundingClientRect();
         tooltip.style.display = 'block';
         tooltip.style.left = (event.clientX - panelRect.left + 16) + 'px';
@@ -212,17 +326,15 @@ fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
         tooltip.innerHTML = '<div class="t-name">' + name + '</div><div class="t-regime">' + regimeLabel[regime] + '</div>';
       })
       .on('mouseleave', () => { tooltip.style.display = 'none'; });
-    console.log('paths drawn:', drawn.size());
   })
-  .catch(err => {
-    console.error('map load error:', err);
+  .catch(() => {
     document.getElementById('mapLoadingText').textContent = 'Map failed to load - check network connection';
   });
 
-const countries = Object.keys(countryRegime).sort();
+const allCountries = Object.keys(countryRegime).sort();
 const fromSel = document.getElementById('fromCountry');
 const toSel = document.getElementById('toCountry');
-countries.forEach(c => {
+allCountries.forEach(c => {
   fromSel.innerHTML += '<option value="' + c + '">' + c + '</option>';
   toSel.innerHTML += '<option value="' + c + '">' + c + '</option>';
 });
@@ -233,13 +345,9 @@ const isEEA = eeaCountries;
 
 function evaluateRoute(from, to) {
   const regs = [];
-  const fromEEA = isEEA.includes(from);
-  const toEEA = isEEA.includes(to);
-  const fromUK = from === 'United Kingdom';
-  const toUK = to === 'United Kingdom';
-  const fromCH = from === 'Switzerland';
-  const toCH = to === 'Switzerland';
-
+  const fromEEA = isEEA.includes(from), toEEA = isEEA.includes(to);
+  const fromUK = from === 'United Kingdom', toUK = to === 'United Kingdom';
+  const fromCH = from === 'Switzerland', toCH = to === 'Switzerland';
   if (fromCH || toCH) {
     regs.push({ name: 'Swiss ETS', desc: 'Route touches Switzerland. Swiss ETS is linked to the EU scheme and tracks EUA pricing directly - this applies in place of a separate EU ETS or CORSIA classification for the Swiss leg.' });
   } else if (fromEEA && toEEA) {
@@ -247,36 +355,30 @@ function evaluateRoute(from, to) {
   } else if ((fromEEA && !toEEA) || (!fromEEA && toEEA)) {
     regs.push({ name: 'CORSIA', desc: 'EEA-to-third-country flight. Falls under CORSIA rather than full EU ETS scope, subject to the EEA extension decision under review as of July 2026.' });
   }
-
   if (fromUK && toUK) {
     regs.push({ name: 'UK ETS', desc: 'Domestic UK flight. Full UK ETS obligation applies, mirroring the EU ETS structure on a separate market.' });
   } else if ((fromUK && !toUK) || (!fromUK && toUK)) {
     regs.push({ name: 'CORSIA', desc: 'UK-to-third-country flight. Falls under CORSIA rather than UK ETS scope.' });
   }
-
   if (regs.length === 0) {
     regs.push({ name: 'CORSIA', desc: 'Neither departure nor arrival falls under EU ETS, UK ETS or Swiss ETS scope. CORSIA applies globally to international flights above the baseline once in its mandatory phase from 2027.' });
   }
   const seen = new Set();
-  return regs.filter(r => {
-    if (seen.has(r.name)) return false;
-    seen.add(r.name);
-    return true;
-  });
+  return regs.filter(r => { if (seen.has(r.name)) return false; seen.add(r.name); return true; });
 }
 
 function renderRoute() {
-  const from = fromSel.value;
-  const to = toSel.value;
+  const from = fromSel.value, to = toSel.value;
+  const aircraftKey = document.getElementById('aircraftType').value;
   const regs = evaluateRoute(from, to);
-  const el = document.getElementById('routeResult');
-  el.innerHTML = regs.map(r =>
-    '<div class="reg-card"><div class="r-name">' + r.name + '</div><div class="r-desc">' + r.desc + '</div></div>'
-  ).join('');
+  document.getElementById('routeResult').innerHTML =
+    regs.map(r => '<div class="reg-card"><div class="r-name">' + r.name + '</div><div class="r-desc">' + r.desc + '</div></div>').join('') +
+    buildCostPanel(from, to, aircraftKey, regs);
 }
 
 fromSel.addEventListener('change', renderRoute);
 toSel.addEventListener('change', renderRoute);
+document.getElementById('aircraftType').addEventListener('change', renderRoute);
 renderRoute();
 </script>
 </body>
