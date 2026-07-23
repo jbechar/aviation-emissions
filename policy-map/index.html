@@ -106,6 +106,27 @@
     font-size: 12px; color: var(--text-muted); margin-top: 3rem; padding-top: 1rem;
     border-top: 1px solid var(--line);
   }
+  .airport-field { position: relative; }
+  .airport-field input[type="text"] {
+    width: 100%; background: var(--panel-raised); color: var(--text); border: 1px solid var(--line-strong);
+    border-radius: 6px; padding: 8px 10px; font-size: 14px; font-family: inherit;
+  }
+  .airport-field input[type="text"]:disabled { color: var(--text-muted); font-style: italic; }
+  .airport-suggestions {
+    position: absolute; top: calc(100% + 2px); left: 0; right: 0;
+    background: var(--panel-raised); border: 1px solid var(--line-strong); border-radius: 6px;
+    max-height: 220px; overflow-y: auto; z-index: 20; display: none;
+  }
+  .airport-suggestion-item { padding: 8px 10px; font-size: 12.5px; cursor: pointer; border-bottom: 1px solid var(--line); }
+  .airport-suggestion-item:last-child { border-bottom: none; }
+  .airport-suggestion-item:hover { background: var(--panel); }
+  .airport-suggestion-item .as-code { color: var(--amber); font-family: 'IBM Plex Mono', monospace; margin-right: 6px; }
+  .great-circle-line { stroke: var(--amber); stroke-width: 2; stroke-dasharray: 5 3; fill: none; }
+  .route-endpoint { fill: var(--teal); stroke: var(--bg); stroke-width: 1.5; }
+  .route-endpoint-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; fill: var(--text);
+    paint-order: stroke; stroke: var(--bg); stroke-width: 3px;
+  }
 </style>
 </head>
 <body>
@@ -120,7 +141,7 @@
 <div class="wrap">
   <div class="eyebrow">Prototype &middot; work in progress</div>
   <h1>Aviation Emissions Policy Map</h1>
-  <p class="subtitle">Hover a country to see which emissions regimes apply. Select a city pair and aircraft type to see which regulations apply and what the estimated carbon cost would be. Coverage is currently limited to EU ETS, UK ETS, Swiss ETS and CORSIA - this is an early prototype, not a complete or authoritative regulatory reference.</p>
+  <p class="subtitle">Hover a country to see which emissions regimes apply. Search a departure and arrival airport (worldwide) and an aircraft type to see which regulations apply, the great-circle route on the map, and the estimated carbon cost. Coverage is currently limited to EU ETS, UK ETS, Swiss ETS and CORSIA - this is an early prototype, not a complete or authoritative regulatory reference.</p>
   <h2>Coverage by country</h2>
   <div class="map-panel">
     <svg id="worldMap" viewBox="0 0 960 500" xmlns="http://www.w3.org/2000/svg">
@@ -138,13 +159,15 @@
   <h2>Check a route</h2>
   <div class="route-panel">
     <div class="route-row">
-      <div class="route-field">
-        <label>Departure country</label>
-        <select id="fromCountry"></select>
+      <div class="route-field airport-field">
+        <label>Departure airport</label>
+        <input type="text" id="fromAirportInput" placeholder="Loading airport database..." disabled autocomplete="off">
+        <div class="airport-suggestions" id="fromSuggestions"></div>
       </div>
-      <div class="route-field">
-        <label>Arrival country</label>
-        <select id="toCountry"></select>
+      <div class="route-field airport-field">
+        <label>Arrival airport</label>
+        <input type="text" id="toAirportInput" placeholder="Loading airport database..." disabled autocomplete="off">
+        <div class="airport-suggestions" id="toSuggestions"></div>
       </div>
       <div class="route-field">
         <label>Aircraft type</label>
@@ -176,7 +199,7 @@
     <div class="route-result" id="routeResult"></div>
   </div>
   <p class="footer-note">
-    Prototype coverage: EU ETS, UK ETS, Swiss ETS, CORSIA. Country boundaries are simplified placeholder shapes for this early version, not precise geography. Regulation text drawn from the same sourcing as the Climate Policies reference on the homepage. Carbon prices are indicative spot rates (EU ETS ~€65/t, UK ETS ~£45/t, CORSIA ~$5/t). Fuel burn figures are approximate cruise-phase values derived from published ICAO BFFM2 methodology and manufacturer data — actual costs will vary by load factor, altitude, and route profile. This does not constitute compliance advice - for filing or penalty decisions specific to a route or operator, consult a qualified compliance advisor.<br><br>
+    Prototype coverage: EU ETS, UK ETS, Swiss ETS, CORSIA. Country boundaries are simplified placeholder shapes for this early version, not precise geography. Regulation text drawn from the same sourcing as the Climate Policies reference on the homepage. Airport locations from the OpenFlights airport database (~6,000 airports with scheduled/commercial service). Route distance is the great-circle (shortest-path) distance between the two airports; actual flown distance will be longer due to routing, airspace, and weather. Carbon prices are indicative spot rates (EU ETS ~€65/t, UK ETS ~£45/t, CORSIA ~$5/t). Fuel burn figures are approximate cruise-phase values derived from published ICAO BFFM2 methodology and manufacturer data — actual costs will vary by load factor, altitude, and route profile. This does not constitute compliance advice - for filing or penalty decisions specific to a route or operator, consult a qualified compliance advisor.<br><br>
     Jaymal Bechar &middot; PhD Researcher, Aviation Emissions, University of Manchester
   </p>
 </div>
@@ -211,29 +234,99 @@ const regimeLabel = {
   'none': 'No scheme mapped yet'
 };
 
-const capitalCoords = {
-  'France':[48.86,2.35],'Germany':[52.52,13.41],'Spain':[40.42,-3.70],
-  'Italy':[41.90,12.48],'Netherlands':[52.37,4.90],'Ireland':[53.33,-6.25],
-  'Belgium':[50.85,4.35],'Portugal':[38.72,-9.14],'Austria':[48.21,16.37],
-  'Poland':[52.23,21.01],'Sweden':[59.33,18.07],'Denmark':[55.68,12.57],
-  'Finland':[60.17,24.94],'Greece':[37.98,23.73],'Czechia':[50.08,14.44],
-  'Romania':[44.43,26.10],'Hungary':[47.50,19.05],'Bulgaria':[42.70,23.32],
-  'Croatia':[45.81,15.98],'Slovakia':[48.15,17.11],'Slovenia':[46.05,14.51],
-  'Lithuania':[54.69,25.28],'Latvia':[56.95,24.11],'Estonia':[59.44,24.75],
-  'Luxembourg':[49.61,6.13],'Malta':[35.90,14.51],'Cyprus':[35.17,33.37],
-  'Iceland':[64.13,-21.94],'Norway':[59.91,10.75],
-  'United Kingdom':[51.51,-0.13],'Switzerland':[46.95,7.45],
-  'United States of America':[38.91,-77.04],'Brazil':[-15.78,-47.93],
-  'China':[39.91,116.39],'Japan':[35.69,139.69],'India':[28.61,77.21],
-  'Turkey':[39.93,32.86],'United Arab Emirates':[24.47,54.37],
-  'Canada':[45.42,-75.70],'Australia':[-35.28,149.13],'South Korea':[37.57,126.98],
-  'Mexico':[19.43,-99.13],'Saudi Arabia':[24.69,46.72],'Qatar':[25.29,51.53],
-  'Singapore':[1.35,103.82],'South Africa':[-25.75,28.19],
-  'Indonesia':[-6.21,106.85],'Argentina':[-34.61,-58.38],
-  'Egypt':[30.06,31.25],'Nigeria':[9.06,7.49],'Thailand':[13.75,100.52],
-  'Vietnam':[21.03,105.85],'Malaysia':[3.15,101.69],'Philippines':[14.60,120.98],
-  'Israel':[31.77,35.22],'Russia':[55.75,37.62],'New Zealand':[-41.29,174.78]
+// OpenFlights country names that differ from the world-atlas / regime keys used above
+const countryNameNormalize = {
+  'United States': 'United States of America',
+  'Czech Republic': 'Czechia'
 };
+
+// Worldwide airport database, loaded at runtime from OpenFlights (raw.githubusercontent.com).
+// Filtered to entries with a valid IATA code and type "airport" (~6,000 commercial-scale airports).
+let airports = [];
+let selectedFromAirport = null, selectedToAirport = null;
+
+function parseCsvLine(line) {
+  const out = [];
+  let cur = '', inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') { inQuotes = !inQuotes; }
+    else if (ch === ',' && !inQuotes) { out.push(cur); cur = ''; }
+    else { cur += ch; }
+  }
+  out.push(cur);
+  return out;
+}
+
+function fmtAirport(a) { return a.name + ' (' + a.iata + ') \u2014 ' + a.city + ', ' + a.country; }
+
+const fromInput = document.getElementById('fromAirportInput');
+const toInput = document.getElementById('toAirportInput');
+const fromSuggestions = document.getElementById('fromSuggestions');
+const toSuggestions = document.getElementById('toSuggestions');
+
+function setupAirportAutocomplete(input, listEl, onSelect) {
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    listEl.innerHTML = '';
+    if (!q || airports.length === 0) { listEl.style.display = 'none'; return; }
+    const matches = [];
+    for (let i = 0; i < airports.length && matches.length < 8; i++) {
+      const a = airports[i];
+      if (a.iata.toLowerCase() === q || a.city.toLowerCase().includes(q) ||
+          a.name.toLowerCase().includes(q) || a.country.toLowerCase().includes(q)) {
+        matches.push(a);
+      }
+    }
+    if (matches.length === 0) { listEl.style.display = 'none'; return; }
+    matches.forEach(a => {
+      const item = document.createElement('div');
+      item.className = 'airport-suggestion-item';
+      item.innerHTML = '<span class="as-code">' + a.iata + '</span>' + a.name + ' \u2014 ' + a.city + ', ' + a.country;
+      item.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        onSelect(a);
+        input.value = fmtAirport(a);
+        listEl.style.display = 'none';
+        renderRoute();
+      });
+      listEl.appendChild(item);
+    });
+    listEl.style.display = 'block';
+  });
+  input.addEventListener('blur', () => setTimeout(() => { listEl.style.display = 'none'; }, 150));
+  input.addEventListener('focus', () => { if (input.value) input.dispatchEvent(new Event('input')); });
+}
+
+setupAirportAutocomplete(fromInput, fromSuggestions, a => { selectedFromAirport = a; });
+setupAirportAutocomplete(toInput, toSuggestions, a => { selectedToAirport = a; });
+
+fetch('https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat')
+  .then(res => res.text())
+  .then(text => {
+    airports = text.split('\n')
+      .map(parseCsvLine)
+      .filter(f => f.length >= 13 && f[4] && f[4] !== '\\N' && f[4].length === 3 && f[12] === 'airport')
+      .map(f => ({
+        name: f[1], city: f[2],
+        country: countryNameNormalize[f[3]] || f[3],
+        iata: f[4],
+        lat: parseFloat(f[6]), lon: parseFloat(f[7])
+      }))
+      .filter(a => !isNaN(a.lat) && !isNaN(a.lon));
+    fromInput.disabled = false; toInput.disabled = false;
+    fromInput.placeholder = 'Search city, airport or IATA code...';
+    toInput.placeholder = 'Search city, airport or IATA code...';
+    selectedFromAirport = airports.find(a => a.iata === 'CDG') || airports[0];
+    selectedToAirport = airports.find(a => a.iata === 'JFK') || airports[1];
+    if (selectedFromAirport) fromInput.value = fmtAirport(selectedFromAirport);
+    if (selectedToAirport) toInput.value = fmtAirport(selectedToAirport);
+    renderRoute();
+  })
+  .catch(() => {
+    fromInput.placeholder = 'Airport data failed to load - check network connection';
+    toInput.placeholder = 'Airport data failed to load - check network connection';
+  });
 
 const aircraft = {
   'A319':      { fuelKgPerHr:2200, cruiseKmH:840, label:'Airbus A319' },
@@ -266,11 +359,10 @@ function haversineKm(lat1, lon1, lat2, lon2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
-function buildCostPanel(from, to, aircraftKey, regimes) {
+function buildCostPanel(fromAirport, toAirport, aircraftKey, regimes) {
   const ac = aircraft[aircraftKey];
-  const fromC = capitalCoords[from], toC = capitalCoords[to];
-  if (!fromC || !toC) return '';
-  const distKm = Math.round(haversineKm(fromC[0], fromC[1], toC[0], toC[1]));
+  if (!fromAirport || !toAirport) return '';
+  const distKm = Math.round(haversineKm(fromAirport.lat, fromAirport.lon, toAirport.lat, toAirport.lon));
   if (distKm < 50) return '';
   const fuelKg = ac.fuelKgPerHr * (distKm / ac.cruiseKmH);
   const co2Tonnes = parseFloat((fuelKg * 3.16 / 1000).toFixed(1));
@@ -300,13 +392,15 @@ const width = 960, height = 500;
 const projection = d3.geoNaturalEarth1().scale(155).translate([width / 2, height / 2 - 20]);
 const path = d3.geoPath(projection);
 const tooltip = document.getElementById('tooltip');
+const countriesLayer = svg.append('g').attr('class', 'countries-layer');
+const routeLayer = svg.append('g').attr('class', 'route-layer');
 
 fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
   .then(res => res.json())
   .then(topology => {
     const countries = topojson.feature(topology, topology.objects.countries);
     document.getElementById('mapLoadingText').remove();
-    const drawn = svg.selectAll('path.country')
+    const drawn = countriesLayer.selectAll('path.country')
       .data(countries.features)
       .enter()
       .append('path')
@@ -330,16 +424,6 @@ fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
   .catch(() => {
     document.getElementById('mapLoadingText').textContent = 'Map failed to load - check network connection';
   });
-
-const allCountries = Object.keys(countryRegime).sort();
-const fromSel = document.getElementById('fromCountry');
-const toSel = document.getElementById('toCountry');
-allCountries.forEach(c => {
-  fromSel.innerHTML += '<option value="' + c + '">' + c + '</option>';
-  toSel.innerHTML += '<option value="' + c + '">' + c + '</option>';
-});
-fromSel.value = 'France';
-toSel.value = 'United States of America';
 
 const isEEA = eeaCountries;
 
@@ -367,17 +451,47 @@ function evaluateRoute(from, to) {
   return regs.filter(r => { if (seen.has(r.name)) return false; seen.add(r.name); return true; });
 }
 
-function renderRoute() {
-  const from = fromSel.value, to = toSel.value;
-  const aircraftKey = document.getElementById('aircraftType').value;
-  const regs = evaluateRoute(from, to);
-  document.getElementById('routeResult').innerHTML =
-    regs.map(r => '<div class="reg-card"><div class="r-name">' + r.name + '</div><div class="r-desc">' + r.desc + '</div></div>').join('') +
-    buildCostPanel(from, to, aircraftKey, regs);
+function clearRouteLine() {
+  routeLayer.selectAll('*').remove();
 }
 
-fromSel.addEventListener('change', renderRoute);
-toSel.addEventListener('change', renderRoute);
+function drawGreatCircle(fromAirport, toAirport) {
+  routeLayer.selectAll('*').remove();
+  const interpolate = d3.geoInterpolate([fromAirport.lon, fromAirport.lat], [toAirport.lon, toAirport.lat]);
+  const steps = 100;
+  const coords = d3.range(steps + 1).map(i => interpolate(i / steps));
+  const lineFeature = { type: 'LineString', coordinates: coords };
+  routeLayer.append('path')
+    .datum(lineFeature)
+    .attr('class', 'great-circle-line')
+    .attr('d', path);
+  [fromAirport, toAirport].forEach(a => {
+    const p = projection([a.lon, a.lat]);
+    if (!p) return;
+    routeLayer.append('circle')
+      .attr('class', 'route-endpoint')
+      .attr('cx', p[0]).attr('cy', p[1]).attr('r', 4);
+    routeLayer.append('text')
+      .attr('class', 'route-endpoint-label')
+      .attr('x', p[0] + 7).attr('y', p[1] - 6)
+      .text(a.iata);
+  });
+}
+
+function renderRoute() {
+  const aircraftKey = document.getElementById('aircraftType').value;
+  if (!selectedFromAirport || !selectedToAirport) {
+    document.getElementById('routeResult').innerHTML = '<p class="no-reg">Search and select a departure and arrival airport above.</p>';
+    clearRouteLine();
+    return;
+  }
+  const regs = evaluateRoute(selectedFromAirport.country, selectedToAirport.country);
+  document.getElementById('routeResult').innerHTML =
+    regs.map(r => '<div class="reg-card"><div class="r-name">' + r.name + '</div><div class="r-desc">' + r.desc + '</div></div>').join('') +
+    buildCostPanel(selectedFromAirport, selectedToAirport, aircraftKey, regs);
+  drawGreatCircle(selectedFromAirport, selectedToAirport);
+}
+
 document.getElementById('aircraftType').addEventListener('change', renderRoute);
 renderRoute();
 </script>
