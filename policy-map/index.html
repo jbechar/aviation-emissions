@@ -97,6 +97,15 @@
   .cost-big .cb-value { font-size: 28px; font-weight: 600; color: var(--amber); }
   .cost-big .cb-note { font-size: 11.5px; color: var(--text-muted); margin-left: auto; }
   .cost-disclaimer { font-size: 11.5px; color: var(--text-muted); margin-top: 10px; border-top: 1px solid var(--line); padding-top: 8px; }
+  .range-table { width: 100%; border-collapse: collapse; margin: 4px 0 12px; font-size: 12.5px; }
+  .range-table th, .range-table td { padding: 6px 4px; text-align: right; border-bottom: 1px solid var(--line); }
+  .range-table th:first-child, .range-table td:first-child { text-align: left; }
+  .range-table td:first-child { color: var(--text-muted); }
+  .range-table th {
+    color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px;
+    text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500;
+  }
+  .range-table tbody tr:last-child td { border-bottom: none; font-weight: 600; color: var(--text); }
   .footer-note {
     font-size: 12px; color: var(--text-muted); margin-top: 3rem; padding-top: 1rem;
     border-top: 1px solid var(--line);
@@ -234,6 +243,7 @@
             <option value="B787-9">Boeing 787-9</option>
             <option value="B777-300ER">Boeing 777-300ER</option>
             <option value="B747-8">Boeing 747-8</option>
+            <option value="A380">Airbus A380</option>
           </optgroup>
           <optgroup label="Regional">
             <option value="ATR72">ATR 72-600</option>
@@ -390,22 +400,40 @@ fetch('https://raw.githubusercontent.com/jpatokal/openflights/master/data/airpor
   });
 
 const aircraft = {
-  'A319':      { fuelKgPerHr:2200, cruiseKmH:840, label:'Airbus A319' },
-  'A320':      { fuelKgPerHr:2400, cruiseKmH:840, label:'Airbus A320' },
-  'A321neo':   { fuelKgPerHr:2700, cruiseKmH:840, label:'Airbus A321neo' },
-  'B737-800':  { fuelKgPerHr:2600, cruiseKmH:840, label:'Boeing 737-800' },
-  'B737MAX8':  { fuelKgPerHr:2300, cruiseKmH:840, label:'Boeing 737 MAX 8' },
-  'E190':      { fuelKgPerHr:1800, cruiseKmH:800, label:'Embraer E190' },
-  'E195E2':    { fuelKgPerHr:2000, cruiseKmH:800, label:'Embraer E195-E2' },
-  'A330-300':  { fuelKgPerHr:5800, cruiseKmH:910, label:'Airbus A330-300' },
-  'A350-900':  { fuelKgPerHr:5300, cruiseKmH:910, label:'Airbus A350-900' },
-  'B787-9':    { fuelKgPerHr:5200, cruiseKmH:910, label:'Boeing 787-9' },
-  'B777-300ER':{ fuelKgPerHr:7500, cruiseKmH:910, label:'Boeing 777-300ER' },
-  'B747-8':    { fuelKgPerHr:9000, cruiseKmH:910, label:'Boeing 747-8' },
-  'ATR72':     { fuelKgPerHr:680,  cruiseKmH:510, label:'ATR 72-600' },
-  'CRJ900':    { fuelKgPerHr:1500, cruiseKmH:780, label:'CRJ-900' },
-  'Q400':      { fuelKgPerHr:850,  cruiseKmH:510, label:'Q400 (Dash 8)' }
+  'A319':      { fuelKgPerHr:2200, cruiseKmH:840, label:'Airbus A319', sizeClass:'narrow' },
+  'A320':      { fuelKgPerHr:2400, cruiseKmH:840, label:'Airbus A320', sizeClass:'narrow' },
+  'A321neo':   { fuelKgPerHr:2700, cruiseKmH:840, label:'Airbus A321neo', sizeClass:'narrow' },
+  'B737-800':  { fuelKgPerHr:2600, cruiseKmH:840, label:'Boeing 737-800', sizeClass:'narrow' },
+  'B737MAX8':  { fuelKgPerHr:2300, cruiseKmH:840, label:'Boeing 737 MAX 8', sizeClass:'narrow' },
+  'E190':      { fuelKgPerHr:1800, cruiseKmH:800, label:'Embraer E190', sizeClass:'narrow' },
+  'E195E2':    { fuelKgPerHr:2000, cruiseKmH:800, label:'Embraer E195-E2', sizeClass:'narrow' },
+  'A330-300':  { fuelKgPerHr:5800, cruiseKmH:910, label:'Airbus A330-300', sizeClass:'wide' },
+  'A350-900':  { fuelKgPerHr:5300, cruiseKmH:910, label:'Airbus A350-900', sizeClass:'wide' },
+  'B787-9':    { fuelKgPerHr:5200, cruiseKmH:910, label:'Boeing 787-9', sizeClass:'wide' },
+  'B777-300ER':{ fuelKgPerHr:7500, cruiseKmH:910, label:'Boeing 777-300ER', sizeClass:'wide' },
+  'B747-8':    { fuelKgPerHr:9000, cruiseKmH:910, label:'Boeing 747-8', sizeClass:'wide' },
+  'A380':      { fuelKgPerHr:11000, cruiseKmH:903, label:'Airbus A380', sizeClass:'super' },
+  'ATR72':     { fuelKgPerHr:680,  cruiseKmH:510, label:'ATR 72-600', sizeClass:'regional' },
+  'CRJ900':    { fuelKgPerHr:1500, cruiseKmH:780, label:'CRJ-900', sizeClass:'regional' },
+  'Q400':      { fuelKgPerHr:850,  cruiseKmH:510, label:'Q400 (Dash 8)', sizeClass:'regional' }
 };
+
+// Indicative extra fuel burn (kg) for the landing/takeoff cycle (taxi, take-off, climb-out,
+// approach, taxi-in) on top of pure cruise-phase burn, banded by aircraft size class.
+// Order-of-magnitude figures consistent with ICAO EEDB-derived LTO fuel totals; not
+// aircraft-specific certified values.
+const ltoFuelKgBySizeClass = { narrow: 700, wide: 2500, super: 4500, regional: 300 };
+
+// Indicative routing correction applied to great-circle distance, banded by stage length,
+// to approximate the gap between GCD and actual flown distance (ATC vectoring, stacking,
+// weather detours) - the same type of adjustment used in ICAO's own Carbon Emissions
+// Calculator methodology (which cites up to ~11% for short European stage lengths).
+function distanceCorrectionFactor(distKm) {
+  if (distKm < 500) return 0.11;
+  if (distKm < 1500) return 0.08;
+  if (distKm < 3000) return 0.05;
+  return 0.03;
+}
 
 const carbonPrices = {
   'EU ETS':    { price:65, currency:'EUR', symbol:'€' },
@@ -420,31 +448,54 @@ function haversineKm(lat1, lon1, lat2, lon2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
+function fmtCurrency(value, symbol) {
+  return value < 1000 ? symbol + value.toFixed(0) : symbol + (value / 1000).toFixed(1) + 'k';
+}
+
 function buildCostPanel(fromAirport, toAirport, aircraftKey, regimes) {
   const ac = aircraft[aircraftKey];
   if (!fromAirport || !toAirport) return '';
-  const distKm = Math.round(haversineKm(fromAirport.lat, fromAirport.lon, toAirport.lat, toAirport.lon));
-  if (distKm < 50) return '';
-  const fuelKg = ac.fuelKgPerHr * (distKm / ac.cruiseKmH);
-  const co2Tonnes = parseFloat((fuelKg * 3.16 / 1000).toFixed(1));
+  const gcdKm = Math.round(haversineKm(fromAirport.lat, fromAirport.lon, toAirport.lat, toAirport.lon));
+  if (gcdKm < 50) return '';
+
   const priceData = carbonPrices[regimes[0].name] || carbonPrices['CORSIA'];
-  const rawCost = co2Tonnes * priceData.price;
-  const cost = rawCost < 1000 ? priceData.symbol + rawCost.toFixed(0) : priceData.symbol + (rawCost/1000).toFixed(1) + 'k';
+  const corr = distanceCorrectionFactor(gcdKm);
+  const ltoKg = ltoFuelKgBySizeClass[ac.sizeClass] || 700;
+
+  const scenarioDefs = {
+    low:  { distKm: gcdKm,               ltoKg: 0 },
+    mid:  { distKm: gcdKm * (1 + corr),  ltoKg: 0 },
+    high: { distKm: gcdKm * (1 + corr),  ltoKg: ltoKg }
+  };
+  const scenarios = {};
+  Object.keys(scenarioDefs).forEach(key => {
+    const s = scenarioDefs[key];
+    const fuelKg = ac.fuelKgPerHr * (s.distKm / ac.cruiseKmH) + s.ltoKg;
+    const co2Tonnes = fuelKg * 3.16 / 1000;
+    scenarios[key] = { fuelKg, co2Tonnes, cost: co2Tonnes * priceData.price };
+  });
+
   return `
     <div class="cost-panel">
       <div class="cost-header">Estimated carbon cost — ${ac.label}</div>
       <div class="cost-grid">
-        <div class="cost-stat"><div class="cs-label">Route distance</div><div class="cs-value">${distKm.toLocaleString()}<span class="cs-unit">km</span></div></div>
-        <div class="cost-stat"><div class="cs-label">Fuel burn</div><div class="cs-value">${(fuelKg/1000).toFixed(1)}<span class="cs-unit">t</span></div></div>
-        <div class="cost-stat"><div class="cs-label">CO₂ emitted</div><div class="cs-value">${co2Tonnes}<span class="cs-unit">t</span></div></div>
+        <div class="cost-stat"><div class="cs-label">Great-circle distance</div><div class="cs-value">${gcdKm.toLocaleString()}<span class="cs-unit">km</span></div></div>
         <div class="cost-stat"><div class="cs-label">Carbon price</div><div class="cs-value">${priceData.symbol}${priceData.price}<span class="cs-unit">/${priceData.currency}</span></div></div>
       </div>
+      <table class="range-table">
+        <thead><tr><th></th><th>Low</th><th>Mid</th><th>High</th></tr></thead>
+        <tbody>
+          <tr><td>Fuel burn</td><td>${(scenarios.low.fuelKg/1000).toFixed(1)}t</td><td>${(scenarios.mid.fuelKg/1000).toFixed(1)}t</td><td>${(scenarios.high.fuelKg/1000).toFixed(1)}t</td></tr>
+          <tr><td>CO&#8322; emitted</td><td>${scenarios.low.co2Tonnes.toFixed(1)}t</td><td>${scenarios.mid.co2Tonnes.toFixed(1)}t</td><td>${scenarios.high.co2Tonnes.toFixed(1)}t</td></tr>
+          <tr><td>Cost</td><td>${fmtCurrency(scenarios.low.cost, priceData.symbol)}</td><td>${fmtCurrency(scenarios.mid.cost, priceData.symbol)}</td><td>${fmtCurrency(scenarios.high.cost, priceData.symbol)}</td></tr>
+        </tbody>
+      </table>
       <div class="cost-big">
-        <span class="cb-label">Estimated obligation</span>
-        <span class="cb-value">${cost}</span>
+        <span class="cb-label">Estimated obligation range</span>
+        <span class="cb-value">${fmtCurrency(scenarios.low.cost, priceData.symbol)} \u2013 ${fmtCurrency(scenarios.high.cost, priceData.symbol)}</span>
         <span class="cb-note">Under ${regimes[0].name} · whole aircraft, one sector</span>
       </div>
-      <div class="cost-disclaimer">Indicative only. Based on cruise-phase fuel burn, BFFM2 methodology, and spot carbon prices. Does not account for free allocation, load factor, non-CO₂ effects, or operator-specific exemptions.</div>
+      <div class="cost-disclaimer">Low: cruise-phase fuel burn over great-circle distance only. Mid: adds an indicative routing correction (${(corr*100).toFixed(0)}% for this stage length) for ATC vectoring, stacking and weather detours, in the spirit of the correction used in ICAO's own Carbon Emissions Calculator methodology. High: adds an indicative landing/takeoff-cycle fuel penalty (taxi, climb-out, approach) on top of mid. All figures are indicative, not flight-plan-grade — actual burn varies with load factor, altitude, winds and specific routing. Does not account for free allocation or non-CO&#8322; effects.</div>
     </div>`;
 }
 
