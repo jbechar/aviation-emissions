@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -154,13 +153,14 @@
 <div class="telemetry">
   <span class="tstat"><span class="dot"></span>LIVE MODEL</span>
   <span>SOURCE — LEE ET AL. 2021</span>
-  <span>METRIC — RF, NOT ERF</span>
+  <span>METRIC — ERF (EFFECTIVE RADIATIVE FORCING)</span>
 </div>
 
 <div class="hero">
   <p class="eyebrow">RF BREAKDOWN // BY POLLUTANT</p>
   <h1>What's actually warming the planet, per pollutant</h1>
-  <p>Share of aviation's radiative forcing (RF) by pollutant, Lee et al. (2021). Click a segment to see how it works.</p>
+  <p>Share of aviation's effective radiative forcing (ERF) by pollutant, Lee et al. (2021). Click a segment to see how it works.</p>
+  <p style="font-size: 12.5px; color: var(--text-muted); max-width: 640px; margin-top: 6px;">These three are aviation's dominant ERF terms and add to just over 100% of Lee et al.'s total (100.9 mW/m&sup2;) — the total also includes smaller warming terms (soot, water vapour) offset in part by a cooling sulfate aerosol term, not shown individually here.</p>
 </div>
 
 <div class="viewport" id="viewport">
@@ -170,35 +170,35 @@
   <span class="hud-corner br"></span>
   <button class="back-btn" id="backBtn" onclick="resetPan()">&lsaquo; back to centre</button>
   <div class="world" id="world">
-    <svg id="rings" width="440" height="440" viewBox="0 0 440 440" role="img" aria-label="A turbofan engine surrounded by a ring showing each pollutant's share of aviation radiative forcing. Contrail cirrus about 72 percent, CO2 about 22 percent, NOx net about 5 percent. Click a segment to see its explanation card."></svg>
+    <svg id="rings" width="440" height="440" viewBox="0 0 440 440" role="img" aria-label="A turbofan engine surrounded by a ring showing each pollutant's share of aviation effective radiative forcing. Contrail cirrus about 57 percent, CO2 about 34 percent, NOx net about 17 percent. Click a segment to see its explanation card."></svg>
 
     <div class="pan-card" id="card-nox" style="border-top-color:#e34948;">
       <span class="eyebrow-mono">DATA SHEET // NOx</span>
-      <p class="ctitle">NOx (net, ~5%)</p>
-      <p class="csub">At cruise altitude, NOx speeds up ozone formation, a warming effect, but also raises hydroxyl radicals that break down methane, a cooling effect. The two nearly offset, leaving a small net warming, though the exact size is genuinely debated.</p>
+      <p class="ctitle">NOx (net, ~17%)</p>
+      <p class="csub">At cruise altitude, NOx speeds up ozone formation, a warming effect, but also raises hydroxyl radicals that break down methane, a cooling effect. The two partially offset, leaving a net warming that's smaller than CO2 or contrail cirrus but still genuinely debated in size.</p>
       <div class="uncert-dial" id="dial-nox-wrap">
-        <span class="dial-label">95% confidence range — Lee et al. 2021</span>
+        <span class="dial-label">90% confidence range — Lee et al. 2021</span>
         <div id="ringdetail-nox"></div>
-        <p class="dial-note flag">The shaded wings show how much wider this slice could be at the high estimate (16 mW/m²). The tick mark sits right at the wedge's centre — the low estimate (−4.8) is negative, so the slice could shrink to nothing, or even flip to the other side.</p>
+        <p class="dial-note flag">The shaded wings show how much wider this slice could be at the high estimate (29 mW/m²). At the low estimate (0.6), the slice shrinks to almost nothing — the ozone warming and methane cooling nearly cancel out — but on this ERF basis the range stays just on the warming side throughout, it doesn't cross into net cooling.</p>
       </div>
     </div>
     <div class="pan-card" id="card-contrail" style="border-top-color:#2a78d6;">
       <span class="eyebrow-mono">DATA SHEET // CONTRAIL CIRRUS</span>
-      <p class="ctitle">Contrail cirrus (~72%)</p>
+      <p class="ctitle">Contrail cirrus (~57%)</p>
       <p class="csub">Water vapour in engine exhaust freezes onto soot particles at cruise altitude, forming ice crystal trails that can spread into thin cirrus cloud cover. Like natural cirrus, they let sunlight through but trap outgoing heat, giving a net warming effect.</p>
-      <p class="csub" style="margin-top:10px;">The 72% figure is a fleet-wide average: Teoh et al. (2020, 2024) find that roughly 2-3% of flights, mostly long-haul, high-altitude, night-time routes, drive about 80% of total contrail warming.</p>
+      <p class="csub" style="margin-top:10px;">The 57% figure is a fleet-wide average: Teoh et al. (2020, 2024) find that roughly 2-3% of flights, mostly long-haul, high-altitude, night-time routes, drive about 80% of total contrail warming.</p>
       <div class="uncert-dial" id="dial-contrail-wrap">
-        <span class="dial-label">95% confidence range — Lee et al. 2021</span>
+        <span class="dial-label">90% confidence range — Lee et al. 2021</span>
         <div id="ringdetail-contrail"></div>
-        <p class="dial-note">The widest wings of any term here: at the high estimate (189 mW/m²) the slice would be so much bigger that its two wings meet and overlap on the far side of the ring — the darker patch where they cross. At the low estimate (33 mW/m²) the tick mark shows it could shrink to a fraction of what's shown. Contrail cirrus is the biggest slice of aviation's warming and the least precisely known.</p>
+        <p class="dial-note">The widest wings of any term here: at the high estimate (98 mW/m²) the slice would be so much bigger that its two wings meet and overlap on the far side of the ring — the darker patch where they cross. At the low estimate (17 mW/m²) the tick mark shows it could shrink to a fraction of what's shown. Contrail cirrus is the biggest slice of aviation's warming and the least precisely known.</p>
       </div>
     </div>
     <div class="pan-card" id="card-co2" style="border-top-color:#eda100;">
       <span class="eyebrow-mono">DATA SHEET // CO2</span>
-      <p class="ctitle">CO<sub>2</sub> (~22%)</p>
+      <p class="ctitle">CO<sub>2</sub> (~34%)</p>
       <p class="csub">Burning jet fuel releases CO<sub>2</sub>, which traps outgoing heat the way a blanket traps body heat. It persists in the atmosphere for centuries, so its warming effect accumulates and lasts long after the flight itself.</p>
       <div class="uncert-dial" id="dial-co2-wrap">
-        <span class="dial-label">95% confidence range — Lee et al. 2021</span>
+        <span class="dial-label">90% confidence range — Lee et al. 2021</span>
         <div id="ringdetail-co2"></div>
         <p class="dial-note">The narrowest wings of any term here: 31 to 38 mW/m². CO2's physics are well understood, so the slice barely moves either side of the solid wedge. This is the number regulators build policy on.</p>
       </div>
@@ -460,9 +460,9 @@ function buildSegmentDetail(containerId, seg) {
   const svg = document.getElementById('rings');
   const cx = 220, cy = 220;
   const segments = [
-    { id: 'co2', label: 'CO2', pct: '~22%', share: 34.3, color: '#eda100', low: 31, high: 38 },
-    { id: 'contrail', label: 'Contrail cirrus', pct: '~72%', share: 111.4, color: '#2a78d6', low: 33, high: 189 },
-    { id: 'nox', label: 'NOx (net)', pct: '~5%', share: 8.2, color: '#e34948', low: -4.8, high: 16 }
+    { id: 'co2', label: 'CO2', pct: '~34%', share: 34.3, color: '#eda100', low: 31, high: 38 },
+    { id: 'contrail', label: 'Contrail cirrus', pct: '~57%', share: 57.4, color: '#2a78d6', low: 17, high: 98 },
+    { id: 'nox', label: 'NOx (net)', pct: '~17%', share: 17.5, color: '#e34948', low: 0.6, high: 29 }
   ];
   const total = segments.reduce(function(s, seg) { return s + seg.share; }, 0);
   const ns = 'http://www.w3.org/2000/svg';
