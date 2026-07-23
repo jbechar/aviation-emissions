@@ -32,11 +32,6 @@
     letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted);
     margin: 2.2rem 0 10px;
   }
-  .map-panel {
-    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
-    padding: 1.5rem; position: relative;
-  }
-  #worldMap { width: 100%; height: auto; display: block; }
   .country {
     stroke: var(--line-strong); stroke-width: 0.5; cursor: pointer;
     transition: opacity 0.15s;
@@ -127,6 +122,55 @@
     font-family: 'IBM Plex Mono', monospace; font-size: 10px; fill: var(--text);
     paint-order: stroke; stroke: var(--bg); stroke-width: 3px;
   }
+  .map-stage {
+    position: relative; width: 100%; background: var(--panel);
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .map-stage #worldMap { width: 100%; height: auto; display: block; max-height: 78vh; }
+  .map-stage #tooltip {
+    position: absolute; background: var(--panel-raised); border: 1px solid var(--line-strong);
+    border-radius: 6px; padding: 10px 12px; font-size: 12.5px; pointer-events: none;
+    display: none; max-width: 240px; z-index: 10;
+  }
+  .map-legend-float {
+    position: absolute; left: 16px; bottom: 16px; z-index: 25;
+    background: rgba(22, 29, 34, 0.92); border: 1px solid var(--line-strong); border-radius: 8px;
+    padding: 10px 14px; display: flex; gap: 14px; flex-wrap: wrap; font-size: 11.5px; color: var(--text-muted);
+    backdrop-filter: blur(4px); max-width: calc(100% - 32px);
+  }
+  .route-toggle-btn {
+    position: absolute; top: 16px; right: 16px; z-index: 30;
+    background: var(--panel-raised); border: 1px solid var(--line-strong); color: var(--text);
+    border-radius: 8px; padding: 10px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+    letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+  }
+  .route-toggle-btn:hover { background: var(--panel); border-color: var(--amber); }
+  .route-float-panel {
+    position: absolute; top: 16px; right: 16px; width: 360px; max-width: calc(100% - 32px);
+    max-height: calc(100% - 32px); overflow-y: auto;
+    background: rgba(20, 26, 31, 0.97); border: 1px solid var(--line-strong); border-radius: 10px;
+    padding: 1.1rem 1.25rem 1.25rem; box-shadow: 0 6px 24px rgba(0,0,0,0.45); z-index: 31;
+    display: none; backdrop-filter: blur(8px);
+  }
+  .route-float-panel.open { display: block; }
+  .route-float-panel .rfp-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;
+  }
+  .route-float-panel .rfp-title {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--amber);
+  }
+  .route-float-panel .rfp-close {
+    background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px;
+    line-height: 1; padding: 2px 6px;
+  }
+  .route-float-panel .rfp-close:hover { color: var(--text); }
+  .route-float-panel .route-row { display: block; }
+  .route-float-panel .route-field { margin-bottom: 0.85rem; }
+  @media (max-width: 640px) {
+    .route-float-panel { width: auto; left: 16px; right: 16px; top: 16px; }
+  }
 </style>
 </head>
 <body>
@@ -138,26 +182,29 @@
   <a href="/aviation-emissions/engagement-overview/" style="color:#9aa5b1;text-decoration:none;">Engagement Overview</a>
   <a href="/aviation-emissions/policy-map/" style="color:#eeab4c;text-decoration:none;">Policy Map</a>
 </div>
-<div class="wrap">
+<div class="wrap" style="padding-bottom: 0;">
   <div class="eyebrow">Prototype &middot; work in progress</div>
   <h1>Aviation Emissions Policy Map</h1>
-  <p class="subtitle">Hover a country to see which emissions regimes apply. Search a departure and arrival airport (worldwide) and an aircraft type to see which regulations apply, the great-circle route on the map, and the estimated carbon cost. Coverage is currently limited to EU ETS, UK ETS, Swiss ETS and CORSIA - this is an early prototype, not a complete or authoritative regulatory reference.</p>
-  <h2>Coverage by country</h2>
-  <div class="map-panel">
-    <svg id="worldMap" viewBox="0 0 960 500" xmlns="http://www.w3.org/2000/svg">
-      <text x="480" y="250" text-anchor="middle" fill="#8ea3ac" font-size="13" font-family="IBM Plex Mono, monospace" id="mapLoadingText">Loading map...</text>
-    </svg>
-    <div id="tooltip"></div>
-    <div class="legend">
-      <div class="legend-item"><span class="swatch" style="background:#1a4a5c;"></span>EU ETS</div>
-      <div class="legend-item"><span class="swatch" style="background:#57c2b1;"></span>UK ETS</div>
-      <div class="legend-item"><span class="swatch" style="background:#eeab4c;"></span>Swiss ETS</div>
-      <div class="legend-item"><span class="swatch" style="background:#435159;"></span>CORSIA only</div>
-      <div class="legend-item"><span class="swatch" style="background:#262f35;"></span>No scheme mapped yet</div>
-    </div>
+  <p class="subtitle">Hover a country to see which emissions regimes apply. Open the route checker to search a departure and arrival airport (worldwide) and an aircraft type to see which regulations apply, the great-circle route on the map, and the estimated carbon cost. Coverage is currently limited to EU ETS, UK ETS, Swiss ETS and CORSIA - this is an early prototype, not a complete or authoritative regulatory reference.</p>
+</div>
+<div class="map-stage">
+  <svg id="worldMap" viewBox="0 0 960 500" xmlns="http://www.w3.org/2000/svg">
+    <text x="480" y="250" text-anchor="middle" fill="#8ea3ac" font-size="13" font-family="IBM Plex Mono, monospace" id="mapLoadingText">Loading map...</text>
+  </svg>
+  <div id="tooltip"></div>
+  <div class="map-legend-float">
+    <div class="legend-item"><span class="swatch" style="background:#1a4a5c;"></span>EU ETS</div>
+    <div class="legend-item"><span class="swatch" style="background:#57c2b1;"></span>UK ETS</div>
+    <div class="legend-item"><span class="swatch" style="background:#eeab4c;"></span>Swiss ETS</div>
+    <div class="legend-item"><span class="swatch" style="background:#435159;"></span>CORSIA only</div>
+    <div class="legend-item"><span class="swatch" style="background:#262f35;"></span>No scheme mapped yet</div>
   </div>
-  <h2>Check a route</h2>
-  <div class="route-panel">
+  <button class="route-toggle-btn" id="routeToggleBtn">&#9776; Route checker</button>
+  <div class="route-float-panel" id="routeFloatPanel">
+    <div class="rfp-header">
+      <span class="rfp-title">Check a route</span>
+      <button class="rfp-close" id="routeCloseBtn" aria-label="Close">&times;</button>
+    </div>
     <div class="route-row">
       <div class="route-field airport-field">
         <label>Departure airport</label>
@@ -198,6 +245,8 @@
     </div>
     <div class="route-result" id="routeResult"></div>
   </div>
+</div>
+<div class="wrap" style="padding-top: 1.5rem;">
   <p class="footer-note">
     Prototype coverage: EU ETS, UK ETS, Swiss ETS, CORSIA. Country boundaries are simplified placeholder shapes for this early version, not precise geography. Regulation text drawn from the same sourcing as the Climate Policies reference on the homepage. Airport locations from the OpenFlights airport database (~6,000 airports with scheduled/commercial service). Route distance is the great-circle (shortest-path) distance between the two airports; actual flown distance will be longer due to routing, airspace, and weather. Carbon prices are indicative spot rates (EU ETS ~€65/t, UK ETS ~£45/t, CORSIA ~$5/t). Fuel burn figures are approximate cruise-phase values derived from published ICAO BFFM2 methodology and manufacturer data — actual costs will vary by load factor, altitude, and route profile. This does not constitute compliance advice - for filing or penalty decisions specific to a route or operator, consult a qualified compliance advisor.<br><br>
     Jaymal Bechar &middot; PhD Researcher, Aviation Emissions, University of Manchester
@@ -264,6 +313,18 @@ const fromInput = document.getElementById('fromAirportInput');
 const toInput = document.getElementById('toAirportInput');
 const fromSuggestions = document.getElementById('fromSuggestions');
 const toSuggestions = document.getElementById('toSuggestions');
+const routeToggleBtn = document.getElementById('routeToggleBtn');
+const routeFloatPanel = document.getElementById('routeFloatPanel');
+const routeCloseBtn = document.getElementById('routeCloseBtn');
+
+routeToggleBtn.addEventListener('click', () => {
+  routeFloatPanel.classList.add('open');
+  routeToggleBtn.style.display = 'none';
+});
+routeCloseBtn.addEventListener('click', () => {
+  routeFloatPanel.classList.remove('open');
+  routeToggleBtn.style.display = 'block';
+});
 
 function setupAirportAutocomplete(input, listEl, onSelect) {
   input.addEventListener('input', () => {
