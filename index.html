@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -142,8 +144,8 @@
 <header>
   <div class="title mono">AVIATION EMISSIONS <span>// explained</span></div>
   <div class="header-actions">
-    <button class="btn" onclick="openDrawer('news')">CURRENT NEWS</button>
-    <button class="btn" onclick="openDrawer('policies')">CLIMATE POLICIES</button>
+    <button class="btn" onclick="openDrawer()">CURRENT NEWS</button>
+    <a class="btn" href="/aviation-emissions/climate-policies/" style="text-decoration:none; display:inline-flex; align-items:center;">CLIMATE POLICIES</a>
     <button class="btn" id="themeBtn" onclick="toggleTheme()">DARK MODE</button>
     <a class="btn" href="/aviation-emissions/engagement-overview/" style="text-decoration:none; display:inline-flex; align-items:center;">ENGAGEMENT OVERVIEW</a>
     <a class="btn" href="/aviation-emissions/policy-map/" style="text-decoration:none; display:inline-flex; align-items:center;">POLICY MAP</a>
@@ -220,60 +222,6 @@
 </div>
 
 <script>
-const policies = [
-  { name: 'EU ETS, aviation',
-    desc: 'Covers intra-EEA flights. Free allowances fully phased out from 2026. Third-country scope extension under review, decision due July 2026.',
-    fin: 'Airlines must surrender one EU allowance (EUA) per tonne of CO<sub>2</sub> emitted. With free allocation gone from 2026, this is now a full cost exposure, not a partial one. EUAs have traded roughly EUR 72-81/tCO<sub>2</sub> through 2026, up from around EUR 60 a year earlier. For a narrowbody burning roughly 2.5 tonnes of fuel per hour (about 7.9 tonnes CO<sub>2</sub>), that is on the order of EUR 570-640 of carbon cost per flight hour at current prices, before any other fuel cost.' },
-  { name: 'UK ETS',
-    desc: 'Mirrors EU ETS structure. Same small-emitter thresholds. EU-UK linkage under negotiation.',
-    fin: 'Same per-tonne surrender mechanism as the EU scheme, priced on a separate UK market that can diverge from EUA prices. A future EU-UK linkage, under discussion, would make allowances interchangeable and likely narrow any price gap, which matters for any operator currently arbitraging between the two schemes.' },
-  { name: 'Swiss ETS',
-    desc: 'Linked to EU ETS since 2020, shared reporting regime.',
-    fin: 'Because it is linked to the EU scheme, Swiss ETS allowances track EUA pricing directly, so the same EUR 72-81/tCO<sub>2</sub> range applies. No separate price exposure to model beyond the EU figure.' },
-  { name: 'CORSIA',
-    desc: 'ICAO global offsetting scheme. First phase (2024-2026) voluntary. Second phase mandatory for nearly all states from January 2027. Baseline redefined as 85% of 2019 emissions.',
-    fin: 'Operators buy eligible emissions units for growth above the baseline, rather than surrendering an allowance for every tonne like EU ETS. Offset unit prices have historically traded far below EUA prices, though eligible-unit supply and pricing remain less mature and more volatile. The financial exposure is smaller per tonne than EU ETS today, but it applies globally and becomes mandatory for most states from 2027, which is the real change to underwrite for.' },
-  { name: 'EU non-CO<sub>2</sub> MRV, Directive 2023/958',
-    desc: 'Mandatory monitoring and reporting of non-CO<sub>2</sub> effects, contrails and NOx, from January 2025. Commission report due by end of 2027, may propose pricing non-CO<sub>2</sub> effects into EU ETS from 2028.',
-    fin: 'Currently a monitoring and reporting cost only, data collection and third-party verification, not a priced obligation. The financial exposure that matters is forward-looking: if the Commission proposes pricing non-CO<sub>2</sub> effects into EU ETS from 2028, that would roughly double or more the effective carbon cost per flight, since non-CO<sub>2</sub> effects are estimated at a larger share of aviation warming than CO<sub>2</sub> itself. Worth underwriting as a probable, not hypothetical, future cost line.' },
-  { name: 'ReFuelEU Aviation',
-    desc: 'SAF blending mandate, starts at 2% in 2025, rising progressively toward 70% by 2050.',
-    fin: 'This is a direct fuel cost, not a permit cost. EASA put 2024 average SAF prices around EUR 2,085/tonne against roughly EUR 734/tonne for conventional jet fuel, close to a 3x premium, with e-fuel pathways costing far more. At a 2% blend, the premium is diluted across the whole fuel bill, but it rises mechanically as the mandate percentage climbs over the coming decades, and the premium itself is not expected to close through any currently available production pathway.' },
-  { name: 'UK SAF Mandate',
-    desc: 'Separate blending mandate, 2% from 2025, own sub-caps and eligibility criteria, differs from the EU on crop-derived biofuel rules.',
-    fin: 'Same cost mechanics as ReFuelEU, a fuel price premium rather than a permit cost, but tracked and reported separately from the EU mandate. For any operator flying both UK and EU routes, this means maintaining two parallel compliance and cost-tracking regimes rather than one.' },
-  { name: 'Small emitter and de minimis thresholds',
-    desc: 'Commercial operators exempt below 10,000 t CO<sub>2</sub>/yr or 243 flights per period. Non-commercial, most business jets, exempt below 1,000 t CO<sub>2</sub>/yr, or simplified reporting below 25,000 t CO<sub>2</sub>/yr.',
-    fin: 'Staying under these thresholds avoids EU/UK ETS obligations entirely, which is a material planning input for smaller operators and fleet structuring decisions. This is the single most consequential number in this list for a business jet operator specifically, since it can be the difference between full compliance cost exposure and none.' },
-  { name: 'CSRD',
-    desc: 'Drives corporate flight-department Scope 3 reporting, relevant to companies operating or chartering jets, separate from airline-facing ETS/CORSIA.',
-    fin: 'Not a fuel or carbon cost directly, it is a disclosure and assurance cost, data collection, and third-party audit spend for the corporate flight department. The indirect financial exposure is through ESG ratings and access to green financing, poor Scope 3 aviation data can affect a company\'s wider cost of capital, not just its compliance budget.' }
-];
-
-function renderDrawerList() {
-  const list = document.getElementById('drawerList');
-  list.innerHTML = '';
-  policies.forEach(function(p, i) {
-    const row = document.createElement('div');
-    row.className = 'policy-row';
-    row.innerHTML = '<span class="pname">' + p.name + '</span><span class="chev">&rsaquo;</span>';
-    row.onclick = function() { showPolicyDetail(i); };
-    list.appendChild(row);
-  });
-}
-function showPolicyDetail(i) {
-  const list = document.getElementById('drawerList');
-  const p = policies[i];
-  list.innerHTML =
-    '<div class="policy-detail">' +
-    '<button class="back-link" onclick="renderDrawerList()">&lsaquo; all policies</button>' +
-    '<h3>' + p.name + '</h3>' +
-    '<p class="section-label">How it works</p>' +
-    '<p>' + p.desc + '</p>' +
-    '<p class="section-label">Financial perspective</p>' +
-    '<p>' + p.fin + '</p>' +
-    '</div>';
-}
 const newsItems = [
   { name: 'GTF grounding: certified pollutant exposure',
     desc: 'Certified engine data quantifying the emissions consequences of the Pratt and Whitney GTF grounding: fuel burn, NOx, and soot compared across the grounded neo engine and both certified ceo alternatives. NOx and soot findings are solid; CO and HC are flagged as genuinely uncertain rather than claimed either way.',
@@ -298,18 +246,10 @@ function renderNewsList() {
   });
 }
 
-function openDrawer(mode) {
-  const title = document.getElementById('drawerTitle');
-  const note = document.getElementById('drawerNote');
-  if (mode === 'news') {
-    title.textContent = 'Current news';
-    note.style.display = 'none';
-    renderNewsList();
-  } else {
-    title.textContent = 'Climate policies';
-    note.style.display = 'block';
-    renderDrawerList();
-  }
+function openDrawer() {
+  document.getElementById('drawerTitle').textContent = 'Current news';
+  document.getElementById('drawerNote').style.display = 'none';
+  renderNewsList();
   document.getElementById('drawer').classList.add('open');
   document.getElementById('drawerOverlay').classList.add('open');
 }
