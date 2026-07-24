@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -258,7 +259,7 @@
 </div>
 <div class="wrap" style="padding-top: 1.5rem;">
   <p class="footer-note">
-    Prototype coverage: EU ETS, UK ETS, Swiss ETS, CORSIA. Country boundaries are simplified placeholder shapes for this early version, not precise geography. Regulation text drawn from the same sourcing as the Climate Policies reference on the homepage. Airport locations from the OpenFlights airport database (~6,000 airports with scheduled/commercial service). Route distance is the great-circle (shortest-path) distance between the two airports; actual flown distance will be longer due to routing, airspace, and weather. Carbon prices are indicative spot rates (EU ETS ~€65/t, UK ETS ~£45/t, CORSIA ~$5/t). Fuel burn figures are approximate cruise-phase values derived from published ICAO BFFM2 methodology and manufacturer data — actual costs will vary by load factor, altitude, and route profile. This does not constitute compliance advice - for filing or penalty decisions specific to a route or operator, consult a qualified compliance advisor.<br><br>
+    Prototype coverage: EU ETS, UK ETS, Swiss ETS, CORSIA. Country boundaries are simplified placeholder shapes for this early version, not precise geography. Regulation text drawn from the same sourcing as the Climate Policies page. Airport locations from the OpenFlights airport database (~6,000 airports with scheduled/commercial service). Route distance is the great-circle (shortest-path) distance between the two airports; actual flown distance will be longer due to routing, airspace, and weather. Carbon prices are indicative spot rates, last checked 24 July 2026 (EU ETS ~€80/t, UK ETS ~£72/t, CORSIA ~$5/t) — UK ETS in particular is moving with EU-UK ETS linkage negotiations, so re-check before relying on it. Fuel burn figures are approximate cruise-phase values derived from published ICAO BFFM2 methodology and manufacturer data — actual costs will vary by load factor, altitude, and route profile. This does not constitute compliance advice - for filing or penalty decisions specific to a route or operator, consult a qualified compliance advisor.<br><br>
     Jaymal Bechar &middot; PhD Researcher, Aviation Emissions, University of Manchester
   </p>
 </div>
@@ -436,11 +437,14 @@ function distanceCorrectionFactor(distKm) {
 }
 
 const carbonPrices = {
-  'EU ETS':    { price:65, currency:'EUR', symbol:'€' },
-  'Swiss ETS': { price:65, currency:'EUR', symbol:'€' },
-  'UK ETS':    { price:45, currency:'GBP', symbol:'£' },
+  'EU ETS':    { price:80, currency:'EUR', symbol:'€' },
+  'Swiss ETS': { price:80, currency:'EUR', symbol:'€' },
+  'UK ETS':    { price:72, currency:'GBP', symbol:'£' },
   'CORSIA':    { price:5,  currency:'USD', symbol:'$' }
 };
+// Prices last checked 24 July 2026. EUA and UKA are both actively traded and move daily —
+// UKA in particular is currently volatile pending the outcome of EU-UK ETS linkage talks
+// (targeted for the 13 July 2026 summit). Re-check before relying on these for a real quote.
 
 function haversineKm(lat1, lon1, lat2, lon2) {
   const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
