@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -181,6 +180,44 @@
   @media (max-width: 640px) {
     .route-float-panel { width: auto; left: 16px; right: 16px; top: 16px; }
   }
+  .portfolio-panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 1.5rem; margin-top: 1rem;
+  }
+  .portfolio-row {
+    display: grid; grid-template-columns: 1.6fr 0.7fr 1.3fr 1.3fr 0.9fr 28px;
+    gap: 10px; align-items: end; margin-bottom: 0.9rem;
+  }
+  .portfolio-row .route-field { margin: 0; min-width: 0; }
+  .portfolio-row input[type="number"] {
+    width: 100%; background: var(--panel-raised); color: var(--text); border: 1px solid var(--line-strong);
+    border-radius: 6px; padding: 8px 10px; font-size: 14px; font-family: inherit;
+  }
+  .portfolio-row-remove {
+    background: none; border: 1px solid var(--line-strong); color: var(--text-muted);
+    border-radius: 6px; width: 28px; height: 36px; cursor: pointer; font-size: 16px; line-height: 1;
+  }
+  .portfolio-row-remove:hover { color: var(--rust); border-color: var(--rust); }
+  .portfolio-add-btn {
+    background: var(--panel-raised); border: 1px dashed var(--line-strong); color: var(--text-muted);
+    border-radius: 6px; padding: 10px; width: 100%; cursor: pointer; font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1.25rem;
+  }
+  .portfolio-add-btn:hover { border-color: var(--amber); color: var(--amber); }
+  .portfolio-summary {
+    border-top: 1px solid var(--line-strong); padding-top: 1rem;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;
+  }
+  .portfolio-summary .ps-card {
+    background: var(--panel-raised); border-radius: 6px; padding: 0.85rem 1rem;
+  }
+  .portfolio-summary .ps-label {
+    font-size: 11px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace;
+    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;
+  }
+  .portfolio-summary .ps-value { font-size: 18px; font-weight: 600; color: var(--amber); }
+  .portfolio-summary .ps-text { font-size: 13px; color: var(--text); }
+  .portfolio-row-invalid { color: var(--rust); font-size: 12px; grid-column: 1 / -1; margin: -4px 0 6px; }
 </style>
 </head>
 <body>
@@ -256,6 +293,16 @@
       </div>
     </div>
     <div class="route-result" id="routeResult"></div>
+  </div>
+</div>
+<div class="wrap" style="padding-top: 1.5rem;">
+  <div class="eyebrow">New &middot; prototype</div>
+  <h2 style="margin-top:0;">Portfolio exposure builder</h2>
+  <p class="subtitle">Add a row per aircraft type in a fleet or network, with an approximate route and annual utilization, to see aggregate carbon cost exposure across the whole portfolio rather than one route at a time.</p>
+  <div class="portfolio-panel">
+    <div id="portfolioRows"></div>
+    <button class="portfolio-add-btn" id="portfolioAddBtn" type="button">+ Add aircraft type</button>
+    <div class="portfolio-summary" id="portfolioSummary"></div>
   </div>
 </div>
 <div class="wrap" style="padding-top: 1.5rem;">
@@ -611,6 +658,157 @@ function renderRoute() {
 
 document.getElementById('aircraftType').addEventListener('change', renderRoute);
 renderRoute();
+
+// ---- Portfolio exposure builder ----
+const aircraftOptionsHtml = `
+  <optgroup label="Narrow-body">
+    <option value="A319">Airbus A319</option>
+    <option value="A320" selected>Airbus A320</option>
+    <option value="A321neo">Airbus A321neo</option>
+    <option value="B737-800">Boeing 737-800</option>
+    <option value="B737MAX8">Boeing 737 MAX 8</option>
+    <option value="E190">Embraer E190</option>
+    <option value="E195E2">Embraer E195-E2</option>
+  </optgroup>
+  <optgroup label="Wide-body">
+    <option value="A330-300">Airbus A330-300</option>
+    <option value="A350-900">Airbus A350-900</option>
+    <option value="B787-9">Boeing 787-9</option>
+    <option value="B777-300ER">Boeing 777-300ER</option>
+    <option value="B747-8">Boeing 747-8</option>
+    <option value="A380">Airbus A380</option>
+  </optgroup>
+  <optgroup label="Regional">
+    <option value="ATR72">ATR 72-600</option>
+    <option value="CRJ900">CRJ-900</option>
+    <option value="Q400">Q400 (Dash 8)</option>
+  </optgroup>`;
+
+let portfolioRowId = 0;
+const portfolioRowsEl = document.getElementById('portfolioRows');
+
+function addPortfolioRow(defaults) {
+  const id = 'prow' + (portfolioRowId++);
+  const row = document.createElement('div');
+  row.className = 'portfolio-row';
+  row.dataset.rowId = id;
+  row.innerHTML = `
+    <div class="route-field"><label>Aircraft type</label><select class="pf-aircraft">${aircraftOptionsHtml}</select></div>
+    <div class="route-field"><label>Count</label><input type="number" class="pf-count" min="1" value="${(defaults && defaults.count) || 1}"></div>
+    <div class="route-field airport-field"><label>From</label><input type="text" class="pf-from" placeholder="City or IATA code" autocomplete="off"><div class="airport-suggestions pf-from-suggestions"></div></div>
+    <div class="route-field airport-field"><label>To</label><input type="text" class="pf-to" placeholder="City or IATA code" autocomplete="off"><div class="airport-suggestions pf-to-suggestions"></div></div>
+    <div class="route-field"><label>Sectors/yr</label><input type="number" class="pf-sectors" min="1" value="${(defaults && defaults.sectors) || 500}"></div>
+    <button type="button" class="portfolio-row-remove" aria-label="Remove row">&times;</button>`;
+  portfolioRowsEl.appendChild(row);
+
+  row._fromAirport = null;
+  row._toAirport = null;
+
+  const fromInputEl = row.querySelector('.pf-from');
+  const toInputEl = row.querySelector('.pf-to');
+  const fromListEl = row.querySelector('.pf-from-suggestions');
+  const toListEl = row.querySelector('.pf-to-suggestions');
+
+  setupAirportAutocomplete(fromInputEl, fromListEl, a => { row._fromAirport = a; calculatePortfolio(); });
+  setupAirportAutocomplete(toInputEl, toListEl, a => { row._toAirport = a; calculatePortfolio(); });
+
+  if (defaults && defaults.from) { row._fromAirport = defaults.from; fromInputEl.value = fmtAirport(defaults.from); }
+  if (defaults && defaults.to) { row._toAirport = defaults.to; toInputEl.value = fmtAirport(defaults.to); }
+  if (defaults && defaults.aircraft) row.querySelector('.pf-aircraft').value = defaults.aircraft;
+
+  row.querySelector('.pf-aircraft').addEventListener('change', calculatePortfolio);
+  row.querySelector('.pf-count').addEventListener('input', calculatePortfolio);
+  row.querySelector('.pf-sectors').addEventListener('input', calculatePortfolio);
+  row.querySelector('.portfolio-row-remove').addEventListener('click', () => {
+    row.remove();
+    calculatePortfolio();
+  });
+}
+
+function calculatePortfolio() {
+  const summaryEl = document.getElementById('portfolioSummary');
+  const rows = Array.from(portfolioRowsEl.children);
+  const totals = { low: 0, mid: 0, high: 0 };
+  const regimeTotals = {};
+  let topRow = null;
+
+  rows.forEach(row => {
+    const invalidNote = row.querySelector('.portfolio-row-invalid');
+    if (invalidNote) invalidNote.remove();
+    if (!row._fromAirport || !row._toAirport || airports.length === 0) {
+      const note = document.createElement('div');
+      note.className = 'portfolio-row-invalid';
+      note.textContent = 'Select a departure and arrival airport from the suggestions to include this row.';
+      row.appendChild(note);
+      return;
+    }
+    const aircraftKey = row.querySelector('.pf-aircraft').value;
+    const count = Math.max(1, parseInt(row.querySelector('.pf-count').value, 10) || 1);
+    const sectors = Math.max(1, parseInt(row.querySelector('.pf-sectors').value, 10) || 1);
+    const ac = aircraft[aircraftKey];
+    const from = row._fromAirport, to = row._toAirport;
+    const gcdKm = haversineKm(from.lat, from.lon, to.lat, to.lon);
+    if (gcdKm < 50) return;
+    const regs = evaluateRoute(from.country, to.country);
+    const priceData = carbonPrices[regs[0].name] || carbonPrices['CORSIA'];
+    const corr = distanceCorrectionFactor(gcdKm);
+    const ltoKg = ltoFuelKgBySizeClass[ac.sizeClass] || 700;
+
+    const scenarioDefs = {
+      low:  { distKm: gcdKm, ltoKg: 0 },
+      mid:  { distKm: gcdKm * (1 + corr), ltoKg: 0 },
+      high: { distKm: gcdKm * (1 + corr), ltoKg: ltoKg }
+    };
+    const annual = {};
+    Object.keys(scenarioDefs).forEach(key => {
+      const s = scenarioDefs[key];
+      const fuelKg = ac.fuelKgPerHr * (s.distKm / ac.cruiseKmH) + s.ltoKg;
+      const co2Tonnes = fuelKg * 3.16 / 1000;
+      const perSectorCost = co2Tonnes * priceData.price;
+      annual[key] = perSectorCost * sectors * count;
+    });
+
+    totals.low += annual.low;
+    totals.mid += annual.mid;
+    totals.high += annual.high;
+    regimeTotals[regs[0].name] = (regimeTotals[regs[0].name] || 0) + annual.mid;
+
+    if (!topRow || annual.mid > topRow.mid) {
+      topRow = { mid: annual.mid, label: ac.label + ', ' + from.iata + ' to ' + to.iata };
+    }
+  });
+
+  if (totals.mid === 0) {
+    summaryEl.innerHTML = '<p class="no-reg">Add at least one aircraft type with a valid route to see portfolio exposure.</p>';
+    return;
+  }
+
+  const regimeTotal = Object.values(regimeTotals).reduce((a, b) => a + b, 0) || 1;
+  const regimeBreakdown = Object.entries(regimeTotals)
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, val]) => name + ' ' + Math.round((val / regimeTotal) * 100) + '%')
+    .join(', ');
+
+  summaryEl.innerHTML = `
+    <div class="ps-card"><div class="ps-label">Total portfolio exposure</div><div class="ps-value">${fmtCurrency(totals.low, '')} \u2013 ${fmtCurrency(totals.high, '')}/yr</div></div>
+    <div class="ps-card"><div class="ps-label">Scheme breakdown (mid, by cost)</div><div class="ps-text">${regimeBreakdown}</div></div>
+    <div class="ps-card"><div class="ps-label">Highest exposure row</div><div class="ps-text">${topRow ? topRow.label : '\u2014'}</div></div>
+    <div class="cost-disclaimer" style="grid-column:1/-1;">Prototype: sums EUR, GBP and USD scheme costs at face value with no currency conversion, and applies the same single-route methodology as the checker above (great-circle distance, indicative routing correction, no free allocation or load-factor adjustment). Treat as an order-of-magnitude portfolio view, not an audited figure.</div>`;
+}
+
+document.getElementById('portfolioAddBtn').addEventListener('click', () => addPortfolioRow());
+
+fetch('https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat')
+  .then(() => {
+    const check = setInterval(() => {
+      if (airports.length > 0) {
+        clearInterval(check);
+        addPortfolioRow({ aircraft: 'A320', count: 12, sectors: 700, from: airports.find(a => a.iata === 'LHR'), to: airports.find(a => a.iata === 'JFK') });
+        addPortfolioRow({ aircraft: 'E195E2', count: 6, sectors: 900, from: airports.find(a => a.iata === 'LCY'), to: airports.find(a => a.iata === 'ZRH') });
+      }
+    }, 200);
+    setTimeout(() => clearInterval(check), 8000);
+  });
 </script>
 </body>
 </html>
