@@ -218,6 +218,32 @@
   .portfolio-summary .ps-value { font-size: 18px; font-weight: 600; color: var(--amber); }
   .portfolio-summary .ps-text { font-size: 13px; color: var(--text); }
   .portfolio-row-invalid { color: var(--rust); font-size: 12px; grid-column: 1 / -1; margin: -4px 0 6px; }
+  .scenario-compare {
+    border-top: 1px solid var(--line-strong); margin-top: 1rem; padding-top: 1rem;
+  }
+  .scenario-compare .sc-header {
+    font-size: 12px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace;
+    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .scenario-compare .sc-tag {
+    background: var(--panel-raised); color: var(--amber); border: 1px solid var(--line-strong);
+    border-radius: 4px; padding: 2px 8px; font-size: 10px; text-transform: none; letter-spacing: normal;
+  }
+  .scenario-compare .sc-grid {
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px;
+  }
+  .scenario-compare .sc-col {
+    background: var(--panel-raised); border-radius: 6px; padding: 0.75rem 1rem; text-align: center;
+  }
+  .scenario-compare .sc-col-changed { border: 1px solid var(--amber); }
+  .scenario-compare .sc-col-label {
+    font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;
+  }
+  .scenario-compare .sc-col-regime { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .scenario-compare .sc-col-cost { font-size: 15px; color: var(--amber); font-weight: 600; }
+  .scenario-compare .sc-arrow { color: var(--text-muted); font-size: 18px; }
+  .scenario-compare .sc-note { font-size: 12px; color: var(--text-muted); margin-top: 0.6rem; }
 </style>
 </head>
 <body>
@@ -527,6 +553,12 @@ function buildCostPanel(fromAirport, toAirport, aircraftKey, regimes) {
     scenarios[key] = { fuelKg, co2Tonnes, cost: co2Tonnes * priceData.price };
   });
 
+  const proposedRegimes = evaluateRouteProposed(fromAirport.country, toAirport.country, gcdKm, regimes);
+  const changed = proposedRegimes[0].name !== regimes[0].name;
+  const proposedPriceData = carbonPrices[proposedRegimes[0].name] || carbonPrices['CORSIA'];
+  const proposedLow = scenarios.low.co2Tonnes * proposedPriceData.price;
+  const proposedHigh = scenarios.high.co2Tonnes * proposedPriceData.price;
+
   return `
     <div class="cost-panel">
       <div class="cost-header">Estimated carbon cost — ${ac.label}</div>
@@ -548,6 +580,25 @@ function buildCostPanel(fromAirport, toAirport, aircraftKey, regimes) {
         <span class="cb-note">Under ${regimes[0].name} · whole aircraft, one sector</span>
       </div>
       <div class="cost-disclaimer">Low: cruise-phase fuel burn over great-circle distance only. Mid: adds an indicative routing correction (${(corr*100).toFixed(0)}% for this stage length) for ATC vectoring, stacking and weather detours, in the spirit of the correction used in ICAO's own Carbon Emissions Calculator methodology. High: adds an indicative landing/takeoff-cycle fuel penalty (taxi, climb-out, approach) on top of mid. All figures are indicative, not flight-plan-grade — actual burn varies with load factor, altitude, winds and specific routing. Does not account for free allocation or non-CO&#8322; effects.</div>
+      <div class="scenario-compare">
+        <div class="sc-header">Regulatory outlook <span class="sc-tag">EU ETS 5,000km extension — proposed, not in force</span></div>
+        <div class="sc-grid">
+          <div class="sc-col">
+            <div class="sc-col-label">Current rules</div>
+            <div class="sc-col-regime">${regimes[0].name}</div>
+            <div class="sc-col-cost">${fmtCurrency(scenarios.low.cost, priceData.symbol)} \u2013 ${fmtCurrency(scenarios.high.cost, priceData.symbol)}</div>
+          </div>
+          <div class="sc-arrow">&rarr;</div>
+          <div class="sc-col${changed ? ' sc-col-changed' : ''}">
+            <div class="sc-col-label">If extension passes</div>
+            <div class="sc-col-regime">${proposedRegimes[0].name}</div>
+            <div class="sc-col-cost">${fmtCurrency(proposedLow, proposedPriceData.symbol)} \u2013 ${fmtCurrency(proposedHigh, proposedPriceData.symbol)}</div>
+          </div>
+        </div>
+        <div class="sc-note">${changed
+          ? 'This route would move from ' + regimes[0].name + ' to ' + proposedRegimes[0].name + ', since it is an EEA-to-non-EEA route under 5,000km great-circle distance.'
+          : 'No change for this route under the proposed extension, it is either already inside EU ETS/UK ETS/Swiss ETS scope, or outside the 5,000km threshold the extension targets.'}</div>
+      </div>
     </div>`;
 }
 
@@ -613,6 +664,16 @@ function evaluateRoute(from, to) {
   }
   const seen = new Set();
   return regs.filter(r => { if (seen.has(r.name)) return false; seen.add(r.name); return true; });
+}
+
+function evaluateRouteProposed(from, to, gcdKm, currentRegs) {
+  const fromEEA = isEEA.includes(from), toEEA = isEEA.includes(to);
+  const eeaLeg = (fromEEA && !toEEA) || (!fromEEA && toEEA);
+  const currentlyCORSIA = currentRegs.length === 1 && currentRegs[0].name === 'CORSIA';
+  if (eeaLeg && currentlyCORSIA && gcdKm <= 5000) {
+    return [{ name: 'EU ETS', desc: 'Under the proposed extension, EEA-to-third-country flights within 5,000km would move from CORSIA into full EU ETS scope.' }];
+  }
+  return currentRegs;
 }
 
 function clearRouteLine() {
