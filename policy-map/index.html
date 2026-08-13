@@ -520,6 +520,17 @@ const carbonPrices = {
 // UKA in particular is currently volatile pending the outcome of EU-UK ETS linkage talks
 // (targeted for the 13 July 2026 summit). Re-check before relying on these for a real quote.
 
+// EU ETS revision proposal (released 17 July 2026): contrail allowance mechanism.
+// Capped pool of up to 3,000,000 allowances available through end of 2033, no more than
+// 420,000 allocated in any single year, shared across ALL EU-regulated airlines.
+// Source: European Commission targeted ETS revision proposal, as reported by T&E and
+// planesightnews.substack.com (Aug 2026). Cross-check against the final legislative text
+// before using in client-facing material - this is a proposal, not yet in force.
+const CONTRAIL_FORECAST_PCT = 0.001;    // 0.1% of verified EU ETS emissions: embedding contrail forecasting into flight planning + sharing with ops control
+const CONTRAIL_REPORTING_PCT = 0.0002;  // +0.02% of verified EU ETS emissions: enhanced trajectory + fuel-flow reporting for non-CO2 MRV
+const CONTRAIL_POOL_CAP_ANNUAL = 420000; // allowances/yr, shared pool across all EU-regulated airlines
+const CONTRAIL_POOL_TOTAL = 3000000;     // total allowances reserved through 2033
+
 function haversineKm(lat1, lon1, lat2, lon2) {
   const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
   const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
@@ -791,6 +802,7 @@ function calculatePortfolio() {
   const rows = Array.from(portfolioRowsEl.children);
   const totals = { low: 0, mid: 0, high: 0 };
   const regimeTotals = {};
+  let euEtsCo2Mid = 0;
   let topRow = null;
 
   rows.forEach(row => {
@@ -821,18 +833,27 @@ function calculatePortfolio() {
       high: { distKm: gcdKm * (1 + corr), ltoKg: ltoKg }
     };
     const annual = {};
+    const annualCo2 = {};
     Object.keys(scenarioDefs).forEach(key => {
       const s = scenarioDefs[key];
       const fuelKg = ac.fuelKgPerHr * (s.distKm / ac.cruiseKmH) + s.ltoKg;
       const co2Tonnes = fuelKg * 3.16 / 1000;
       const perSectorCost = co2Tonnes * priceData.price;
       annual[key] = perSectorCost * sectors * count;
+      annualCo2[key] = co2Tonnes * sectors * count;
     });
 
     totals.low += annual.low;
     totals.mid += annual.mid;
     totals.high += annual.high;
     regimeTotals[regs[0].name] = (regimeTotals[regs[0].name] || 0) + annual.mid;
+
+    // Contrail allowance mechanism (EU ETS revision proposal) applies to verified EU ETS
+    // emissions specifically, not UK ETS, Swiss ETS or CORSIA - so only EU ETS-scope rows
+    // feed the allowance calculation below.
+    if (regs[0].name === 'EU ETS') {
+      euEtsCo2Mid += annualCo2.mid;
+    }
 
     if (!topRow || annual.mid > topRow.mid) {
       topRow = { mid: annual.mid, label: ac.label + ', ' + from.iata + ' to ' + to.iata };
@@ -850,11 +871,31 @@ function calculatePortfolio() {
     .map(([name, val]) => name + ' ' + Math.round((val / regimeTotal) * 100) + '%')
     .join(', ');
 
+  const euaPrice = carbonPrices['EU ETS'].price;
+  const contrailForecastValue = euEtsCo2Mid * CONTRAIL_FORECAST_PCT * euaPrice;
+  const contrailReportingValue = euEtsCo2Mid * CONTRAIL_REPORTING_PCT * euaPrice;
+  const contrailTotalValue = contrailForecastValue + contrailReportingValue;
+  const contrailPoolCapValue = CONTRAIL_POOL_CAP_ANNUAL * euaPrice;
+
+  const contrailCard = euEtsCo2Mid > 0
+    ? `<div class="ps-card">
+        <div class="ps-label">Contrail allowance opportunity</div>
+        <div class="ps-value">${fmtCurrency(contrailTotalValue, '€')}/yr</div>
+        <div class="ps-text" style="font-size:12.5px;margin-top:2px;">0.1% forecast integration + 0.02% reporting bonus, on ${Math.round(euEtsCo2Mid).toLocaleString()}t EU ETS CO&#8322;/yr</div>
+      </div>`
+    : `<div class="ps-card">
+        <div class="ps-label">Contrail allowance opportunity</div>
+        <div class="ps-value" style="font-size:14px;color:var(--text-muted);">No EU ETS routes</div>
+        <div class="ps-text" style="font-size:12.5px;margin-top:2px;">The proposed mechanism applies to verified EU ETS emissions only - add an intra-EEA route to see this.</div>
+      </div>`;
+
   summaryEl.innerHTML = `
     <div class="ps-card"><div class="ps-label">Total portfolio exposure</div><div class="ps-value">${fmtCurrency(totals.low, '')} \u2013 ${fmtCurrency(totals.high, '')}/yr</div></div>
     <div class="ps-card"><div class="ps-label">Scheme breakdown (mid, by cost)</div><div class="ps-text">${regimeBreakdown}</div></div>
     <div class="ps-card"><div class="ps-label">Highest exposure row</div><div class="ps-text">${topRow ? topRow.label : '\u2014'}</div></div>
-    <div class="cost-disclaimer" style="grid-column:1/-1;">Prototype: sums EUR, GBP and USD scheme costs at face value with no currency conversion, and applies the same single-route methodology as the checker above (great-circle distance, indicative routing correction, no free allocation or load-factor adjustment). Treat as an order-of-magnitude portfolio view, not an audited figure.</div>`;
+    ${contrailCard}
+    <div class="cost-disclaimer" style="grid-column:1/-1;">Prototype: sums EUR, GBP and USD scheme costs at face value with no currency conversion, and applies the same single-route methodology as the checker above (great-circle distance, indicative routing correction, no free allocation or load-factor adjustment). Treat as an order-of-magnitude portfolio view, not an audited figure.</div>
+    <div class="cost-disclaimer" style="grid-column:1/-1;">Contrail allowance figure reflects the EU ETS revision proposed 17 July 2026: a pool of up to ${(CONTRAIL_POOL_TOTAL/1000000).toFixed(0)} million allowances through 2033, capped at ${CONTRAIL_POOL_CAP_ANNUAL.toLocaleString()}/yr and shared across every EU-regulated airline (worth roughly ${fmtCurrency(contrailPoolCapValue,'€')}/yr at current EUA prices for the whole market). It rewards airlines for embedding contrail forecasting into flight planning and enhanced non-CO&#8322; reporting - a demonstrated capability, not proven avoidance - and is not yet in force. Because the pool is shared, a large network's calculated entitlement may exceed its real pro-rata share once every other qualifying airline claims from the same pot. Separately, early operational data from contrail-avoidance trials (200+ flights) has shown fuel penalties running around 30% above desktop modelling estimates, worth weighing against any allowance value. Not compliance or financial advice.</div>`;
 }
 
 document.getElementById('portfolioAddBtn').addEventListener('click', () => addPortfolioRow());
