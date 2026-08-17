@@ -531,6 +531,47 @@ const CONTRAIL_REPORTING_PCT = 0.0002;  // +0.02% of verified EU ETS emissions: 
 const CONTRAIL_POOL_CAP_ANNUAL = 420000; // allowances/yr, shared pool across all EU-regulated airlines
 const CONTRAIL_POOL_TOTAL = 3000000;     // total allowances reserved through 2033
 
+// CORSIA voluntary participation list, ICAO "CORSIA States for Chapter 3 State Pairs",
+// 6th edition (published 1 Aug 2025), effective 1 January 2026 - 130 states.
+// Source: https://www.icao.int/sites/default/files/sp-files/environmental-protection/CORSIA/Documents/CORSIA-States-for-Chapter-3-State-Pairs_6Ed_web.pdf
+// This list changes yearly (states can join or withdraw) - re-check against the current
+// edition before relying on it for a live client quote. Names normalized to match the
+// world-atlas/OpenFlights country names used elsewhere in this file; verify a name isn't
+// silently failing to match if a state on this list never highlights as CORSIA-covered.
+const corsiaParticipatingStates2026Raw = [
+  'Afghanistan','Albania','Antigua and Barbuda','Armenia','Australia','Austria','Azerbaijan',
+  'Bahamas','Bahrain','Barbados','Belgium','Belize','Benin','Bosnia and Herzegovina','Botswana',
+  'Bulgaria','Burkina Faso','Cambodia','Cameroon','Canada','Comoros','Cook Islands','Costa Rica',
+  "Côte d'Ivoire",'Ivory Coast','Croatia','Cuba','Cyprus','Czechia','Democratic Republic of the Congo',
+  'Denmark','Dominica','Dominican Republic','Ecuador','El Salvador','Equatorial Guinea','Estonia',
+  'Finland','France','Gabon','Gambia','Georgia','Germany','Ghana','Greece','Grenada','Guatemala',
+  'Guyana','Haiti','Honduras','Hungary','Iceland','Indonesia','Iraq','Ireland','Israel','Italy',
+  'Jamaica','Japan','Kazakhstan','Kenya','Kiribati','Kuwait','Latvia','Lithuania','Luxembourg',
+  'Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands','Mauritania',
+  'Mexico','Micronesia','Monaco','Montenegro','Namibia','Nauru','Netherlands','New Zealand',
+  'Nigeria','North Macedonia','Norway','Oman','Palau','Papua New Guinea','Philippines','Poland',
+  'Portugal','Qatar','South Korea','Republic of Korea','Moldova','Republic of Moldova','Romania',
+  'Rwanda','Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines','Samoa',
+  'San Marino','Saudi Arabia','Serbia','Seychelles','Sierra Leone','Singapore','Slovakia','Slovenia',
+  'Solomon Islands','South Sudan','Spain','Suriname','Sweden','Switzerland','Thailand','Timor-Leste',
+  'Tonga','Trinidad and Tobago','Turkey','Türkiye','Tuvalu','Uganda','Ukraine','United Arab Emirates',
+  'United Kingdom','Tanzania','United Republic of Tanzania','United States of America','United States',
+  'Uruguay','Vanuatu','Uruguay','Vietnam','Viet Nam','Zambia','Zimbabwe'
+];
+const corsiaParticipatingStates2026 = new Set(corsiaParticipatingStates2026Raw);
+
+function isCorsiaParticipating(countryName) {
+  return corsiaParticipatingStates2026.has(countryName);
+}
+
+// Fuel burn / emissions uncertainty band, per Daniel Rotherham (PhD researcher, University
+// of Manchester, aviation emissions modelling) - a personal/institutional source, not a
+// published citation, so labelled as such in the tool rather than presented as literature
+// consensus. Applied to the high-scenario estimate (routing-corrected distance + LTO cycle)
+// as the central estimate, since that's the fullest point estimate this tool produces.
+const ROTHERHAM_UNCERTAINTY_LOW_PCT = -0.13;
+const ROTHERHAM_UNCERTAINTY_HIGH_PCT = 0.15;
+
 function haversineKm(lat1, lon1, lat2, lon2) {
   const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
   const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
@@ -547,7 +588,7 @@ function buildCostPanel(fromAirport, toAirport, aircraftKey, regimes) {
   const gcdKm = Math.round(haversineKm(fromAirport.lat, fromAirport.lon, toAirport.lat, toAirport.lon));
   if (gcdKm < 50) return '';
 
-  const priceData = carbonPrices[regimes[0].name] || carbonPrices['CORSIA'];
+  const priceData = carbonPrices[regimes[0].name] || (regimes[0].name === 'No scheme (yet)' ? { price: 0, currency: '', symbol: '€' } : carbonPrices['CORSIA']);
   const corr = distanceCorrectionFactor(gcdKm);
   const ltoKg = ltoFuelKgBySizeClass[ac.sizeClass] || 700;
 
@@ -570,6 +611,43 @@ function buildCostPanel(fromAirport, toAirport, aircraftKey, regimes) {
   const proposedLow = scenarios.low.co2Tonnes * proposedPriceData.price;
   const proposedHigh = scenarios.high.co2Tonnes * proposedPriceData.price;
 
+  // Rotherham uncertainty band, applied around the high-scenario point estimate.
+  const uncCo2Low = scenarios.high.co2Tonnes * (1 + ROTHERHAM_UNCERTAINTY_LOW_PCT);
+  const uncCo2High = scenarios.high.co2Tonnes * (1 + ROTHERHAM_UNCERTAINTY_HIGH_PCT);
+  const uncCostLow = scenarios.high.cost * (1 + ROTHERHAM_UNCERTAINTY_LOW_PCT);
+  const uncCostHigh = scenarios.high.cost * (1 + ROTHERHAM_UNCERTAINTY_HIGH_PCT);
+
+  // CORSIA's mandatory second phase (2027-2035) only matters for routes where CORSIA is the
+  // relevant scheme today - it doesn't affect routes already inside EU ETS/UK ETS/Swiss ETS,
+  // since those national schemes take precedence over CORSIA.
+  const corsiaRelevant = regimes[0].name === 'CORSIA' || regimes[0].name === 'No scheme (yet)';
+  const corsiaWillCover2027 = corsiaRelevant && corsiaCovered2027(fromAirport.country, toAirport.country);
+  const corsia2027Changed = corsiaRelevant && regimes[0].name === 'No scheme (yet)' && corsiaWillCover2027;
+  const corsia2027PriceData = carbonPrices['CORSIA'];
+  const corsia2027Low = scenarios.low.co2Tonnes * corsia2027PriceData.price;
+  const corsia2027High = scenarios.high.co2Tonnes * corsia2027PriceData.price;
+  const corsia2027Block = corsiaRelevant ? `
+      <div class="scenario-compare">
+        <div class="sc-header">Regulatory outlook <span class="sc-tag">CORSIA mandatory phase — from 2027, not yet in force</span></div>
+        <div class="sc-note" style="margin-top:0;margin-bottom:0.6rem;">From 2027, CORSIA becomes mandatory for ICAO states above a 0.5% share of 2018 international traffic, with narrow exemptions for least-developed, small-island and landlocked states (who may still opt in). This tool approximates 2027 coverage as "applies to any international route" - treat it as directional for smaller or exempt states, not a compliance-grade determination.</div>
+        <div class="sc-grid">
+          <div class="sc-col">
+            <div class="sc-col-label">Current rules</div>
+            <div class="sc-col-regime">${regimes[0].name}</div>
+            <div class="sc-col-cost">${fmtCurrency(scenarios.low.cost, priceData.symbol)} \u2013 ${fmtCurrency(scenarios.high.cost, priceData.symbol)}</div>
+          </div>
+          <div class="sc-arrow">&rarr;</div>
+          <div class="sc-col${corsia2027Changed ? ' sc-col-changed' : ''}">
+            <div class="sc-col-label">From 2027</div>
+            <div class="sc-col-regime">${corsiaWillCover2027 ? 'CORSIA' : regimes[0].name}</div>
+            <div class="sc-col-cost">${fmtCurrency(corsia2027Low, corsia2027PriceData.symbol)} \u2013 ${fmtCurrency(corsia2027High, corsia2027PriceData.symbol)}</div>
+          </div>
+        </div>
+        <div class="sc-note">${corsia2027Changed
+          ? 'At least one state on this route has not opted into CORSIA\u2019s current voluntary phase, so this route has no offsetting obligation today. From 2027 it would very likely become covered, at CORSIA\u2019s indicative price rather than the higher EU/UK ETS rates.'
+          : 'No change expected for this route from CORSIA\u2019s 2027 mandatory phase - both states already participate voluntarily today.'}</div>
+      </div>` : '';
+
   return `
     <div class="cost-panel">
       <div class="cost-header">Estimated carbon cost — ${ac.label}</div>
@@ -590,7 +668,12 @@ function buildCostPanel(fromAirport, toAirport, aircraftKey, regimes) {
         <span class="cb-value">${fmtCurrency(scenarios.low.cost, priceData.symbol)} \u2013 ${fmtCurrency(scenarios.high.cost, priceData.symbol)}</span>
         <span class="cb-note">Under ${regimes[0].name} · whole aircraft, one sector</span>
       </div>
-      <div class="cost-disclaimer">Low: cruise-phase fuel burn over great-circle distance only. Mid: adds an indicative routing correction (${(corr*100).toFixed(0)}% for this stage length) for ATC vectoring, stacking and weather detours, in the spirit of the correction used in ICAO's own Carbon Emissions Calculator methodology. High: adds an indicative landing/takeoff-cycle fuel penalty (taxi, climb-out, approach) on top of mid. All figures are indicative, not flight-plan-grade — actual burn varies with load factor, altitude, winds and specific routing. Does not account for free allocation or non-CO&#8322; effects.</div>
+      <div class="cost-big" style="border-top:none;padding-top:4px;">
+        <span class="cb-label">Modelled uncertainty (\u201313%/+15%)</span>
+        <span class="cb-value" style="font-size:20px;">${fmtCurrency(uncCostLow, priceData.symbol)} \u2013 ${fmtCurrency(uncCostHigh, priceData.symbol)}</span>
+        <span class="cb-note">${uncCo2Low.toFixed(1)}t \u2013 ${uncCo2High.toFixed(1)}t CO&#8322; · around the high-scenario estimate</span>
+      </div>
+      <div class="cost-disclaimer">Low: cruise-phase fuel burn over great-circle distance only. Mid: adds an indicative routing correction (${(corr*100).toFixed(0)}% for this stage length) for ATC vectoring, stacking and weather detours, in the spirit of the correction used in ICAO's own Carbon Emissions Calculator methodology. High: adds an indicative landing/takeoff-cycle fuel penalty (taxi, climb-out, approach) on top of mid. All figures are indicative, not flight-plan-grade — actual burn varies with load factor, altitude, winds and specific routing. Does not account for free allocation or non-CO&#8322; effects. Modelled uncertainty band (\u201313%/+15%) applied around the high-scenario estimate per Daniel Rotherham, PhD researcher in aviation emissions at the University of Manchester — a direct personal source, not a published citation.</div>
       <div class="scenario-compare">
         <div class="sc-header">Regulatory outlook <span class="sc-tag">EU ETS 5,000km extension — proposed, not in force</span></div>
         <div class="sc-note" style="margin-top:0;margin-bottom:0.6rem;">Measured from Frankfurt aerodrome, effective January 2029. Newly in-scope third-country airports include Istanbul, Hamad International (Doha), Dubai International, and Murtala Muhammed International (Lagos).</div>
@@ -610,7 +693,7 @@ function buildCostPanel(fromAirport, toAirport, aircraftKey, regimes) {
         <div class="sc-note">${changed
           ? 'This route would move from ' + regimes[0].name + ' to ' + proposedRegimes[0].name + ', since it is an EEA-to-non-EEA route under 5,000km great-circle distance.'
           : 'No change for this route under the proposed extension, it is either already inside EU ETS/UK ETS/Swiss ETS scope, or outside the 5,000km threshold the extension targets.'}</div>
-      </div>
+      </div>${corsia2027Block}
     </div>`;
 }
 
@@ -659,23 +742,46 @@ function evaluateRoute(from, to) {
   const fromEEA = isEEA.includes(from), toEEA = isEEA.includes(to);
   const fromUK = from === 'United Kingdom', toUK = to === 'United Kingdom';
   const fromCH = from === 'Switzerland', toCH = to === 'Switzerland';
+  // CORSIA is route-based: it only applies today if BOTH the departure and arrival states
+  // are on the current voluntary participation list (see corsiaParticipatingStates2026 above).
+  // A route with a non-participating endpoint (e.g. China) has no CORSIA obligation yet,
+  // even though it's international - that only changes in the 2027 mandatory phase.
+  const corsiaCovered = isCorsiaParticipating(from) && isCorsiaParticipating(to);
   if (fromCH || toCH) {
     regs.push({ name: 'Swiss ETS', desc: 'Route touches Switzerland. Swiss ETS is linked to the EU scheme and tracks EUA pricing directly - this applies in place of a separate EU ETS or CORSIA classification for the Swiss leg.' });
   } else if (fromEEA && toEEA) {
     regs.push({ name: 'EU ETS', desc: 'Intra-EEA flight. Full EU ETS obligation applies - one EUA surrendered per tonne of CO2, no free allocation from 2026.' });
   } else if ((fromEEA && !toEEA) || (!fromEEA && toEEA)) {
-    regs.push({ name: 'CORSIA', desc: 'EEA-to-third-country flight. Falls under CORSIA rather than full EU ETS scope, subject to the EEA extension decision under review as of July 2026.' });
+    regs.push(corsiaCovered
+      ? { name: 'CORSIA', desc: 'EEA-to-third-country flight. Falls under CORSIA rather than full EU ETS scope, since both states currently participate voluntarily in CORSIA.' }
+      : { name: 'No scheme (yet)', desc: 'EEA-to-third-country flight, but at least one state on this route has not opted into CORSIA\u2019s current voluntary phase, so no offsetting obligation applies today. This changes once CORSIA becomes mandatory from 2027.' });
   }
   if (fromUK && toUK) {
     regs.push({ name: 'UK ETS', desc: 'Domestic UK flight. Full UK ETS obligation applies, mirroring the EU ETS structure on a separate market.' });
   } else if ((fromUK && !toUK) || (!fromUK && toUK)) {
-    regs.push({ name: 'CORSIA', desc: 'UK-to-third-country flight. Falls under CORSIA rather than UK ETS scope.' });
+    regs.push(corsiaCovered
+      ? { name: 'CORSIA', desc: 'UK-to-third-country flight. Falls under CORSIA rather than UK ETS scope, since both states currently participate voluntarily in CORSIA.' }
+      : { name: 'No scheme (yet)', desc: 'UK-to-third-country flight, but at least one state on this route has not opted into CORSIA\u2019s current voluntary phase, so no offsetting obligation applies today. This changes once CORSIA becomes mandatory from 2027.' });
   }
   if (regs.length === 0) {
-    regs.push({ name: 'CORSIA', desc: 'Neither departure nor arrival falls under EU ETS, UK ETS or Swiss ETS scope. CORSIA applies globally to international flights above the baseline once in its mandatory phase from 2027.' });
+    regs.push(corsiaCovered
+      ? { name: 'CORSIA', desc: 'Neither departure nor arrival falls under EU ETS, UK ETS or Swiss ETS scope, but both states currently participate voluntarily in CORSIA, so it applies to this route today.' }
+      : { name: 'No scheme (yet)', desc: 'Neither departure nor arrival falls under EU ETS, UK ETS or Swiss ETS scope, and at least one state on this route has not opted into CORSIA\u2019s current voluntary phase. No carbon pricing scheme applies to this route today. CORSIA becomes mandatory for nearly all states from 2027, at which point this route would likely become covered.' });
   }
   const seen = new Set();
   return regs.filter(r => { if (seen.has(r.name)) return false; seen.add(r.name); return true; });
+}
+
+// Whether a route would be CORSIA-covered once the scheme's mandatory second phase begins
+// (2027-2035). From 2027, participation is required for all ICAO states above a 0.5% share
+// of 2018 international RTKs, with narrow exemptions for Least Developed Countries, Small
+// Island Developing States and Landlocked Developing Countries (who may still opt in
+// voluntarily). This tool can't evaluate the RTK threshold or exemption list precisely, so
+// it approximates 2027 as "CORSIA applies to any international route" - a reasonable
+// approximation for major commercial routes, but it will overstate coverage for small/exempt
+// states. Treat the 2027 comparison as directional, not a compliance-grade determination.
+function corsiaCovered2027(from, to) {
+  return from !== to;
 }
 
 function evaluateRouteProposed(from, to, gcdKm, currentRegs) {
@@ -824,7 +930,7 @@ function calculatePortfolio() {
     const gcdKm = haversineKm(from.lat, from.lon, to.lat, to.lon);
     if (gcdKm < 50) return;
     const regs = evaluateRoute(from.country, to.country);
-    const priceData = carbonPrices[regs[0].name] || carbonPrices['CORSIA'];
+    const priceData = carbonPrices[regs[0].name] || (regs[0].name === 'No scheme (yet)' ? { price: 0, currency: '', symbol: '€' } : carbonPrices['CORSIA']);
     const corr = distanceCorrectionFactor(gcdKm);
     const ltoKg = ltoFuelKgBySizeClass[ac.sizeClass] || 700;
 
