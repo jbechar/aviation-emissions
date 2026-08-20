@@ -11,6 +11,7 @@
     --line: #2c383f; --line-strong: #435159;
     --text: #eef0ee; --text-muted: #8ea3ac;
     --amber: #eeab4c; --teal: #57c2b1; --rust: #e0724a; --blueprint: #1a4a5c;
+    --regime-eu: #2f7db3; --regime-uk: #45e0c4; --regime-ch: #eeab4c; --regime-corsia: #b073e0; --regime-none: #333f47;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; min-height: 100%; }
@@ -38,11 +39,11 @@
     fill: #2c383f;
   }
   .country:hover { opacity: 0.75; }
-  .country.regime-eu-ets { fill: #1a4a5c; }
-  .country.regime-uk-ets { fill: #57c2b1; }
-  .country.regime-ch-ets { fill: #eeab4c; }
-  .country.regime-corsia-only { fill: #435159; }
-  .country.regime-none { fill: #262f35; }
+  .country.regime-eu-ets { fill: var(--regime-eu); }
+  .country.regime-uk-ets { fill: var(--regime-uk); }
+  .country.regime-ch-ets { fill: var(--regime-ch); }
+  .country.regime-corsia-only { fill: var(--regime-corsia); }
+  .country.regime-none { fill: var(--regime-none); }
   .loading-note { font-size: 13px; color: var(--text-muted); text-align: center; padding: 3rem 0; }
   .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 1rem; font-size: 12px; color: var(--text-muted); }
   .legend-item { display: flex; align-items: center; gap: 6px; }
@@ -267,11 +268,11 @@
   </svg>
   <div id="tooltip"></div>
   <div class="map-legend-float">
-    <div class="legend-item"><span class="swatch" style="background:#1a4a5c;"></span>EU ETS</div>
-    <div class="legend-item"><span class="swatch" style="background:#57c2b1;"></span>UK ETS</div>
-    <div class="legend-item"><span class="swatch" style="background:#eeab4c;"></span>Swiss ETS</div>
-    <div class="legend-item"><span class="swatch" style="background:#435159;"></span>CORSIA only</div>
-    <div class="legend-item"><span class="swatch" style="background:#262f35;"></span>No scheme mapped yet</div>
+    <div class="legend-item"><span class="swatch" style="background:var(--regime-eu);"></span>EU ETS</div>
+    <div class="legend-item"><span class="swatch" style="background:var(--regime-uk);"></span>UK ETS</div>
+    <div class="legend-item"><span class="swatch" style="background:var(--regime-ch);"></span>Swiss ETS</div>
+    <div class="legend-item"><span class="swatch" style="background:var(--regime-corsia);"></span>CORSIA only</div>
+    <div class="legend-item"><span class="swatch" style="background:var(--regime-none);"></span>No scheme mapped yet</div>
   </div>
   <button class="route-toggle-btn" id="routeToggleBtn">&#9776; Route checker</button>
   <div class="route-float-panel" id="routeFloatPanel">
