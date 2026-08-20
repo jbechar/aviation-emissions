@@ -11,7 +11,7 @@
     --line: #2c383f; --line-strong: #435159;
     --text: #eef0ee; --text-muted: #8ea3ac;
     --amber: #eeab4c; --teal: #57c2b1; --rust: #e0724a; --blueprint: #1a4a5c;
-    --regime-eu: #2f7db3; --regime-uk: #45e0c4; --regime-ch: #eeab4c; --regime-corsia: #b073e0; --regime-none: #333f47;
+    --regime-eu: #3d6d8c; --regime-uk: #4f9d8f; --regime-ch: #d9a44f; --regime-corsia: #44365a; --regime-none: #2a343b;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; min-height: 100%; }
@@ -21,6 +21,7 @@
     line-height: 1.6;
   }
   .wrap { max-width: 980px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  .wrap-gutter { padding: 0 1.5rem; }
   .eyebrow {
     font-family: 'IBM Plex Mono', monospace; font-size: 11px;
     letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber);
@@ -34,11 +35,12 @@
     margin: 2.2rem 0 10px;
   }
   .country {
-    stroke: var(--line-strong); stroke-width: 0.5; cursor: pointer;
+    stroke: var(--line-strong); stroke-width: 0.35; cursor: pointer;
     transition: opacity 0.15s;
     fill: #2c383f;
   }
-  .country:hover { opacity: 0.75; }
+  .country:hover { opacity: 0.8; }
+  .wrap-gutter { margin-top: 0.5rem; }
   .country.regime-eu-ets { fill: var(--regime-eu); }
   .country.regime-uk-ets { fill: var(--regime-uk); }
   .country.regime-ch-ets { fill: var(--regime-ch); }
@@ -133,11 +135,11 @@
     paint-order: stroke; stroke: var(--bg); stroke-width: 3px;
   }
   .map-stage {
-    position: relative; width: 100%; background: var(--panel);
-    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    position: relative; width: 100%; max-width: 980px; margin: 0 auto;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
     overflow: hidden;
   }
-  .map-stage #worldMap { width: 100%; height: auto; display: block; max-height: 78vh; }
+  .map-stage #worldMap { width: 100%; height: auto; display: block; max-height: 62vh; }
   .map-stage #tooltip {
     position: absolute; background: var(--panel-raised); border: 1px solid var(--line-strong);
     border-radius: 6px; padding: 10px 12px; font-size: 12.5px; pointer-events: none;
@@ -262,6 +264,7 @@
   <h1>Aviation Emissions Policy Map</h1>
   <p class="subtitle">Hover a country to see which emissions regimes apply. Open the route checker to search a departure and arrival airport (worldwide) and an aircraft type to see which regulations apply, the great-circle route on the map, and the estimated carbon cost. Coverage is currently limited to EU ETS, UK ETS, Swiss ETS and CORSIA - this is an early prototype, not a complete or authoritative regulatory reference.</p>
 </div>
+<div class="wrap-gutter">
 <div class="map-stage">
   <svg id="worldMap" viewBox="0 0 960 500" xmlns="http://www.w3.org/2000/svg">
     <text x="480" y="250" text-anchor="middle" fill="#8ea3ac" font-size="13" font-family="IBM Plex Mono, monospace" id="mapLoadingText">Loading map...</text>
@@ -321,6 +324,7 @@
     </div>
     <div class="route-result" id="routeResult"></div>
   </div>
+</div>
 </div>
 <div class="wrap" style="padding-top: 1.5rem;">
   <div class="eyebrow">New &middot; prototype</div>
@@ -706,7 +710,7 @@ const tooltip = document.getElementById('tooltip');
 const countriesLayer = svg.append('g').attr('class', 'countries-layer');
 const routeLayer = svg.append('g').attr('class', 'route-layer');
 
-fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json')
   .then(res => res.json())
   .then(topology => {
     const countries = topojson.feature(topology, topology.objects.countries);
@@ -721,6 +725,7 @@ fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
       })
       .attr('data-country', d => d.properties.name)
       .attr('d', path)
+      .attr('shape-rendering', 'geometricPrecision')
       .on('mousemove', (event, d) => {
         const name = d.properties.name;
         const regime = countryRegime[name] || 'none';
