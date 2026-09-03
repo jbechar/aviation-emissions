@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -70,6 +71,50 @@
     font-size: 12px; color: var(--text-muted); margin-top: 3rem; padding-top: 1rem;
     border-top: 1px solid var(--line);
   }
+
+  /* Audience lens */
+  .lens-bar {
+    margin-top: 1.5rem; padding: 14px 16px; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  }
+  .lens-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-muted); white-space: nowrap;
+  }
+  .lens-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .lens-btn {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: 0.02em;
+    background: transparent; border: 1px solid var(--line-strong); color: var(--text-muted);
+    padding: 7px 13px; border-radius: 5px; cursor: pointer; transition: all 0.15s ease;
+  }
+  .lens-btn:hover { color: var(--text); border-color: var(--teal); }
+  .lens-btn.active { color: var(--bg); background: var(--teal); border-color: var(--teal); font-weight: 500; }
+  .lens-hint {
+    font-size: 11px; color: var(--text-muted); width: 100%; margin-top: 2px; line-height: 1.5;
+  }
+  .lens-hint b { color: var(--text); font-weight: 500; }
+
+  .policy-card { display: flex; flex-direction: column; }
+  .policy-card .pdesc { order: 1; }
+  .policy-card .pfin { order: 2; }
+  .policy-card .plens { order: 0; }
+  body[data-view="capital"] .policy-card .pfin { order: 0; }
+  body[data-view="capital"] .policy-card .pdesc { order: 2; font-size: 12.5px; }
+  body[data-view="capital"] .policy-card .plens { order: 3; }
+
+  .plens {
+    display: none; font-size: 12.5px; line-height: 1.55; padding: 9px 12px; border-radius: 6px;
+    margin-bottom: 10px; border: 1px solid var(--line);
+  }
+  body[data-view="capital"] .plens, body[data-view="ops"] .plens { display: block; }
+  body[data-view="capital"] .plens {
+    background: rgba(238,171,76,0.08); border-color: rgba(238,171,76,0.35); color: var(--text);
+  }
+  body[data-view="capital"] .plens::before { content: "For capital & risk — "; color: var(--amber); font-weight: 500; }
+  body[data-view="ops"] .plens {
+    background: rgba(87,194,177,0.08); border-color: rgba(87,194,177,0.35); color: var(--text);
+  }
+  body[data-view="ops"] .plens::before { content: "For compliance & ops — "; color: var(--teal); font-weight: 500; }
 </style>
 </head>
 <body>
@@ -89,6 +134,16 @@
   <h1>Aviation Climate Policies &amp; Carbon Pricing</h1>
   <p class="subtitle">Plain-language explanations of the schemes that price or regulate aviation's emissions, what they actually cost, and how those costs work. Almost everything below prices or regulates CO&#8322; specifically; non-CO&#8322; effects (contrail cirrus, NOx) are a larger share of aviation's actual warming but are only newly and partially addressed, see the EU non-CO&#8322; MRV entry.</p>
   <p class="last-updated">Prices last checked 24 July 2026. Carbon markets move daily, treat these as a current ballpark, not a quote.</p>
+
+  <div class="lens-bar">
+    <span class="lens-label">Read this as:</span>
+    <div class="lens-btns">
+      <button class="lens-btn" data-lens="general" onclick="setLens('general')">General</button>
+      <button class="lens-btn" data-lens="capital" onclick="setLens('capital')">Capital &amp; Risk</button>
+      <button class="lens-btn" data-lens="ops" onclick="setLens('ops')">Compliance &amp; Ops</button>
+    </div>
+    <div class="lens-hint" id="lens-hint"></div>
+  </div>
 
   <h2>Current carbon prices</h2>
   <div class="price-grid">
@@ -118,54 +173,63 @@
 
   <div class="policy-card new-badge">
     <h3>EU ETS, aviation <span class="badge">Updated 17 Jul 2026</span></h3>
+    <p class="plens" data-capital="Full-cost, uncapped-per-tonne exposure since free allocation ended, the highest per-tonne carbon liability in aviation today, and the one most likely to expand geographically before 2029." data-ops="You're already surrendering allowances for every intra-EEA tonne; the near-term filing question is whether non-EU short-haul routes fall inside the proposed 5,000km extension."></p>
     <p class="pdesc">Covers intra-EEA flights. Free allowances fully phased out from 2026. A separate Commission proposal (17 July 2026) would extend scope to non-EU flights within 5,000km of the EU's geographic centre from 2029, pulling in routes to North Africa and Middle East hubs, applied as a "top up" to CORSIA rather than double-charging operators. Separately, the Commission's 17 July ETS review confirms the scheme is being strengthened specifically for aviation and maritime, alongside a slower Linear Reduction Factor (3.7% for 2031-35, 1.7% for 2036-40), continued free allocation beyond 2030 tied more closely to decarbonisation investment, and a new &euro;100bn Industrial Decarbonisation Bank funded by the ETS.</p>
     <p class="pfin"><span class="pfin-label">What it costs</span>Airlines must surrender one EU allowance (EUA) per tonne of CO&#8322; emitted. With free allocation gone from 2026, this is a full cost exposure, not a partial one. At today's ~&euro;80/tCO&#8322;, a narrowbody burning roughly 2.5 tonnes of fuel per hour (about 7.9 tonnes CO&#8322;) is on the order of &euro;630 of carbon cost per flight hour, before any other fuel cost. ICAO has publicly objected to the proposed non-EU scope extension as inconsistent with CORSIA, so that piece specifically remains a proposal, not settled law. <a href="/aviation-emissions/corsia-calculator/">Full mechanics comparison with CORSIA &rarr;</a></p>
   </div>
 
   <div class="policy-card">
     <h3>UK ETS</h3>
+    <p class="plens" data-capital="A distinct, currently-diverging price to model separately from EUA until the linkage question is resolved." data-ops="Track UKA and EUA separately until linkage resolves; don't assume convergence in filings yet."></p>
     <p class="pdesc">Mirrors EU ETS structure. Same small-emitter thresholds. A formal EU-UK linkage was targeted for the 13 July 2026 reset summit, which would make allowances interchangeable between the two schemes.</p>
     <p class="pfin"><span class="pfin-label">What it costs</span>Same per-tonne surrender mechanism as the EU scheme, but priced on a separate UK market that can diverge meaningfully from EUA prices, currently around &pound;72/tCO&#8322;, though this is genuinely in flux pending the linkage outcome. If linkage is confirmed, expect the EUA-UKA spread to narrow further; if talks stall, UKA could fall back toward the &pound;55-60 range.</p>
   </div>
 
   <div class="policy-card">
     <h3>Swiss ETS</h3>
+    <p class="plens" data-capital="No separate exposure to model, treat it as EU ETS pricing." data-ops="Reporting is shared with EU ETS; no separate allowance market to track."></p>
     <p class="pdesc">Linked to EU ETS since 2020, shared reporting regime.</p>
     <p class="pfin"><span class="pfin-label">What it costs</span>Because it's linked to the EU scheme, Swiss ETS allowances track EUA pricing directly, so the same ~&euro;80/tCO&#8322; applies. No separate price exposure to model beyond the EU figure.</p>
   </div>
 
   <div class="policy-card">
     <h3>CORSIA</h3>
+    <p class="plens" data-capital="Lower per-tonne cost than ETS today, but the 2027 mandatory phase is the real inflection point for global fleet exposure." data-ops="From January 2027 this becomes mandatory for nearly all states, confirm your operation's baseline and offset-unit sourcing now."></p>
     <p class="pdesc">ICAO's global offsetting scheme. First phase (2024-2026) voluntary. Second phase mandatory for nearly all states from January 2027. Baseline redefined as 85% of 2019 emissions.</p>
     <p class="pfin"><span class="pfin-label">What it costs</span>Operators buy eligible emissions units for growth above the baseline, rather than surrendering an allowance for every tonne like EU ETS. Offset unit prices have historically traded far below EUA prices, though eligible-unit supply and pricing remain less mature and more volatile. The financial exposure is smaller per tonne than EU ETS today, but it applies globally and becomes mandatory for most states from 2027, which is the real change to underwrite for. <a href="/aviation-emissions/corsia-calculator/">Full mechanics comparison and offsetting calculator &rarr;</a></p>
   </div>
 
   <div class="policy-card">
     <h3>EU non-CO&#8322; MRV, Directive 2023/958</h3>
+    <p class="plens" data-capital="Currently unpriced, but a 2028 pricing proposal would materially raise effective carbon cost per flight, worth underwriting as probable, not hypothetical." data-ops="Monitoring and third-party verification obligations are live now, regardless of whether pricing follows in 2028."></p>
     <p class="pdesc">Mandatory monitoring and reporting of non-CO&#8322; effects, contrails and NOx, from January 2025. Commission report due by end of 2027, may propose pricing non-CO&#8322; effects into EU ETS from 2028.</p>
     <p class="pfin"><span class="pfin-label">What it costs</span>Currently a monitoring and reporting cost only: data collection and third-party verification, not a priced obligation. The forward-looking exposure is the one that matters: if the Commission proposes pricing non-CO&#8322; effects into EU ETS from 2028, that would roughly double or more the effective carbon cost per flight, since non-CO&#8322; effects are estimated at a larger share of aviation's actual warming than CO&#8322; itself (see the radiative forcing breakdown on the homepage). Worth underwriting as a probable, not hypothetical, future cost line.</p>
   </div>
 
   <div class="policy-card">
     <h3>ReFuelEU Aviation</h3>
+    <p class="plens" data-capital="A structural fuel cost premium that scales mechanically over decades, relevant to any long-term fuel cost or operating margin model." data-ops="The blend ratio rises on a fixed schedule; lock in SAF supply agreements ahead of mandate step-ups, not after."></p>
     <p class="pdesc">SAF blending mandate, starts at 2% in 2025, rising progressively toward 70% by 2050.</p>
     <p class="pfin"><span class="pfin-label">What it costs</span>This is a direct fuel cost, not a permit cost. EASA put 2024 average SAF prices around &euro;2,085/tonne against roughly &euro;734/tonne for conventional jet fuel, close to a 3x premium, with e-fuel pathways costing far more. At a 2% blend, the premium is diluted across the whole fuel bill, but it rises mechanically as the mandate percentage climbs over the coming decades, and the premium itself isn't expected to close through any currently available production pathway.</p>
   </div>
 
   <div class="policy-card">
     <h3>UK SAF Mandate</h3>
+    <p class="plens" data-capital="Same premium mechanics as ReFuelEU, priced and tracked on a separate UK schedule." data-ops="Dual-mandate exposure if you fly both UK and EU routes, two compliance regimes rather than one."></p>
     <p class="pdesc">Separate blending mandate, 2% from 2025, own sub-caps and eligibility criteria, differs from the EU on crop-derived biofuel rules.</p>
     <p class="pfin"><span class="pfin-label">What it costs</span>Same cost mechanics as ReFuelEU, a fuel price premium rather than a permit cost, but tracked and reported separately from the EU mandate. For any operator flying both UK and EU routes, this means maintaining two parallel compliance and cost-tracking regimes rather than one.</p>
   </div>
 
   <div class="policy-card">
     <h3>Small emitter and de minimis thresholds</h3>
+    <p class="plens" data-capital="The clearest lever for reducing an operator's carbon-cost exposure to zero, worth checking before assuming ETS applies to a target fleet." data-ops="Confirm annual tonnage and flight counts against these thresholds before assuming ETS obligations apply."></p>
     <p class="pdesc">Commercial operators exempt below 10,000 t CO&#8322;/yr or 243 flights per period. Non-commercial, most business jets, exempt below 1,000 t CO&#8322;/yr, or simplified reporting below 25,000 t CO&#8322;/yr.</p>
     <p class="pfin"><span class="pfin-label">What it costs</span>Staying under these thresholds avoids EU/UK ETS obligations entirely, which is a material planning input for smaller operators and fleet structuring decisions. This is the single most consequential number in this list for a business jet operator specifically, since it can be the difference between full compliance cost exposure and none.</p>
   </div>
 
   <div class="policy-card">
     <h3>CSRD</h3>
+    <p class="plens" data-capital="An indirect cost-of-capital risk rather than a fuel cost, poor Scope 3 aviation data can affect financing terms." data-ops="A disclosure and audit workload for the flight department, separate from airline-facing ETS/CORSIA duties."></p>
     <p class="pdesc">Drives corporate flight-department Scope 3 reporting, relevant to companies operating or chartering jets, separate from airline-facing ETS/CORSIA.</p>
     <p class="pfin"><span class="pfin-label">What it costs</span>Not a fuel or carbon cost directly, it's a disclosure and assurance cost: data collection and third-party audit spend for the corporate flight department. The indirect financial exposure runs through ESG ratings and access to green financing, poor Scope 3 aviation data can affect a company's wider cost of capital, not just its compliance budget.</p>
   </div>
@@ -175,5 +239,47 @@
     Jaymal Bechar &middot; PhD Researcher, Aviation Emissions, University of Manchester
   </p>
 </div>
+
+<script>
+  var LENS_COPY = {
+    general: "",
+    capital: "Leads with cost and exposure, built for investors, lessors, and counterparties assessing aviation carbon risk.",
+    ops: "Leads with mechanics and obligations, built for compliance, flight ops, and fleet planning teams."
+  };
+
+  function fillLensNotes() {
+    document.querySelectorAll('.plens').forEach(function (el) {
+      var view = document.body.getAttribute('data-view');
+      if (view === 'capital' && el.dataset.capital) el.textContent = el.dataset.capital;
+      else if (view === 'ops' && el.dataset.ops) el.textContent = el.dataset.ops;
+    });
+  }
+
+  function setLens(view, skipHistory) {
+    document.body.setAttribute('data-view', view);
+    document.querySelectorAll('.lens-btn').forEach(function (btn) {
+      btn.classList.toggle('active', btn.dataset.lens === view);
+    });
+    document.getElementById('lens-hint').innerHTML = LENS_COPY[view] ? '<b>' + (view === 'capital' ? 'Capital & Risk' : 'Compliance & Ops') + ':</b> ' + LENS_COPY[view] : '';
+    fillLensNotes();
+    try { localStorage.setItem('policyLens', view); } catch (e) {}
+    if (!skipHistory) {
+      var url = new URL(window.location);
+      if (view === 'general') url.searchParams.delete('view');
+      else url.searchParams.set('view', view);
+      window.history.replaceState({}, '', url);
+    }
+  }
+
+  (function initLens() {
+    var params = new URLSearchParams(window.location.search);
+    var initial = params.get('view');
+    if (!initial) {
+      try { initial = localStorage.getItem('policyLens'); } catch (e) {}
+    }
+    if (initial !== 'capital' && initial !== 'ops') initial = 'general';
+    setLens(initial, true);
+  })();
+</script>
 </body>
 </html>
