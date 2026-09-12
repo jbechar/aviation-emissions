@@ -1,18 +1,23 @@
-
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Engagement Overview - Emissions & Compliance Literacy</title>
+<title>Engagement Brochure - Aviation Emissions & Exposure Modelling</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
- 
+
   :root[data-theme="dark"] {
     --bg: #0e1417; --panel: #161d22; --panel-raised: #1c242a;
     --line: #2c383f; --line-strong: #435159;
     --text: #eef0ee; --text-muted: #8ea3ac;
     --amber: #eeab4c; --teal: #57c2b1; --rust: #e0724a; --blueprint: #1a4a5c;
+  }
+  :root[data-theme="light"] {
+    --bg: #f6f5f0; --panel: #ffffff; --panel-raised: #ffffff;
+    --line: #dcdad0; --line-strong: #b7b4a6;
+    --text: #16191a; --text-muted: #5c6a6f;
+    --amber: #b8791f; --teal: #1f8a79; --rust: #b6431f; --blueprint: #cfe3e8;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; min-height: 100%; }
@@ -20,6 +25,7 @@
     background: var(--bg); color: var(--text);
     font-family: 'IBM Plex Sans', sans-serif;
     line-height: 1.6;
+    transition: background 0.2s, color 0.2s;
   }
   .wrap {
     max-width: 760px;
@@ -35,15 +41,16 @@
     margin-bottom: 10px;
   }
   h1 {
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 600;
-    margin: 0 0 8px;
+    margin: 0 0 10px;
+    letter-spacing: -0.01em;
   }
   .subtitle {
     font-size: 14.5px;
     color: var(--text-muted);
     margin: 0 0 2.5rem;
-    max-width: 560px;
+    max-width: 580px;
   }
   h2 {
     font-family: 'IBM Plex Mono', monospace;
@@ -51,54 +58,69 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--text-muted);
-    margin: 2.2rem 0 10px;
+    margin: 2.4rem 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
   }
-  p, li { font-size: 14.5px; color: var(--text); }
-  .card {
+  p { font-size: 14.5px; color: var(--text); margin: 0 0 1rem; }
+  .lede { color: var(--text-muted); }
+
+  ul.proof-list { list-style: none; margin: 0; padding: 0; }
+  ul.proof-list li {
+    position: relative;
+    padding: 0 0 12px 20px;
+    font-size: 14px;
+    color: var(--text);
+  }
+  ul.proof-list li::before {
+    content: "\2014";
+    position: absolute; left: 0; color: var(--teal);
+  }
+
+  .step-row { display: flex; gap: 18px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .step-row:last-child { border-bottom: none; }
+  .step-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 22px; font-weight: 600; color: var(--amber);
+    min-width: 30px; flex-shrink: 0;
+  }
+  .step-title { font-size: 14.5px; font-weight: 600; margin: 0 0 4px; }
+  .step-desc { font-size: 13.5px; color: var(--text-muted); margin: 0; }
+
+  .offer-card {
     background: var(--panel);
     border: 1px solid var(--line);
-    border-radius: 8px;
+    border-left: 3px solid var(--teal);
+    border-radius: 6px;
     padding: 1.1rem 1.3rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
   }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13.5px;
-    margin-top: 0.25rem;
-  }
-  td {
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--line);
-    vertical-align: top;
-  }
-  td.label {
-    color: var(--text-muted);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    width: 30%;
-    white-space: nowrap;
-  }
+  .offer-card h3 { font-size: 15px; margin: 0 0 6px; color: var(--text); }
+  .offer-card p { font-size: 13.5px; color: var(--text-muted); margin: 0; }
+
   .fee-card {
     background: linear-gradient(135deg, var(--panel-raised), var(--panel));
     border: 1px solid var(--line-strong);
-    border-radius: 8px;
-    padding: 1.2rem 1.4rem;
-    margin: 0.5rem 0 1.5rem;
+    border-left: 3px solid var(--amber);
+    border-radius: 6px;
+    padding: 1rem 1.3rem;
+    margin-bottom: 1rem;
   }
-  .fee-num {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 22px;
-    color: var(--amber);
-    font-weight: 600;
+  .fee-card .fee-title { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--amber); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 6px; }
+  .fee-card p { font-size: 13.5px; color: var(--text-muted); margin: 0; }
+
+  .links-row a {
+    display: block;
+    font-size: 13.5px;
+    color: var(--teal);
+    text-decoration: none;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
   }
-  .fee-cap {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-top: 4px;
-  }
+  .links-row a:last-child { border-bottom: none; }
+  .links-row a:hover { color: var(--amber); }
+  .links-row a::after { content: " \2192"; }
+
   .footer-note {
     font-size: 12px;
     color: var(--text-muted);
@@ -106,89 +128,160 @@
     padding-top: 1rem;
     border-top: 1px solid var(--line);
   }
-  a { color: var(--teal); }
+  .cta-bar {
+    margin-top: 2.5rem;
+    padding: 1.2rem 1.4rem;
+    background: var(--panel-raised);
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    text-align: center;
+  }
+  .cta-bar p { margin: 0 0 10px; font-size: 14px; }
+  .cta-bar a.btn {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    background: var(--amber);
+    color: #0e1417;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .btn-theme {
+    position: fixed; top: 16px; right: 16px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    background: none; border: 1px solid var(--line-strong); color: var(--text-muted);
+    padding: 7px 14px; border-radius: 3px; cursor: pointer;
+  }
 </style>
 </head>
 <body>
+<button class="btn-theme" id="themeBtn" onclick="toggleTheme()">LIGHT MODE</button>
+
 <div style="background:#05070a;color:#9aa5b1;font-family:'IBM Plex Mono',monospace;font-size:11px;padding:12px 24px;display:flex;gap:22px;flex-wrap:wrap;letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid #222;">
   <a href="/aviation-emissions/" style="color:#9aa5b1;text-decoration:none;">&larr; Home</a>
   <a href="/aviation-emissions/smbc-jsa-brief/" style="color:#9aa5b1;text-decoration:none;">SMBC / JSA Brief</a>
   <a href="/aviation-emissions/gtf-non-co2-supplement/" style="color:#9aa5b1;text-decoration:none;">Non-CO2 Supplement</a>
   <a href="/aviation-emissions/gtf-exposure-calculator/" style="color:#9aa5b1;text-decoration:none;">Exposure Calculator</a>
-  <a href="/aviation-emissions/engagement-overview/" style="color:#eeab4c;text-decoration:none;">Engagement Overview</a>
+  <a href="/aviation-emissions/engagement-overview/" style="color:#9aa5b1;text-decoration:none;">Engagement Overview</a>
   <a href="/aviation-emissions/policy-map/" style="color:#9aa5b1;text-decoration:none;">Policy Map</a>
   <a href="/aviation-emissions/climate-policies/" style="color:#9aa5b1;text-decoration:none;">Climate Policies</a>
   <a href="/aviation-emissions/corsia-calculator/" style="color:#9aa5b1;text-decoration:none;">ETS vs CORSIA</a>
+  <a href="/aviation-emissions/brochure/" style="color:#eeab4c;text-decoration:none;">Brochure</a>
 </div>
- 
+
 <div class="wrap">
-  <div class="eyebrow">Engagement Overview</div>
+  <div class="eyebrow">Engagement Brochure</div>
   <h1>Aviation Emissions &amp; Exposure Modelling</h1>
-  <p class="subtitle">Data, modelling and plain-language materials on EU ETS, UK ETS, Swiss ETS, CORSIA and CSRD, delivered two ways: as a bounded exposure report for a specific fleet or transaction, or as ongoing subcontract support under an advisory firm's own client relationship.</p>
+  <p class="subtitle lede">Data, modelling and plain-language materials on EU ETS, UK ETS, Swiss ETS, CORSIA and CSRD &mdash; delivered as a bounded exposure report for a specific fleet or transaction, or as ongoing subcontract support under your own client relationship.</p>
 
-  <h2>Two ways to work together</h2>
-  <table>
-    <tr><td class="label">Exposure report</td><td>A fixed-scope, fixed-fee report on what EU ETS, UK ETS, Swiss ETS and CORSIA actually cost a specific fleet or transaction, delivered as a document your team or committee can read directly. Best for a one-off decision: a lease, an acquisition, a counterparty assessment.</td></tr>
-    <tr><td class="label">Subcontract support</td><td>Ongoing or project-based modelling, materials, and tracking delivered under your firm's name or clearly attributed, sitting underneath your own client relationship and regulatory judgement. Best for firms who need this as a recurring input, not a one-off.</td></tr>
-  </table>
+  <h2>Where This Comes From</h2>
+  <p>Built on real technical grounding, not just summary. This isn&rsquo;t a generic policy overview &mdash; it&rsquo;s grounded in original, certified-data analysis of real aviation mechanical and credit events.</p>
+  <ul class="proof-list">
+    <li>The SMBC/JSA fleet exposure case: 44 aircraft, ~$173.5M annual re-placement value, built from certified engine data on the P&amp;W GTF grounding</li>
+    <li>An interactive, uncertainty-aware breakdown of radiative forcing by pollutant &mdash; not a single-point estimate, the actual confidence range</li>
+    <li>A route-level carbon cost calculator covering any two airports worldwide, any aircraft type, current EU ETS/UK ETS/Swiss ETS/CORSIA pricing</li>
+    <li>A live policy reference, most recently updated to reflect the European Commission&rsquo;s 17 July 2026 ETS review and the proposed non-EU scope extension</li>
+    <li>A CORSIA offsetting calculator whose core formula has been checked against ICAO&rsquo;s own published 2024 figures to 7 decimal places</li>
+  </ul>
 
-  <h2>What this is</h2>
-  <p>Analytical and modelling support for firms who need the underlying data and materials on aviation emissions policy, without diverting their own senior time to build it in-house: fleet and route-level exposure modelling, plain-language briefing materials, and sourced, dated tracking of what's changing across the five schemes. This isn't compliance strategy or legal advice, and it isn't delivered as independent expert judgement to your end client - it's the modelling, sourcing, and materials that sit underneath your own team's advice, for your review and sign-off before anything reaches a client.</p>
+  <h2>The Outcome</h2>
+  <p>A fixed-scope answer to the question that actually costs money: what does EU ETS, UK ETS, Swiss ETS and CORSIA exposure actually come to for this fleet, this route set, or this transaction &mdash; in a document your team or committee can act on directly, with the scope and fee agreed before any work starts. No open-ended hours on either side.</p>
 
-  <h2>Working basis</h2>
-  <p>Offered specifically as subcontracted support under advisory firms, lessors, airlines, or consultancies who hold the client relationship and regulatory judgement themselves. Work can be delivered under your firm's name or clearly attributed, whichever fits. Standard confidentiality terms apply; happy to sign an NDA before any client-specific detail is shared. All figures and regulatory detail clearly sourced and dated - the modelling and materials are yours to apply judgement to, not independent advice delivered to your end client.</p>
- 
-  <h2>Where this comes from</h2>
-  <div class="card">
-    <strong>Built on real technical grounding, not just summary</strong><br>
-    Includes original, certified-data analysis of aviation mechanical and credit events - most recently the GTF grounding crisis and the SMBC/JSA fleet exposure case (44 aircraft, ~$173.5M annual re-placement value) - alongside an interactive, uncertainty-aware breakdown of radiative forcing by pollutant, a route-level carbon cost calculator (any two airports worldwide, any aircraft type, current EU ETS/UK ETS/Swiss ETS/CORSIA pricing), a live reference on what each scheme actually requires and costs, most recently updated to reflect the European Commission's 17 July 2026 ETS review and the proposed non-EU scope extension, and a CORSIA offsetting calculator whose core formula has been checked against ICAO's own published 2024 figures to 7 decimal places.<br>
-    <a href="/aviation-emissions/smbc-jsa-brief/">View the exposure brief &rarr;</a> &middot; <a href="/aviation-emissions/">View the emissions explainer &rarr;</a> &middot; <a href="/aviation-emissions/policy-map/">View the policy map &rarr;</a> &middot; <a href="/aviation-emissions/climate-policies/">View the climate policies reference &rarr;</a> &middot; <a href="/aviation-emissions/corsia-calculator/">View the ETS vs CORSIA mechanics &amp; calculator &rarr;</a>
+  <h2>How It&rsquo;s Delivered &mdash; The Steps</h2>
+  <div class="step-row">
+    <div class="step-num">1</div>
+    <div>
+      <p class="step-title">Scope confirmed up front</p>
+      <p class="step-desc">Fleet size, route set, or transaction detail agreed before a fee is quoted &mdash; no ambiguity about what&rsquo;s covered.</p>
+    </div>
   </div>
- 
-  <h2>Typical scope per engagement</h2>
-  <table>
-    <tr><td class="label">Modelling &amp; data</td><td>Route or fleet-level exposure modelling, fuel burn, CO2 and carbon cost under EU ETS/UK ETS/Swiss ETS/CORSIA, built to your spec and handed off as working data for your team to apply judgement to</td></tr>
-    <tr><td class="label">Materials</td><td>Plain-language briefing materials, training decks, or reference content on ETS/CORSIA/CSRD mechanisms, thresholds, and cost drivers, drafted for your review and sign-off before anything reaches a client</td></tr>
-    <tr><td class="label">Tracking</td><td>Sourced, dated updates on regulatory changes across EU ETS, UK ETS, Swiss ETS, CORSIA and CSRD - what changed and when, raw and factual, for your team to interpret and apply</td></tr>
-    <tr><td class="label">Output</td><td>Working files, briefing documents, spreadsheets, or a hosted reference tool, depending on what fits your existing workflow</td></tr>
-    <tr><td class="label">Cadence</td><td>One-off project, or ongoing support on a retainer or regular cycle (monthly/quarterly), depending on scope agreed</td></tr>
-  </table>
- 
+  <div class="step-row">
+    <div class="step-num">2</div>
+    <div>
+      <p class="step-title">Modelling built to your spec</p>
+      <p class="step-desc">Route or fleet-level exposure modelling: fuel burn, CO<sub>2</sub>, and carbon cost under EU ETS/UK ETS/Swiss ETS/CORSIA, handed off as working data your team applies judgement to.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">3</div>
+    <div>
+      <p class="step-title">Materials drafted for your sign-off</p>
+      <p class="step-desc">Plain-language briefing materials, training decks, or reference content on mechanisms, thresholds, and cost drivers &mdash; reviewed and signed off by you before anything reaches a client.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">4</div>
+    <div>
+      <p class="step-title">Delivered in the format that fits</p>
+      <p class="step-desc">Working files, briefing documents, spreadsheets, or a hosted reference tool &mdash; whatever fits your existing workflow, one-off or on an ongoing cycle.</p>
+    </div>
+  </div>
+
+  <h2>The Core Offering</h2>
+  <p>Two ways to work together:</p>
+  <div class="offer-card">
+    <h3>Exposure Report</h3>
+    <p>A fixed-scope, fixed-fee report on what EU ETS, UK ETS, Swiss ETS and CORSIA actually cost a specific fleet or transaction. Best for a one-off decision: a lease, an acquisition, a counterparty assessment.</p>
+  </div>
+  <div class="offer-card">
+    <h3>Subcontract Support</h3>
+    <p>Ongoing or project-based modelling, materials, and tracking delivered under your firm&rsquo;s name or clearly attributed, sitting underneath your own client relationship and regulatory judgement. Best as a recurring input, not a one-off.</p>
+  </div>
+
+  <h2>Working Basis</h2>
+  <p>Offered specifically as subcontracted support under advisory firms, lessors, airlines, or consultancies who hold the client relationship and regulatory judgement themselves. Standard confidentiality terms apply; happy to sign an NDA before any client-specific detail is shared. All figures and regulatory detail are clearly sourced and dated &mdash; this is modelling and materials for your team&rsquo;s judgement, not independent advice delivered to your end client.</p>
+
   <h2>Fees</h2>
   <div class="fee-card">
-    <div class="fee-num" style="font-size:19px;">Exposure report: fixed fee, starting from a set baseline per fleet or transaction</div>
-    <div class="fee-cap">Scope confirmed up front (fleet size, route set, or transaction detail) before a fee is quoted, so there are no open-ended hours on either side.</div>
+    <div class="fee-title">Exposure Report</div>
+    <p>Fixed fee, starting from a set baseline per fleet or transaction, agreed after scope is confirmed.</p>
   </div>
   <div class="fee-card">
-    <div class="fee-num" style="font-size:19px;">Subcontract support: day rate or project fee, negotiated per engagement</div>
-    <div class="fee-cap">Scoped and agreed per engagement, based on depth and cadence required.</div>
+    <div class="fee-title">Subcontract Support</div>
+    <p>Day rate or project fee, negotiated per engagement based on depth and cadence required.</p>
   </div>
-  <p>Fee and scope agreed directly with the engaging firm or organisation, invoiced against agreed milestones.</p>
- 
+  <p style="font-size:12.5px;color:var(--text-muted);">Fee and scope agreed directly with the engaging firm or organisation, invoiced against agreed milestones.</p>
+
+  <h2>See The Work</h2>
+  <div class="links-row">
+    <a href="/aviation-emissions/smbc-jsa-brief/">View the exposure brief (SMBC/JSA)</a>
+    <a href="/aviation-emissions/">View the emissions explainer</a>
+    <a href="/aviation-emissions/policy-map/">View the policy map</a>
+    <a href="/aviation-emissions/corsia-calculator/">View the ETS vs CORSIA mechanics &amp; calculator</a>
+  </div>
+
+  <div class="cta-bar">
+    <p>Ready to scope an engagement?</p>
+    <a class="btn" href="mailto:becharjaymal@gmail.com?subject=Engagement%20enquiry">Get in touch &rarr;</a>
+  </div>
+
   <p class="footer-note">
     Jaymal Bechar &middot; PhD Researcher, Aviation Emissions, University of Manchester<br>
     becharjaymal@gmail.com &middot; jbechar.github.io/aviation-emissions
   </p>
 </div>
+
+<script>
+function toggleTheme() {
+  const root = document.documentElement;
+  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? 'LIGHT MODE' : 'DARK MODE';
+  localStorage.setItem('theme', next);
+}
+(function() {
+  const saved = localStorage.getItem('theme');
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('themeBtn').textContent = saved === 'dark' ? 'LIGHT MODE' : 'DARK MODE';
+  }
+})();
+</script>
+
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "99311d4c453e49c091ebf8972f3c2200"}'></script><!-- End Cloudflare Web Analytics -->
+
 </body>
 </html>
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
