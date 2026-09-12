@@ -11,7 +11,7 @@ RF central estimates: Lee et al. (2021), *Atmospheric Environment*.
 Contrail concentration finding: Teoh et al. (2020, 2024).
 
 Status
-Work in progress — parked for now, will be built out further.
+Continually being moderated and updated
 
 About
 Built by Jaymal Bechar, PhD Researcher in Aviation Emissions, University of Manchester.
