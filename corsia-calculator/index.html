@@ -1,107 +1,125 @@
-
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Understanding ETS & CORSIA - Aviation Emissions</title>
+<title>ETS and CORSIA - Aviation emissions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
   :root {
-    --bg: #0e1417; --panel: #161d22; --panel-raised: #1c242a;
-    --line: #2c383f; --line-strong: #435159;
-    --text: #eef0ee; --text-muted: #8ea3ac;
-    --amber: #eeab4c; --teal: #57c2b1; --rust: #e0724a;
+    --paper: #f1f3ee; --ink: #1b2733; --muted: #5a6672; --line: #cbd2cc;
+    --money: #a3246f; --link: #2b5c8a; --tint: #e6e9e3; --field: #ffffff;
+    --body: 'Atkinson Hyperlegible', 'Segoe UI', Arial, sans-serif;
+    --head: 'Barlow Semi Condensed', 'Arial Narrow', Arial, sans-serif;
+    --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #151b21; --ink: #e6eae6; --muted: #97a3ac; --line: #2e3a42;
+      --money: #e27db8; --link: #8db8e0; --tint: #1c242b; --field: #1c242b;
+    }
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', sans-serif; line-height: 1.6; }
-  a { color: var(--teal); }
-  .wrap { max-width: 800px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
-  .eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rust); margin-bottom: 0.5rem; }
-  h1 { font-size: 26px; margin: 0 0 0.75rem; }
-  h2 { font-size: 17px; margin: 2.25rem 0 1rem; border-bottom: 1px solid var(--line); padding-bottom: 0.5rem; }
-  .subtitle { color: var(--text-muted); font-size: 15px; max-width: 640px; }
-  .draft-flag {
-    background: rgba(224,114,74,0.1); border: 1px solid var(--rust); border-radius: 8px;
-    padding: 12px 16px; font-size: 13px; margin: 1.25rem 0; color: var(--text);
+  html, body { margin: 0; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6; }
+  a { color: var(--link); text-underline-offset: 3px; }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+
+  .site-nav { max-width: 760px; margin: 0 auto; padding: 1.25rem 1.5rem 0; display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 15px; }
+  .site-nav a { color: var(--muted); text-decoration: none; }
+  .site-nav a:hover { color: var(--ink); text-decoration: underline; }
+  .site-nav a[aria-current="page"] { color: var(--ink); font-weight: 700; }
+  .site-nav .home { color: var(--ink); font-weight: 700; flex-basis: 100%; margin-bottom: 2px; }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
+  h1, h2, h3 { font-family: var(--head); font-weight: 600; line-height: 1.15; }
+  h1 { font-size: clamp(34px, 6vw, 46px); margin: 0 0 1rem; max-width: 20ch; }
+  h2 { font-size: 26px; margin: 3.5rem 0 1rem; }
+  h3 { font-size: 23px; margin: 0 0 0.5rem; }
+  .subtitle { font-size: 19px; margin: 0; max-width: 62ch; }
+
+  /* Timeline */
+  .timeline-wrap { position: relative; height: 90px; margin: 1.5rem 0 0.5rem; }
+  .timeline-line { position: absolute; top: 33px; left: 0; right: 0; height: 2px; background: var(--ink); }
+  .tl-point, .tl-range { position: absolute; top: 34px; cursor: pointer; text-align: center; }
+  .tl-point { transform: translate(-50%, -8px); }
+  .tl-range { transform: translateY(-8px); }
+  .tl-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--paper); border: 2px solid var(--ink); margin: 0 auto; }
+  .tl-range-bar { height: 16px; border-radius: 8px; background: var(--paper); border: 2px solid var(--ink); }
+  .tl-year { font-family: var(--head); font-weight: 600; font-size: 17px; color: var(--muted); margin-top: 8px; white-space: nowrap; }
+  .tl-point:hover .tl-year, .tl-range:hover .tl-year { color: var(--ink); }
+  .tl-point.active .tl-dot, .tl-range.active .tl-range-bar { background: var(--link); border-color: var(--link); }
+  .tl-point.active .tl-year, .tl-range.active .tl-year { color: var(--link); }
+  .tl-detail { padding: 0 0 0 1rem; border-left: 3px solid var(--link); min-height: 5.5em; }
+  .tl-detail-title { font-weight: 700; margin-bottom: 4px; }
+
+  /* Comparison */
+  .compare-table, .sgf-table { width: 100%; border-collapse: collapse; margin: 0.5rem 0 1.5rem; font-size: 16px; }
+  .compare-table th, .compare-table td, .sgf-table th, .sgf-table td { padding: 12px 12px 12px 0; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+  .compare-table tr:first-child th, .sgf-table tr:first-child th { font-family: var(--head); font-weight: 600; font-size: 20px; border-bottom: 2px solid var(--ink); }
+  .compare-table td:first-child { font-weight: 700; width: 9rem; }
+  .compare-note { background: var(--tint); border-radius: 6px; padding: 1rem 1.25rem; margin: 0 0 1rem; }
+
+  .draft-flag { border: 2px dashed var(--muted); border-radius: 6px; padding: 1rem 1.25rem; margin: 2.5rem 0 0; }
+
+  /* Calculator */
+  .calc-panel { border-top: 2px solid var(--ink); padding-top: 1.25rem; }
+  .field { margin-bottom: 1.25rem; }
+  .field label { display: block; font-weight: 700; margin-bottom: 6px; }
+  .field input, .field select { width: 100%; max-width: 26rem; font: inherit; color: var(--ink); background: var(--field); border: 1.5px solid var(--ink); border-radius: 6px; padding: 9px 12px; }
+  .field .hint { font-size: 15px; color: var(--muted); margin-top: 6px; max-width: 60ch; }
+  .result-panel { margin-top: 1.75rem; }
+  .result-row { display: flex; justify-content: space-between; gap: 1rem; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .result-row .rlabel { color: var(--muted); }
+  .result-row .rval { font-variant-numeric: tabular-nums; text-align: right; }
+  .result-final { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; padding: 1rem 0 0.25rem; }
+  .rf-label { font-weight: 700; }
+  .rf-val { font-family: var(--head); font-weight: 600; font-size: 40px; line-height: 1; color: var(--money); font-variant-numeric: tabular-nums; }
+  .worked { font-size: 15px; color: var(--muted); margin: 0.5rem 0 0; }
+  .worked code, .formula-box { font-family: var(--mono); font-size: 0.92em; }
+  .worked code { color: var(--ink); }
+
+  /* Explainer sections */
+  .policy-card { padding: 1.75rem 0; border-top: 1px solid var(--line); }
+  h2 + .policy-card { border-top: 2px solid var(--ink); }
+  .policy-card p { margin: 0; }
+  .policy-card p + p { margin-top: 0.75rem !important; }
+  .formula-box { background: var(--tint); border-radius: 6px; padding: 12px 16px; margin: 0.75rem 0; overflow-x: auto; white-space: nowrap; }
+
+  .footer-note { font-size: 15px; color: var(--muted); margin-top: 3rem; padding-top: 1.5rem; border-top: 2px solid var(--ink); }
+
+  @media (max-width: 620px) {
+    body { font-size: 16px; }
+    .tl-year { font-size: 14px; }
+    .compare-table, .compare-table tbody, .compare-table tr, .compare-table td { display: block; width: 100%; }
+    .compare-table tr:first-child { display: none; }
+    .compare-table tr { padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .compare-table td { border: 0; padding: 2px 0; }
+    .compare-table td:nth-child(2)::before { content: "EU / UK ETS: "; font-weight: 700; }
+    .compare-table td:nth-child(3)::before { content: "CORSIA: "; font-weight: 700; }
+    .rf-val { font-size: 34px; }
   }
-  .draft-flag strong { color: var(--rust); }
-
-  .calc-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 1.5rem; }
-  .field { margin-bottom: 1rem; }
-  .field label { display: block; font-size: 12.5px; color: var(--text-muted); margin-bottom: 5px; }
-  .field input, .field select {
-    width: 100%; background: var(--panel-raised); color: var(--text); border: 1px solid var(--line-strong);
-    border-radius: 6px; padding: 9px 11px; font-size: 14px; font-family: inherit;
-  }
-  .field .hint { font-size: 11.5px; color: var(--text-muted); margin-top: 4px; }
-
-  .result-panel { margin-top: 1.5rem; border-top: 1px solid var(--line); padding-top: 1.25rem; }
-  .result-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
-  .result-row:last-child { border-bottom: none; }
-  .result-row .rlabel { color: var(--text-muted); }
-  .result-row .rval { font-family: 'IBM Plex Mono', monospace; }
-  .result-final { display: flex; justify-content: space-between; align-items: baseline; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line-strong); }
-  .result-final .rf-label { font-size: 13px; color: var(--text-muted); }
-  .result-final .rf-val { font-size: 26px; font-weight: 600; color: var(--amber); }
-
-  .formula-box {
-    background: var(--panel-raised); border: 1px solid var(--line); border-radius: 6px;
-    padding: 14px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; margin: 12px 0;
-    overflow-x: auto; white-space: nowrap;
-  }
-  .worked { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
-  .worked code { color: var(--teal); font-family: 'IBM Plex Mono', monospace; }
-
-  .policy-card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
-  .policy-card h3 { font-size: 14.5px; margin: 0 0 8px; }
-  .policy-card p { font-size: 13.5px; color: var(--text-muted); margin: 0; }
-  .sgf-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
-  .sgf-table th, .sgf-table td { padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--line); }
-  .sgf-table th { color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; text-transform: uppercase; }
-  .footer-note { font-size: 12px; color: var(--text-muted); margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line); }
-
-  .timeline-wrap { position: relative; height: 96px; margin: 2rem 0 1rem; }
-  .timeline-line { position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: var(--line-strong); transform: translateY(-50%); }
-  .tl-point { position: absolute; top: 50%; transform: translate(-50%, -50%); cursor: pointer; text-align: center; outline: none; }
-  .tl-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--panel); border: 2px solid var(--teal); margin: 0 auto; transition: background 0.15s, transform 0.15s; }
-  .tl-point:hover .tl-dot, .tl-point.active .tl-dot, .tl-point:focus .tl-dot { background: var(--teal); transform: scale(1.3); }
-  .tl-year { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-muted); margin-top: 8px; white-space: nowrap; transition: color 0.15s; }
-  .tl-point:hover .tl-year, .tl-point.active .tl-year, .tl-point:focus .tl-year { color: var(--teal); }
-  .tl-range { position: absolute; top: 50%; transform: translateY(-50%); cursor: pointer; text-align: center; outline: none; }
-  .tl-range-bar { height: 26px; border-radius: 6px; border: 2px solid var(--amber); background: rgba(238,171,76,0.12); transition: background 0.15s; }
-  .tl-range:hover .tl-range-bar, .tl-range.active .tl-range-bar, .tl-range:focus .tl-range-bar { background: rgba(238,171,76,0.3); }
-  .tl-range .tl-year { margin-top: 8px; }
-  .tl-range:hover .tl-year, .tl-range.active .tl-year, .tl-range:focus .tl-year { color: var(--amber); }
-  .tl-detail { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 1.1rem 1.4rem; margin-bottom: 2.5rem; min-height: 30px; }
-  .tl-detail-title { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--teal); margin-bottom: 6px; }
-  .tl-detail-body { font-size: 13.5px; color: var(--text); }
-
-  .compare-table { width: 100%; border-collapse: collapse; margin: 1rem 0 2.5rem; font-size: 13px; }
-  .compare-table th, .compare-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
-  .compare-table th { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
-  .compare-table td:first-child { color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; white-space: nowrap; }
-  .compare-table th:nth-child(2), .compare-table td:nth-child(2) { color: var(--teal); }
-  .compare-table th:nth-child(3), .compare-table td:nth-child(3) { color: var(--amber); }
-  .compare-note { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 1.1rem 1.4rem; font-size: 13.5px; margin-bottom: 2.5rem; }
-  .compare-note strong { color: var(--text); }
 </style>
 </head>
 <body>
-<div style="background:#05070a;color:#9aa5b1;font-family:'IBM Plex Mono',monospace;font-size:11px;padding:12px 24px;display:flex;gap:22px;flex-wrap:wrap;letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid #222;">
-  <a href="/aviation-emissions/" style="color:#9aa5b1;text-decoration:none;">&larr; Home</a>
-  <a href="/aviation-emissions/engagement-overview/" style="color:#9aa5b1;text-decoration:none;">Engagement Overview</a>
-  <a href="/aviation-emissions/policy-map/" style="color:#9aa5b1;text-decoration:none;">Policy Map</a>
-  <a href="/aviation-emissions/climate-policies/" style="color:#9aa5b1;text-decoration:none;">Climate Policies</a>
-  <a href="/aviation-emissions/corsia-calculator/" style="color:#e0724a;text-decoration:none;">ETS vs CORSIA</a>
-</div>
+<nav class="site-nav" aria-label="Site">
+  <a class="home" href="/aviation-emissions/">Aviation emissions</a>
+  <a href="/aviation-emissions/policy-map/">Policy map</a>
+  <a href="/aviation-emissions/climate-policies/">Climate rules</a>
+  <a href="/aviation-emissions/corsia-calculator/" aria-current="page">ETS vs CORSIA</a>
+  <a href="/aviation-emissions/gtf-exposure-calculator/">GTF calculator</a>
+  <a href="/aviation-emissions/gtf-non-co2-supplement/">GTF pollution</a>
+  <a href="/aviation-emissions/smbc-jsa-brief/">SMBC / JSA brief</a>
+  <a href="/aviation-emissions/engagement-overview/">How I can help</a>
+</nav>
 
 <div class="wrap">
-  <div class="eyebrow">Reference &amp; tool &middot; calculator section is draft</div>
-  <h1>Understanding ETS &amp; CORSIA</h1>
-  <p class="subtitle">How aviation ended up with more than one carbon scheme, how EU/UK ETS and CORSIA actually differ mechanically, and a working calculator for CORSIA's offsetting requirement.</p>
+  <h1>ETS and CORSIA, and why there are two</h1>
+  <p class="subtitle">Flying has more than one carbon rule, and they work in very different ways. This page shows how that happened, what the difference is, and lets you work out what an airline owes under CORSIA.</p>
 
-  <h2>How we got here</h2>
+  <h2>How it got like this</h2>
   <div class="timeline-wrap" id="timelineWrap">
     <div class="timeline-line"></div>
     <div class="tl-point" style="left:6%" data-id="2012" tabindex="0">
@@ -126,107 +144,107 @@
     </div>
   </div>
   <div class="tl-detail" id="tlDetail">
-    <div class="tl-detail-title" id="tlDetailTitle">Hover or tap a point above</div>
-    <div class="tl-detail-body" id="tlDetailBody">Five moments that explain why aviation ended up with more than one overlapping carbon scheme, not one system that evolved cleanly.</div>
+    <div class="tl-detail-title" id="tlDetailTitle">Tap a year above</div>
+    <div class="tl-detail-body" id="tlDetailBody">Five things happened that explain why flying ended up with two rules that overlap, instead of one.</div>
   </div>
 
-  <h2>ETS vs CORSIA, the technical differences</h2>
+  <h2>How ETS and CORSIA are different</h2>
   <table class="compare-table">
     <tr><th></th><th>EU / UK ETS</th><th>CORSIA</th></tr>
-    <tr><td>Mechanism</td><td>Cap-and-trade</td><td>Offsetting against a baseline</td></tr>
-    <tr><td>What's priced</td><td>Every tonne of CO2 on covered flights</td><td>Only tonnes above 85% of 2019 levels (the baseline)</td></tr>
-    <tr><td>What you buy</td><td>Allowances (EUA/UKA) - one instrument, capped supply, exchange-traded</td><td>Eligible emissions units from approved offset programs (Gold Standard, Verra, ACR) - heterogeneous quality and pricing</td></tr>
-    <tr><td>Price behaviour</td><td>Market-driven, moves daily; ~&euro;80/t (EU), ~&pound;72/t (UK)</td><td>No single traded price; unit prices vary by program, roughly $5-20/t</td></tr>
-    <tr><td>Route scope</td><td>Intra-jurisdiction (EU ETS: intra-EEA; UK ETS: domestic UK)</td><td>International flights between two CORSIA-participating states only</td></tr>
-    <tr><td>Trajectory</td><td>Cap tightens yearly (Linear Reduction Factor) - deliberately drives emissions down</td><td>No mandated reduction below baseline, just "no net growth" above 2019</td></tr>
-    <tr><td>Compliance math</td><td>Emissions &times; 1 allowance/tonne - full exposure, no formula</td><td>Emissions &times; Sector's Growth Factor - a fraction, not the whole</td></tr>
+    <tr><td>How it works</td><td>There is a limit on total carbon. Airlines buy and sell permits under it.</td><td>Airlines pay for carbon above a starting line by buying offset credits.</td></tr>
+    <tr><td>What you pay for</td><td>Every tonne of CO2 on the flights it covers</td><td>Only the tonnes above 85% of 2019 (the starting line)</td></tr>
+    <tr><td>What you buy</td><td>Allowances. There is only one kind, there are only so many, and they are sold on an exchange.</td><td>Offset credits from approved groups (Gold Standard, Verra, ACR). Some are better than others, and prices vary.</td></tr>
+    <tr><td>Price</td><td>Changes every day. About &euro;80 a tonne (EU) and &pound;72 a tonne (UK)</td><td>No one price. Roughly $5 to $20 a tonne, depending on the credit</td></tr>
+    <tr><td>Which flights</td><td>Flights inside the area (EU scheme: inside Europe. UK scheme: inside the UK)</td><td>Flights between two countries, but only if both countries are in CORSIA</td></tr>
+    <tr><td>Over time</td><td>The limit gets smaller every year, to push carbon down</td><td>No push to go below the starting line. The aim is just to not grow past 2019</td></tr>
+    <tr><td>The sum</td><td>Tonnes &times; 1. One allowance for every tonne. Simple.</td><td>Tonnes &times; the growth factor. You pay for a part, not all of it</td></tr>
   </table>
   <div class="compare-note">
-    <strong>The part that trips people up:</strong> "global scheme" doesn't mean "bigger cost." Because CORSIA only charges for growth above a 2019 baseline, and its eligible units price far below EUA, actual dollar exposure under CORSIA is currently much smaller per tonne than under EU ETS, even though EU ETS covers a far smaller slice of the network. The EU's proposed 5,000km scope extension is explicitly designed as a "top up" to CORSIA, not a stack, where both would apply to the same route, the EU ETS obligation is reduced to reflect what's already paid under CORSIA, so operators aren't double-charged for the same tonne.
+    <strong>The bit people get wrong:</strong> CORSIA covers the whole world, but that does not make it cost more. It only charges for growth above 2019, and its credits are much cheaper than EU allowances. So per tonne, CORSIA costs a lot less today, even though the EU scheme covers far fewer flights. The EU&apos;s new 5,000km plan is built to sit on top of CORSIA. If both rules cover the same flight, the airline takes off what it already paid for CORSIA. So nobody pays twice for the same tonne.
   </div>
 
   <div class="draft-flag" style="margin-top:0;">
-    <strong>Everything below this point is a draft, not yet published as a finished tool.</strong> The formula and 2024 figures are cross-checked against ICAO's own published Sector's Growth Factor calculation and match to 7 decimal places (see worked example). What hasn't been independently checked yet: edge cases around State-pair eligibility, the CORSIA-eligible-fuel deduction, and the 2030+ individual growth factor blend. Sitting here until a compliance professional has reviewed it.
+    <strong>Everything below here is a draft. It is not finished yet.</strong> I checked the formula and the 2024 numbers against ICAO&apos;s own sum, and they match to 7 decimal places (see the example). What I have not checked yet: some tricky cases about which country pairs count, the discount for clean fuel, and the new sum that starts in 2030. It stays a draft until a compliance expert has looked at it.
   </div>
 
-  <h2>Calculate an offsetting requirement</h2>
+  <h2>Work out what an airline owes</h2>
   <div class="calc-panel">
     <div class="field">
-      <label>Operator's CORSIA-covered CO2 emissions for the year (tonnes)</label>
+      <label>Airline&apos;s CO2 on CORSIA flights this year (tonnes)</label>
       <input type="number" id="operatorEmissions" value="50000" min="0">
-      <div class="hint">Emissions from flights between two CORSIA-participating States only, not an operator's total emissions.</div>
+      <div class="hint">Only count flights between two countries that are both in CORSIA. Not all of the airline&apos;s flights.</div>
     </div>
     <div class="field">
-      <label>Compliance year</label>
+      <label>Year</label>
       <select id="complianceYear"></select>
-      <div class="hint">2021-2029 uses the 100% sectoral approach. 2024 uses ICAO's actual published Sector's Growth Factor. Later years are provisional, ICAO publishes each year's SGF the following year.</div>
+      <div class="hint">2021 to 2029 all use the whole-industry growth factor. 2024 uses ICAO&apos;s real number. Later years are guesses for now, because ICAO only puts out each year&apos;s number the year after.</div>
     </div>
     <div class="result-panel">
-      <div class="result-row"><span class="rlabel">Sector's Growth Factor (SGF) for this year</span><span class="rval" id="outSgf">-</span></div>
-      <div class="result-row"><span class="rlabel">Formula</span><span class="rval">OR = Operator emissions &times; SGF</span></div>
+      <div class="result-row"><span class="rlabel">Growth factor for this year</span><span class="rval" id="outSgf">-</span></div>
+      <div class="result-row"><span class="rlabel">Formula</span><span class="rval">Owed = airline&apos;s tonnes &times; growth factor</span></div>
       <div class="result-final">
-        <span class="rf-label">Estimated offsetting requirement</span>
+        <span class="rf-label">Tonnes the airline has to offset</span>
         <span class="rf-val" id="outResult">-</span>
       </div>
       <p class="worked" id="outWorked"></p>
     </div>
   </div>
 
-  <h2>How the Sector's Growth Factor is actually calculated</h2>
+  <h2>How the growth factor is worked out</h2>
   <div class="policy-card">
     <h3>The formula</h3>
     <div class="formula-box">SGF_y&nbsp;=&nbsp;(SE_y&nbsp;&minus;&nbsp;SE_B,y)&nbsp;/&nbsp;SE_y</div>
-    <p>SE_y is total sectoral CO2 emissions, across all operators, for CORSIA-applicable State pairs in year y. SE_B,y is the baseline: 85% of total 2019 sectoral CO2 emissions for those same State pairs. ICAO calculates and publishes this centrally, once a year, for the whole sector, not per operator.</p>
+    <p>SE_y is all the CO2 from every airline, on flights between CORSIA countries, in that year. SE_B,y is the starting line: 85% of the CO2 on those same flights in 2019. ICAO works this out once a year for the whole industry. It is the same number for every airline.</p>
   </div>
   <div class="policy-card">
-    <h3>Worked example, ICAO's actual 2024 figures</h3>
-    <p>2019 baseline (85% of applicable 2019 emissions): <strong>305,522,071 t CO2</strong>. Actual 2024 emissions for the same State pairs: <strong>361,159,641 t CO2</strong>.</p>
-    <p style="margin-top:8px;">SGF_2024 = (361,159,641 &minus; 305,522,071) / 361,159,641 = <strong>0.15405257</strong>, exactly what ICAO published. An operator with 50,000 t of CORSIA-covered emissions in 2024 owes 50,000 &times; 0.15405257 &asymp; <strong>7,703 t CO2</strong> of offsetting.</p>
+    <h3>Example, using ICAO&apos;s real 2024 numbers</h3>
+    <p>Starting line (85% of 2019): <strong>305,522,071 t CO2</strong>. Real CO2 in 2024 on the same flights: <strong>361,159,641 t CO2</strong>.</p>
+    <p style="margin-top:8px;">SGF_2024 = (361,159,641 &minus; 305,522,071) / 361,159,641 = <strong>0.15405257</strong>. That is the same number ICAO put out. So an airline with 50,000 tonnes on CORSIA flights in 2024 has to offset 50,000 &times; 0.15405257, which is about <strong>7,703 t CO2</strong>.</p>
   </div>
   <div class="policy-card">
-    <h3>What changes from 2030</h3>
-    <p>From 2030, an Individual Growth Factor (an operator's own emissions growth, not just the sector's) enters the calculation alongside SGF, rising from 20% weight (2030-2032) to 70% weight (2033-2035). This calculator currently applies the pre-2030, 100%-sectoral formula only, the individual growth factor blend is not yet implemented, flagged above as unreviewed.</p>
+    <h3>What changes in 2030</h3>
+    <p>From 2030, each airline&apos;s own growth starts to count too, not just the whole industry&apos;s. It counts for 20% from 2030 to 2032, and 70% from 2033 to 2035. This calculator only does the sum from before 2030 for now. I have not built the new part yet.</p>
   </div>
   <div class="policy-card">
-    <h3>CORSIA-eligible fuel deduction, not yet built</h3>
-    <p>An operator's final offsetting requirement for a compliance period is reduced by any emissions reductions claimed from CORSIA-eligible fuels (SAF that meets CORSIA's own eligibility criteria, using a fuel conversion factor of 3.16 kg CO2/kg for Jet-A). That deduction isn't in this calculator yet, current output is the pre-deduction offsetting requirement, a ceiling, not the final number an operator would actually owe after claiming eligible fuel use.</p>
+    <h3>Discount for clean fuel (not built yet)</h3>
+    <p>If an airline uses clean fuel (SAF) that meets CORSIA&apos;s rules, it can take that off what it owes. For normal jet fuel, 1 kg burned makes 3.16 kg of CO2. This calculator does not take off the discount yet. So the answer is the most an airline could owe, not the final amount.</p>
   </div>
 
-  <h2>Published Sector's Growth Factors by year</h2>
+  <h2>Growth factor for each year</h2>
   <table class="sgf-table">
     <tr><th>Year</th><th>SGF</th><th>Status</th></tr>
-    <tr><td>2021-2023 (Pilot)</td><td>~0 (voluntary, baseline effectively reset post-COVID)</td><td>Published</td></tr>
-    <tr><td>2024</td><td>0.15405257</td><td>Published (ICAO, 2025)</td></tr>
-    <tr><td>2025 onward</td><td>Not yet published</td><td>ICAO publishes each year's SGF the following year</td></tr>
+    <tr><td>2021 to 2023 (trial)</td><td>About 0 (joining was a choice, and COVID reset the starting line)</td><td>Out</td></tr>
+    <tr><td>2024</td><td>0.15405257</td><td>Out (ICAO, 2025)</td></tr>
+    <tr><td>2025 and later</td><td>Not out yet</td><td>ICAO puts out each year&apos;s number the year after</td></tr>
   </table>
 
   <p class="footer-note">
-    Sourcing: ICAO Assembly Resolution A39-3 / A41-22, ICAO Environmental Technical Manual (Doc 9501) Volume IV, ICAO CORSIA webinar materials (Sessions 5-6), and ICAO's published 2024 Sector's Growth Factor announcement. This is a draft calculation tool, not compliance advice, for an operator's actual filing obligation, that sits with a qualified compliance advisor or the relevant State authority.<br><br>
-    Jaymal Bechar &middot; PhD Researcher, Aviation Emissions, University of Manchester
+    Where this comes from: ICAO Assembly Resolutions A39-3 and A41-22, the ICAO Environmental Technical Manual (Doc 9501) Volume IV, ICAO&apos;s CORSIA webinars (Sessions 5 and 6), and ICAO&apos;s 2024 growth factor announcement. This is a draft tool, not advice. For what an airline really has to file, ask a compliance advisor or the country&apos;s regulator.<br><br>
+    Jaymal Bechar, PhD researcher, aviation emissions, University of Manchester
   </p>
 </div>
 
 <script>
 const timelineData = {
   '2012': {
-    title: '2012: EU ETS starts covering aviation',
-    body: 'The EU included every flight landing in or departing the EEA in its carbon market, regardless of where the flight originated, effectively pricing emissions from routes anywhere in the world into Europe.'
+    title: '2012: The EU starts charging planes for carbon',
+    body: 'The EU put every flight that landed in or took off from Europe into its carbon market. It did not matter where the flight came from. So a flight from anywhere in the world to Europe had to pay.'
   },
   '2013': {
-    title: '2013: EU retreats to intra-EEA flights only',
-    body: 'Facing strong objections from the US, China and others, including threats of retaliation, the EU limited scope to flights within the European Economic Area, a deliberate, temporary "stop the clock" measure to give ICAO room to build a global alternative.'
+    title: '2013: The EU backs down',
+    body: 'The US, China and others were very angry. Some said they would hit back. So the EU only charged flights inside Europe. It called this "stop the clock". The idea was to give ICAO time to make a rule for the whole world.'
   },
   '2016': {
-    title: '2016: ICAO adopts CORSIA',
-    body: 'The International Civil Aviation Organization agreed a global scheme as that alternative. Structurally different from ETS: instead of a cap-and-trade market, airlines only offset emissions growth above a 2019 baseline, not every tonne emitted.'
+    title: '2016: ICAO agrees CORSIA',
+    body: 'ICAO, the UN group for flying, agreed that world rule. It works very differently from the EU one. There is no limit and no permits to trade. Airlines only pay for growth above 2019, not for every tonne.'
   },
   '2021': {
-    title: '2021: UK ETS launches',
-    body: 'Following Brexit, the UK created its own emissions trading scheme, structurally near-identical to the EU\u2019s cap-and-trade model, but a separate market with its own price, currently trading at a different level to EUA.'
+    title: '2021: The UK starts its own scheme',
+    body: 'After Brexit, the UK made its own carbon market. It works almost the same as the EU one. But it is a separate market, with its own price, and right now that price is different from the EU price.'
   },
   '2024-2027': {
-    title: '2024-2027: CORSIA phases in',
-    body: 'CORSIA ran as a voluntary Pilot Phase from 2021-2023, entered a voluntary First Phase in 2024, and becomes mandatory for nearly all participating states from 2027, the point at which most airlines can no longer opt out.'
+    title: '2024 to 2027: CORSIA becomes a must',
+    body: 'From 2021 to 2023, CORSIA was a trial, and joining was a choice. In 2024 the first real stage started, but it was still a choice. From 2027, almost every country has to take part, so most airlines can no longer say no.'
   }
 };
 
@@ -257,7 +275,7 @@ const yearSelect = document.getElementById('complianceYear');
 for (let y = 2021; y <= 2029; y++) {
   const opt = document.createElement('option');
   opt.value = y;
-  opt.textContent = y + (sgfByYear[y] !== undefined ? '' : ' (SGF not yet published, using 2024 as placeholder)');
+  opt.textContent = y + (sgfByYear[y] !== undefined ? '' : ' (not out yet, so using 2024 for now)');
   if (y === 2024) opt.selected = true;
   yearSelect.appendChild(opt);
 }
@@ -271,9 +289,9 @@ function calculate() {
   document.getElementById('outSgf').textContent = sgf.toFixed(8);
   document.getElementById('outResult').textContent = Math.round(offsetting).toLocaleString() + ' t CO2';
   document.getElementById('outWorked').innerHTML =
-    'Worked: <code>' + emissions.toLocaleString() + ' &times; ' + sgf.toFixed(8) + ' = ' +
-    Math.round(offsetting).toLocaleString() + ' t CO2</code> owed as offsetting for ' + year + '.' +
-    (sgfByYear[year] === undefined ? ' Note: ' + year + '\'s actual SGF isn\'t published yet, this uses 2024\'s figure as a rough placeholder only.' : '');
+    'The sum: <code>' + emissions.toLocaleString() + ' &times; ' + sgf.toFixed(8) + ' = ' +
+    Math.round(offsetting).toLocaleString() + ' t CO2</code> to offset for ' + year + '.' +
+    (sgfByYear[year] === undefined ? ' Note: the real number for ' + year + ' is not out yet, so this uses the 2024 number as a rough guess.' : '');
 }
 
 document.getElementById('operatorEmissions').addEventListener('input', calculate);
