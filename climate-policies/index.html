@@ -1,250 +1,223 @@
-
-
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Climate Policies - Aviation Emissions</title>
+<title>Climate rules - Aviation emissions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
-
-  :root[data-theme="dark"] {
-    --bg: #0e1417; --panel: #161d22; --panel-raised: #1c242a;
-    --line: #2c383f; --line-strong: #435159;
-    --text: #eef0ee; --text-muted: #8ea3ac;
-    --amber: #eeab4c; --teal: #57c2b1; --rust: #e0724a; --blueprint: #1a4a5c;
+  :root {
+    --paper: #f1f3ee; --ink: #1b2733; --muted: #5a6672; --line: #cbd2cc;
+    --money: #a3246f; --link: #2b5c8a; --tint: #e6e9e3;
+    --body: 'Atkinson Hyperlegible', 'Segoe UI', Arial, sans-serif;
+    --head: 'Barlow Semi Condensed', 'Arial Narrow', Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #151b21; --ink: #e6eae6; --muted: #97a3ac; --line: #2e3a42;
+      --money: #e27db8; --link: #8db8e0; --tint: #1c242b;
+    }
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; min-height: 100%; }
-  body {
-    background: var(--bg); color: var(--text);
-    font-family: 'IBM Plex Sans', sans-serif;
-    line-height: 1.6;
-  }
-  a { color: var(--teal); }
-  .wrap { max-width: 800px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
-  .eyebrow {
-    font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--amber); margin-bottom: 0.5rem;
-  }
-  h1 { font-size: 28px; margin: 0 0 0.75rem; }
-  h2 { font-size: 17px; margin: 2.5rem 0 1rem; border-bottom: 1px solid var(--line); padding-bottom: 0.5rem; }
-  .subtitle { color: var(--text-muted); font-size: 15px; max-width: 640px; }
-  .last-updated {
-    font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--text-muted);
-    margin-top: 0.75rem;
-  }
+  html, body { margin: 0; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6; }
+  a { color: var(--link); text-underline-offset: 3px; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
 
-  .price-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;
-    margin-top: 1.25rem;
-  }
-  .price-card {
-    background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px;
-  }
-  .price-card .pname { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; font-family: 'IBM Plex Mono', monospace; }
-  .price-card .pval { font-size: 24px; font-weight: 600; margin: 6px 0 4px; }
-  .price-card .pval .punit { font-size: 13px; color: var(--text-muted); font-weight: 400; }
-  .price-card .pnote { font-size: 11.5px; color: var(--text-muted); line-height: 1.5; }
-  .price-card.flag { border-color: var(--amber); }
-  .price-card.flag .pnote { color: var(--amber); }
+  .site-nav { max-width: 760px; margin: 0 auto; padding: 1.25rem 1.5rem 0; display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 15px; }
+  .site-nav a { color: var(--muted); text-decoration: none; }
+  .site-nav a:hover { color: var(--ink); text-decoration: underline; }
+  .site-nav a[aria-current="page"] { color: var(--ink); font-weight: 700; }
+  .site-nav .home { color: var(--ink); font-weight: 700; margin-right: auto; }
 
-  .policy-card {
-    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
-    padding: 1.25rem 1.5rem; margin-bottom: 1rem;
-  }
-  .policy-card h3 { font-size: 15px; margin: 0 0 8px; }
-  .policy-card .pdesc { font-size: 13.5px; color: var(--text-muted); margin: 0 0 10px; }
-  .policy-card .pfin { font-size: 13.5px; border-top: 1px solid var(--line); padding-top: 10px; margin: 0; }
-  .policy-card .pfin-label {
-    font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--teal);
-    text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;
-  }
-  .policy-card.new-badge { border-color: var(--teal); }
-  .badge {
-    display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 10px;
-    letter-spacing: 0.05em; text-transform: uppercase; color: var(--teal);
-    border: 1px solid var(--teal); border-radius: 4px; padding: 2px 6px; margin-left: 8px;
-  }
-  .footer-note {
-    font-size: 12px; color: var(--text-muted); margin-top: 3rem; padding-top: 1rem;
-    border-top: 1px solid var(--line);
-  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
+  h1, h2, h3 { font-family: var(--head); font-weight: 600; line-height: 1.15; }
+  h1 { font-size: clamp(34px, 6vw, 46px); margin: 0 0 1rem; max-width: 15ch; }
+  h2 { font-size: 26px; margin: 3.5rem 0 1rem; }
+  h3 { font-size: 23px; margin: 0 0 0.5rem; }
+  .subtitle { font-size: 19px; margin: 0 0 1rem; max-width: 62ch; }
+  .last-updated { color: var(--muted); font-size: 15px; margin: 0; }
+  .eyebrow { display: none; }
 
-  /* Audience lens */
-  .lens-bar {
-    margin-top: 1.5rem; padding: 14px 16px; background: var(--panel); border: 1px solid var(--line);
-    border-radius: 8px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
-  }
-  .lens-label {
-    font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em;
-    text-transform: uppercase; color: var(--text-muted); white-space: nowrap;
-  }
-  .lens-btns { display: flex; gap: 8px; flex-wrap: wrap; }
-  .lens-btn {
-    font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: 0.02em;
-    background: transparent; border: 1px solid var(--line-strong); color: var(--text-muted);
-    padding: 7px 13px; border-radius: 5px; cursor: pointer; transition: all 0.15s ease;
-  }
-  .lens-btn:hover { color: var(--text); border-color: var(--teal); }
-  .lens-btn.active { color: var(--bg); background: var(--teal); border-color: var(--teal); font-weight: 500; }
-  .lens-hint {
-    font-size: 11px; color: var(--text-muted); width: 100%; margin-top: 2px; line-height: 1.5;
-  }
-  .lens-hint b { color: var(--text); font-weight: 500; }
+  /* Who is reading */
+  .lens-bar { margin-top: 2.25rem; }
+  .lens-label { display: block; font-weight: 700; margin-bottom: 8px; }
+  .lens-btns { display: inline-flex; flex-wrap: wrap; border: 1.5px solid var(--ink); border-radius: 6px; overflow: hidden; }
+  .lens-btn { font: inherit; font-size: 16px; background: transparent; color: var(--ink); border: 0; border-right: 1.5px solid var(--ink); padding: 8px 16px; cursor: pointer; }
+  .lens-btn:last-child { border-right: 0; }
+  .lens-btn:hover { background: var(--tint); }
+  .lens-btn.active { background: var(--ink); color: var(--paper); }
+  .lens-hint { color: var(--muted); font-size: 15px; margin-top: 10px; min-height: 1em; }
+  .lens-hint b { color: var(--ink); }
 
-  .policy-card { display: flex; flex-direction: column; }
-  .policy-card .pdesc { order: 1; }
-  .policy-card .pfin { order: 2; }
-  .policy-card .plens { order: 0; }
-  body[data-view="capital"] .policy-card .pfin { order: 0; }
-  body[data-view="capital"] .policy-card .pdesc { order: 2; font-size: 12.5px; }
-  body[data-view="capital"] .policy-card .plens { order: 3; }
+  /* Price ledger */
+  .price-grid { margin: 0; border-top: 2px solid var(--ink); }
+  .price-card { display: grid; grid-template-columns: 9rem 8.5rem 1fr; gap: 0 1.25rem; align-items: baseline; padding: 1rem 0; border-bottom: 1px solid var(--line); }
+  .pname { font-weight: 700; }
+  .pval { font-family: var(--head); font-weight: 600; font-size: 34px; line-height: 1; color: var(--money); font-variant-numeric: tabular-nums; }
+  .punit { font-family: var(--body); font-weight: 400; font-size: 14px; color: var(--muted); margin-left: 3px; }
+  .pnote { font-size: 15px; color: var(--muted); }
+  .price-card.flag .pnote { color: var(--ink); }
+  .price-card.flag .pnote::before { content: "Watch this one. "; font-weight: 700; }
 
-  .plens {
-    display: none; font-size: 12.5px; line-height: 1.55; padding: 9px 12px; border-radius: 6px;
-    margin-bottom: 10px; border: 1px solid var(--line);
-  }
+  /* Rules */
+  .policy-card { display: flex; flex-direction: column; padding: 2rem 0; border-top: 1px solid var(--line); }
+  h2 + .policy-card { border-top: 2px solid var(--ink); }
+  .policy-card h3 { order: -1; }
+  .badge { display: block; font-family: var(--body); font-size: 14px; font-weight: 400; color: var(--muted); margin-top: 4px; }
+  .pdesc { order: 1; margin: 0 0 1rem; }
+  .pfin { order: 2; margin: 0; padding-left: 1rem; border-left: 3px solid var(--money); }
+  .pfin-label { font-weight: 700; color: var(--money); }
+  .pfin-label::after { content: ": "; }
+  .plens { order: 0; display: none; margin: 0 0 1rem; padding: 10px 14px; background: var(--tint); border-radius: 6px; }
   body[data-view="capital"] .plens, body[data-view="ops"] .plens { display: block; }
-  body[data-view="capital"] .plens {
-    background: rgba(238,171,76,0.08); border-color: rgba(238,171,76,0.35); color: var(--text);
+  body[data-view="capital"] .plens::before { content: "For finance and risk: "; font-weight: 700; }
+  body[data-view="ops"] .plens::before { content: "For compliance and operations: "; font-weight: 700; }
+  body[data-view="capital"] .pfin { order: 0; margin-bottom: 1rem; }
+  body[data-view="capital"] .plens { order: 1; }
+  body[data-view="capital"] .pdesc { order: 2; margin: 0; color: var(--muted); font-size: 16px; }
+
+  .footer-note { font-size: 15px; color: var(--muted); margin-top: 3rem; padding-top: 1.5rem; border-top: 2px solid var(--ink); }
+
+  @media (max-width: 620px) {
+    body { font-size: 16px; }
+    .price-card { grid-template-columns: 1fr auto; }
+    .pnote { grid-column: 1 / -1; margin-top: 6px; }
+    .lens-btns { display: flex; flex-direction: column; width: 100%; }
+    .lens-btn { border-right: 0; border-bottom: 1.5px solid var(--ink); text-align: left; }
+    .lens-btn:last-child { border-bottom: 0; }
   }
-  body[data-view="capital"] .plens::before { content: "For capital & risk — "; color: var(--amber); font-weight: 500; }
-  body[data-view="ops"] .plens {
-    background: rgba(87,194,177,0.08); border-color: rgba(87,194,177,0.35); color: var(--text);
-  }
-  body[data-view="ops"] .plens::before { content: "For compliance & ops — "; color: var(--teal); font-weight: 500; }
 </style>
 </head>
 <body>
-<div style="background:#05070a;color:#9aa5b1;font-family:'IBM Plex Mono',monospace;font-size:11px;padding:12px 24px;display:flex;gap:22px;flex-wrap:wrap;letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid #222;">
-  <a href="/aviation-emissions/" style="color:#9aa5b1;text-decoration:none;">&larr; Home</a>
-  <a href="/aviation-emissions/smbc-jsa-brief/" style="color:#9aa5b1;text-decoration:none;">SMBC / JSA Brief</a>
-  <a href="/aviation-emissions/gtf-non-co2-supplement/" style="color:#9aa5b1;text-decoration:none;">Non-CO2 Supplement</a>
-  <a href="/aviation-emissions/gtf-exposure-calculator/" style="color:#9aa5b1;text-decoration:none;">Exposure Calculator</a>
-  <a href="/aviation-emissions/engagement-overview/" style="color:#9aa5b1;text-decoration:none;">Engagement Overview</a>
-  <a href="/aviation-emissions/policy-map/" style="color:#9aa5b1;text-decoration:none;">Policy Map</a>
-  <a href="/aviation-emissions/climate-policies/" style="color:#eeab4c;text-decoration:none;">Climate Policies</a>
-  <a href="/aviation-emissions/corsia-calculator/" style="color:#9aa5b1;text-decoration:none;">ETS vs CORSIA</a>
-</div>
+<nav class="site-nav" aria-label="Site">
+  <a class="home" href="/aviation-emissions/">Aviation emissions</a>
+  <a href="/aviation-emissions/policy-map/">Policy map</a>
+  <a href="/aviation-emissions/climate-policies/" aria-current="page">Climate rules</a>
+  <a href="/aviation-emissions/corsia-calculator/">ETS vs CORSIA</a>
+  <a href="/aviation-emissions/gtf-exposure-calculator/">GTF calculator</a>
+  <a href="/aviation-emissions/gtf-non-co2-supplement/">GTF pollution</a>
+  <a href="/aviation-emissions/smbc-jsa-brief/">SMBC / JSA brief</a>
+  <a href="/aviation-emissions/engagement-overview/">How I can help</a>
+</nav>
 
 <div class="wrap">
-  <div class="eyebrow">Reference &middot; updated periodically, not real-time</div>
-  <h1>Aviation Climate Policies &amp; Carbon Pricing</h1>
-  <p class="subtitle">Plain-language explanations of the schemes that price or regulate aviation's emissions, what they actually cost, and how those costs work. Almost everything below prices or regulates CO&#8322; specifically; non-CO&#8322; effects (contrail cirrus, NOx) are a larger share of aviation's actual warming but are only newly and partially addressed, see the EU non-CO&#8322; MRV entry.</p>
-  <p class="last-updated">Prices last checked 24 July 2026. Carbon markets move daily, treat these as a current ballpark, not a quote.</p>
+  <h1>The rules that make flying pay for carbon</h1>
+  <p class="subtitle">Airlines now have to pay for some of the pollution they make. This page explains each rule, what it costs, and how the cost works. Almost all of them only charge for CO&#8322;. The clouds and NOx that planes make cause more warming, but the rules are only just starting to cover them. See the EU non-CO&#8322; entry below.</p>
+  <p class="last-updated">I update this page by hand. I last checked prices on 24 July 2026. Carbon prices change every day, so use these as a rough guide, not an exact price.</p>
 
   <div class="lens-bar">
-    <span class="lens-label">Read this as:</span>
+    <span class="lens-label">I work in:</span>
     <div class="lens-btns">
-      <button class="lens-btn" data-lens="general" onclick="setLens('general')">General</button>
-      <button class="lens-btn" data-lens="capital" onclick="setLens('capital')">Capital &amp; Risk</button>
-      <button class="lens-btn" data-lens="ops" onclick="setLens('ops')">Compliance &amp; Ops</button>
+      <button class="lens-btn" data-lens="general" onclick="setLens('general')">Anything else</button>
+      <button class="lens-btn" data-lens="capital" onclick="setLens('capital')">Finance and risk</button>
+      <button class="lens-btn" data-lens="ops" onclick="setLens('ops')">Compliance and operations</button>
     </div>
     <div class="lens-hint" id="lens-hint"></div>
   </div>
 
-  <h2>Current carbon prices</h2>
+  <h2>What carbon costs right now</h2>
   <div class="price-grid">
     <div class="price-card">
       <div class="pname">EU ETS (EUA)</div>
       <div class="pval">&euro;80<span class="punit">/tCO&#8322;</span></div>
-      <div class="pnote">Trading roughly &euro;79-82 through mid/late July 2026, up from ~&euro;72 a year earlier. Actively traded, moves daily.</div>
+      <div class="pnote">About &euro;79 to &euro;82 in July 2026. A year before, it was about &euro;72. The price changes every day.</div>
     </div>
     <div class="price-card flag">
       <div class="pname">UK ETS (UKA)</div>
       <div class="pval">&pound;72<span class="punit">/tCO&#8322;</span></div>
-      <div class="pnote">Volatile right now: pending the outcome of EU-UK ETS linkage talks (targeted for the 13 July 2026 summit), forecasts range from ~&pound;57 to ~&pound;75 depending on how that lands. Re-check before quoting.</div>
+      <div class="pnote">It is jumping around a lot. The UK and EU are talking about joining their two schemes (the plan was to agree it at the 13 July 2026 summit). Guesses go from about &pound;57 to &pound;75 depending on what happens. Check again before you use this number.</div>
     </div>
     <div class="price-card">
       <div class="pname">Swiss ETS</div>
       <div class="pval">&euro;80<span class="punit">/tCO&#8322;</span></div>
-      <div class="pnote">Linked to EU ETS since 2020, tracks the EUA price directly. No separate price to model.</div>
+      <div class="pnote">Joined to the EU scheme since 2020, so it has the same price. Nothing extra to work out.</div>
     </div>
     <div class="price-card">
       <div class="pname">CORSIA</div>
       <div class="pval">~$5<span class="punit">/tCO&#8322;</span></div>
-      <div class="pnote">Not a single traded allowance price, operators buy eligible offset units. Market is thinner and less liquid than EU/UK ETS, so this figure is a rough historical ballpark, not a live quote.</div>
+      <div class="pnote">There is no one price here. Airlines buy offset credits, and those are sold in lots of smaller markets. So this is a rough number from the past, not today&apos;s price.</div>
     </div>
   </div>
 
-  <h2>The schemes</h2>
+  <h2>The rules, one by one</h2>
 
   <div class="policy-card new-badge">
-    <h3>EU ETS, aviation <span class="badge">Updated 17 Jul 2026</span></h3>
-    <p class="plens" data-capital="Full-cost, uncapped-per-tonne exposure since free allocation ended, the highest per-tonne carbon liability in aviation today, and the one most likely to expand geographically before 2029." data-ops="You're already surrendering allowances for every intra-EEA tonne; the near-term filing question is whether non-EU short-haul routes fall inside the proposed 5,000km extension."></p>
-    <p class="pdesc">Covers intra-EEA flights. Free allowances fully phased out from 2026. A separate Commission proposal (17 July 2026) would extend scope to non-EU flights within 5,000km of the EU's geographic centre from 2029, pulling in routes to North Africa and Middle East hubs, applied as a "top up" to CORSIA rather than double-charging operators. Separately, the Commission's 17 July ETS review confirms the scheme is being strengthened specifically for aviation and maritime, alongside a slower Linear Reduction Factor (3.7% for 2031-35, 1.7% for 2036-40), continued free allocation beyond 2030 tied more closely to decarbonisation investment, and a new &euro;100bn Industrial Decarbonisation Bank funded by the ETS.</p>
-    <p class="pfin"><span class="pfin-label">What it costs</span>Airlines must surrender one EU allowance (EUA) per tonne of CO&#8322; emitted. With free allocation gone from 2026, this is a full cost exposure, not a partial one. At today's ~&euro;80/tCO&#8322;, a narrowbody burning roughly 2.5 tonnes of fuel per hour (about 7.9 tonnes CO&#8322;) is on the order of &euro;630 of carbon cost per flight hour, before any other fuel cost. ICAO has publicly objected to the proposed non-EU scope extension as inconsistent with CORSIA, so that piece specifically remains a proposal, not settled law. <a href="/aviation-emissions/corsia-calculator/">Full mechanics comparison with CORSIA &rarr;</a></p>
+    <h3>EU ETS (the EU carbon market) <span class="badge">Updated 17 July 2026</span></h3>
+    <p class="plens" data-capital="Airlines now pay for every tonne, with no free allowances. This is the most expensive carbon rule in aviation per tonne, and the one most likely to cover more routes by 2029." data-ops="You already hand in allowances for every tonne on flights inside Europe. The next question is whether your short flights to places outside the EU fall inside the new 5,000km plan."></p>
+    <p class="pdesc">This covers flights inside Europe (the EU plus Norway, Iceland and Liechtenstein). From 2026, airlines get no free allowances. On 17 July 2026, the EU also put forward a new plan. From 2029, it would cover flights to places outside the EU, as long as they are within 5,000km of the middle of the EU. That would pull in flights to North Africa and big Middle East airports. Airlines would only pay the difference on top of what they already pay for CORSIA, so they don&apos;t pay twice. On the same day, the EU said it would make the scheme stronger for planes and ships. It also said the cap will shrink more slowly after 2030 (3.7% a year for 2031 to 2035, and 1.7% a year for 2036 to 2040). Some free allowances will stay after 2030 for companies that invest in cutting carbon. And a new &euro;100bn fund, paid for by the scheme, will help industry cut carbon.</p>
+    <p class="pfin"><span class="pfin-label">What it costs</span>For every tonne of CO&#8322; a plane makes, the airline has to hand in one EU allowance. From 2026 they pay for all of it. At about &euro;80 a tonne, a normal single-aisle plane burns about 2.5 tonnes of fuel an hour. That makes about 7.9 tonnes of CO&#8322;. So it pays about &euro;630 for carbon every hour it flies, on top of the fuel. ICAO (the UN body for flying) has said it does not like the new 5,000km plan. So that part is still only a plan, not the law. <a href="/aviation-emissions/corsia-calculator/">See how this compares with CORSIA</a></p>
   </div>
 
   <div class="policy-card">
     <h3>UK ETS</h3>
-    <p class="plens" data-capital="A distinct, currently-diverging price to model separately from EUA until the linkage question is resolved." data-ops="Track UKA and EUA separately until linkage resolves; don't assume convergence in filings yet."></p>
-    <p class="pdesc">Mirrors EU ETS structure. Same small-emitter thresholds. A formal EU-UK linkage was targeted for the 13 July 2026 reset summit, which would make allowances interchangeable between the two schemes.</p>
-    <p class="pfin"><span class="pfin-label">What it costs</span>Same per-tonne surrender mechanism as the EU scheme, but priced on a separate UK market that can diverge meaningfully from EUA prices, currently around &pound;72/tCO&#8322;, though this is genuinely in flux pending the linkage outcome. If linkage is confirmed, expect the EUA-UKA spread to narrow further; if talks stall, UKA could fall back toward the &pound;55-60 range.</p>
+    <p class="plens" data-capital="A separate price that is drifting away from the EU one. Work it out on its own until the UK and EU decide whether to join up." data-ops="Track UK and EU allowances separately for now. Don't assume they will have the same price yet."></p>
+    <p class="pdesc">Works the same way as the EU scheme, with the same limits for small airlines. The UK and EU planned to join the two schemes at their 13 July 2026 summit. If they do, you could use a UK allowance in the EU and the other way round.</p>
+    <p class="pfin"><span class="pfin-label">What it costs</span>Same deal as the EU: one allowance for every tonne. But the UK has its own market, so the price can be quite different. Right now it is about &pound;72 a tonne, but that could change fast. If the two schemes join, the UK and EU prices should get closer. If the talks stall, the UK price could drop back to about &pound;55 to &pound;60.</p>
   </div>
 
   <div class="policy-card">
     <h3>Swiss ETS</h3>
-    <p class="plens" data-capital="No separate exposure to model, treat it as EU ETS pricing." data-ops="Reporting is shared with EU ETS; no separate allowance market to track."></p>
-    <p class="pdesc">Linked to EU ETS since 2020, shared reporting regime.</p>
-    <p class="pfin"><span class="pfin-label">What it costs</span>Because it's linked to the EU scheme, Swiss ETS allowances track EUA pricing directly, so the same ~&euro;80/tCO&#8322; applies. No separate price exposure to model beyond the EU figure.</p>
+    <p class="plens" data-capital="Nothing extra to work out. Use the EU price." data-ops="You report it along with the EU scheme. There is no separate market to watch."></p>
+    <p class="pdesc">Joined to the EU scheme since 2020. You report to both in the same way.</p>
+    <p class="pfin"><span class="pfin-label">What it costs</span>Because it is joined to the EU scheme, it has the same price: about &euro;80 a tonne. Nothing extra to work out.</p>
   </div>
 
   <div class="policy-card">
     <h3>CORSIA</h3>
-    <p class="plens" data-capital="Lower per-tonne cost than ETS today, but the 2027 mandatory phase is the real inflection point for global fleet exposure." data-ops="From January 2027 this becomes mandatory for nearly all states, confirm your operation's baseline and offset-unit sourcing now."></p>
-    <p class="pdesc">ICAO's global offsetting scheme. First phase (2024-2026) voluntary. Second phase mandatory for nearly all states from January 2027. Baseline redefined as 85% of 2019 emissions.</p>
-    <p class="pfin"><span class="pfin-label">What it costs</span>Operators buy eligible emissions units for growth above the baseline, rather than surrendering an allowance for every tonne like EU ETS. Offset unit prices have historically traded far below EUA prices, though eligible-unit supply and pricing remain less mature and more volatile. The financial exposure is smaller per tonne than EU ETS today, but it applies globally and becomes mandatory for most states from 2027, which is the real change to underwrite for. <a href="/aviation-emissions/corsia-calculator/">Full mechanics comparison and offsetting calculator &rarr;</a></p>
+    <p class="plens" data-capital="Cheaper per tonne than the EU scheme today. The big change is 2027, when it becomes a must for most countries." data-ops="From January 2027 almost every country has to join. Check your starting line and where you will buy credits now."></p>
+    <p class="pdesc">The UN&apos;s worldwide plan for flights between countries. From 2024 to 2026, countries could choose to join. From January 2027, almost all of them have to. The starting line is 85% of what airlines made in 2019.</p>
+    <p class="pfin"><span class="pfin-label">What it costs</span>Airlines only pay for the carbon above the starting line, not every tonne like in the EU. They pay by buying offset credits. These have always been much cheaper than EU allowances, but the market is newer and the price jumps around more. So it costs less per tonne than the EU scheme today. But it covers the whole world, and it becomes a must for most countries from 2027. That is the big change to plan for. <a href="/aviation-emissions/corsia-calculator/">See how it works, and try the calculator</a></p>
   </div>
 
   <div class="policy-card">
-    <h3>EU non-CO&#8322; MRV, Directive 2023/958</h3>
-    <p class="plens" data-capital="Currently unpriced, but a 2028 pricing proposal would materially raise effective carbon cost per flight, worth underwriting as probable, not hypothetical." data-ops="Monitoring and third-party verification obligations are live now, regardless of whether pricing follows in 2028."></p>
-    <p class="pdesc">Mandatory monitoring and reporting of non-CO&#8322; effects, contrails and NOx, from January 2025. Commission report due by end of 2027, may propose pricing non-CO&#8322; effects into EU ETS from 2028.</p>
-    <p class="pfin"><span class="pfin-label">What it costs</span>Currently a monitoring and reporting cost only: data collection and third-party verification, not a priced obligation. The forward-looking exposure is the one that matters: if the Commission proposes pricing non-CO&#8322; effects into EU ETS from 2028, that would roughly double or more the effective carbon cost per flight, since non-CO&#8322; effects are estimated at a larger share of aviation's actual warming than CO&#8322; itself (see the radiative forcing breakdown on the homepage). Worth underwriting as a probable, not hypothetical, future cost line.</p>
+    <h3>EU rule on tracking non-CO&#8322; (Directive 2023/958)</h3>
+    <p class="plens" data-capital="Free for now. But if the EU starts charging for it in 2028, the carbon cost of each flight would go up a lot. Plan for it as likely." data-ops="You already have to track this and get it checked by someone else, whether or not a price comes in 2028."></p>
+    <p class="pdesc">Since January 2025, airlines have to track and report their contrails and NOx, not just CO&#8322;. The EU will write a report by the end of 2027. It may then say airlines should pay for these too, starting in 2028.</p>
+    <p class="pfin"><span class="pfin-label">What it costs</span>Right now it only costs the work of collecting the data and paying someone to check it. The real cost could come later. If the EU starts charging for contrails and NOx from 2028, the carbon cost of each flight could double or more. That is because they cause more warming than CO&#8322; does (see the ring on the homepage). I would plan for this as likely, not just possible.</p>
   </div>
 
   <div class="policy-card">
-    <h3>ReFuelEU Aviation</h3>
-    <p class="plens" data-capital="A structural fuel cost premium that scales mechanically over decades, relevant to any long-term fuel cost or operating margin model." data-ops="The blend ratio rises on a fixed schedule; lock in SAF supply agreements ahead of mandate step-ups, not after."></p>
-    <p class="pdesc">SAF blending mandate, starts at 2% in 2025, rising progressively toward 70% by 2050.</p>
-    <p class="pfin"><span class="pfin-label">What it costs</span>This is a direct fuel cost, not a permit cost. EASA put 2024 average SAF prices around &euro;2,085/tonne against roughly &euro;734/tonne for conventional jet fuel, close to a 3x premium, with e-fuel pathways costing far more. At a 2% blend, the premium is diluted across the whole fuel bill, but it rises mechanically as the mandate percentage climbs over the coming decades, and the premium itself isn't expected to close through any currently available production pathway.</p>
+    <h3>ReFuelEU (the EU clean fuel rule)</h3>
+    <p class="plens" data-capital="Fuel gets more expensive, step by step, for decades. Put it in any long-term fuel cost or profit plan." data-ops="The amount of clean fuel you need goes up on set dates. Sign supply deals before each step up, not after."></p>
+    <p class="pdesc">Airlines have to mix cleaner fuel (called SAF) into their normal jet fuel. It starts at 2% in 2025 and goes up bit by bit, to 70% by 2050.</p>
+    <p class="pfin"><span class="pfin-label">What it costs</span>This one makes fuel cost more. You don&apos;t buy permits. In 2024, EASA said SAF cost about &euro;2,085 a tonne. Normal jet fuel cost about &euro;734. So SAF is nearly 3 times the price, and fuel made from electricity (e-fuel) costs even more. At 2%, the extra cost is small across the whole fuel bill. But it grows every time the rule steps up. And no way of making SAF today looks likely to bring the price down to normal fuel.</p>
   </div>
 
   <div class="policy-card">
-    <h3>UK SAF Mandate</h3>
-    <p class="plens" data-capital="Same premium mechanics as ReFuelEU, priced and tracked on a separate UK schedule." data-ops="Dual-mandate exposure if you fly both UK and EU routes, two compliance regimes rather than one."></p>
-    <p class="pdesc">Separate blending mandate, 2% from 2025, own sub-caps and eligibility criteria, differs from the EU on crop-derived biofuel rules.</p>
-    <p class="pfin"><span class="pfin-label">What it costs</span>Same cost mechanics as ReFuelEU, a fuel price premium rather than a permit cost, but tracked and reported separately from the EU mandate. For any operator flying both UK and EU routes, this means maintaining two parallel compliance and cost-tracking regimes rather than one.</p>
+    <h3>UK clean fuel rule (SAF mandate)</h3>
+    <p class="plens" data-capital="Works like the EU rule, but on its own UK timetable." data-ops="If you fly UK and EU routes, you have two rules to follow, not one."></p>
+    <p class="pdesc">The UK&apos;s own clean fuel rule. It also starts at 2% in 2025. It has its own limits and its own list of what counts. It is different from the EU on fuel made from crops.</p>
+    <p class="pfin"><span class="pfin-label">What it costs</span>Same as the EU rule: fuel costs more, and you don&apos;t buy permits. But you track and report it apart from the EU one. So if you fly UK and EU routes, you have to keep two sets of records, not one.</p>
   </div>
 
   <div class="policy-card">
-    <h3>Small emitter and de minimis thresholds</h3>
-    <p class="plens" data-capital="The clearest lever for reducing an operator's carbon-cost exposure to zero, worth checking before assuming ETS applies to a target fleet." data-ops="Confirm annual tonnage and flight counts against these thresholds before assuming ETS obligations apply."></p>
-    <p class="pdesc">Commercial operators exempt below 10,000 t CO&#8322;/yr or 243 flights per period. Non-commercial, most business jets, exempt below 1,000 t CO&#8322;/yr, or simplified reporting below 25,000 t CO&#8322;/yr.</p>
-    <p class="pfin"><span class="pfin-label">What it costs</span>Staying under these thresholds avoids EU/UK ETS obligations entirely, which is a material planning input for smaller operators and fleet structuring decisions. This is the single most consequential number in this list for a business jet operator specifically, since it can be the difference between full compliance cost exposure and none.</p>
+    <h3>When small airlines don&apos;t have to pay</h3>
+    <p class="plens" data-capital="The simplest way an airline can pay nothing. Check this before you assume a fleet has to pay." data-ops="Check your yearly tonnes and number of flights against these limits before you assume you have to pay."></p>
+    <p class="pdesc">Airlines that sell tickets don&apos;t have to pay if they make less than 10,000 tonnes of CO&#8322; a year, or fly fewer than 243 flights in a period. Private flyers (most business jets) don&apos;t have to pay below 1,000 tonnes a year. Below 25,000 tonnes, they get an easier way to report.</p>
+    <p class="pfin"><span class="pfin-label">What it costs</span>If you stay under these limits, you don&apos;t have to follow the EU or UK scheme at all. That matters a lot for small airlines and how they set up their fleets. For a business jet company, this is the most important number on the page. It can mean paying the full cost, or paying nothing.</p>
   </div>
 
   <div class="policy-card">
-    <h3>CSRD</h3>
-    <p class="plens" data-capital="An indirect cost-of-capital risk rather than a fuel cost, poor Scope 3 aviation data can affect financing terms." data-ops="A disclosure and audit workload for the flight department, separate from airline-facing ETS/CORSIA duties."></p>
-    <p class="pdesc">Drives corporate flight-department Scope 3 reporting, relevant to companies operating or chartering jets, separate from airline-facing ETS/CORSIA.</p>
-    <p class="pfin"><span class="pfin-label">What it costs</span>Not a fuel or carbon cost directly, it's a disclosure and assurance cost: data collection and third-party audit spend for the corporate flight department. The indirect financial exposure runs through ESG ratings and access to green financing, poor Scope 3 aviation data can affect a company's wider cost of capital, not just its compliance budget.</p>
+    <h3>CSRD (the EU company reporting rule)</h3>
+    <p class="plens" data-capital="Not a fuel cost. But bad flight data can make it harder or more expensive to borrow money." data-ops="More reporting and checking for the flight team, on top of the airline rules above."></p>
+    <p class="pdesc">Big companies have to report the carbon from their business flights. This matters if a company owns or hires jets. It is separate from the airline rules above.</p>
+    <p class="pfin"><span class="pfin-label">What it costs</span>You don&apos;t pay for carbon here. You pay to collect the data and have someone check it. The bigger risk is indirect. Bad flight data can hurt a company&apos;s green ratings, and that can make borrowing cost more.</p>
   </div>
 
   <p class="footer-note">
-    Sourcing: European Commission press releases (17 July 2026 ETS review; proposed non-EU scope extension), Ishka Airfinance analysis, ICE/Carbon Pulse/Energy Aspects market reporting for pricing, EASA for SAF price data. This is education and monitoring, not compliance strategy or legal advice, for filing decisions or penalty exposure specific to your operation, that sits with your qualified compliance advisor or legal counsel.<br><br>
-    Jaymal Bechar &middot; PhD Researcher, Aviation Emissions, University of Manchester
+    Where this comes from: European Commission press releases (the 17 July 2026 review and the 5,000km plan), Ishka Airfinance, ICE, Carbon Pulse and Energy Aspects for prices, and EASA for SAF prices. This page is here to help you understand the rules. It is not legal advice. For decisions about what to file, or fines, talk to your compliance advisor or lawyer.<br><br>
+    Jaymal Bechar, PhD researcher, aviation emissions, University of Manchester
   </p>
 </div>
 
 <script>
   var LENS_COPY = {
     general: "",
-    capital: "Leads with cost and exposure, built for investors, lessors, and counterparties assessing aviation carbon risk.",
-    ops: "Leads with mechanics and obligations, built for compliance, flight ops, and fleet planning teams."
+    capital: "Shows the cost first. For investors, lessors and lenders who need to know how much carbon could cost.",
+    ops: "Shows what you have to do first. For compliance, flight operations and fleet planning teams."
   };
 
   function fillLensNotes() {
@@ -260,7 +233,7 @@
     document.querySelectorAll('.lens-btn').forEach(function (btn) {
       btn.classList.toggle('active', btn.dataset.lens === view);
     });
-    document.getElementById('lens-hint').innerHTML = LENS_COPY[view] ? '<b>' + (view === 'capital' ? 'Capital & Risk' : 'Compliance & Ops') + ':</b> ' + LENS_COPY[view] : '';
+    document.getElementById('lens-hint').innerHTML = LENS_COPY[view] ? '<b>' + (view === 'capital' ? 'Finance and risk' : 'Compliance and operations') + ':</b> ' + LENS_COPY[view] : '';
     fillLensNotes();
     try { localStorage.setItem('policyLens', view); } catch (e) {}
     if (!skipHistory) {
