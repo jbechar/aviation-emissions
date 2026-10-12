@@ -3,106 +3,120 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GTF calculator - Aviation emissions</title>
+<title>GTF calculator | Aviation Emissions Explained</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --paper: #f1f3ee; --ink: #1b2733; --muted: #5a6672; --line: #cbd2cc;
-    --money: #a3246f; --link: #2b5c8a; --tint: #e6e9e3; --field: #ffffff;
-    --bar-a: #1b2733; --bar-b: #7f98ad;
-    --body: 'Atkinson Hyperlegible', 'Segoe UI', Arial, sans-serif;
-    --head: 'Barlow Semi Condensed', 'Arial Narrow', Arial, sans-serif;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --paper: #151b21; --ink: #e6eae6; --muted: #97a3ac; --line: #2e3a42;
-      --money: #e27db8; --link: #8db8e0; --tint: #1c242b; --field: #1c242b;
-      --bar-a: #e6eae6; --bar-b: #6f8aa0;
-    }
+    --paper: #F5F6F3; --ink: #0E1A24; --muted: #51606E; --line: #D8DDE2;
+    --navy: #0E2A40; --accent: #1F3A5F; --accent-soft: #EAF0F6;
+    --money: #1F3A5F; --link: #1F3A5F; --tint: #EEF1F3; --field: #FFFFFF;
+    --bar-a: #1F3A5F; --bar-b: #7FA6C9;
+    --body: 'Public Sans', system-ui, sans-serif;
+    --head: 'Source Serif 4', Georgia, serif;
+    --mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
-  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; }
   a { color: var(--link); text-underline-offset: 3px; }
   a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
 
-  .site-nav { max-width: 760px; margin: 0 auto; padding: 1.25rem 1.5rem 0; display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 15px; }
-  .site-nav a { color: var(--muted); text-decoration: none; }
-  .site-nav a:hover { color: var(--ink); text-decoration: underline; }
-  .site-nav a[aria-current="page"] { color: var(--ink); font-weight: 700; }
-  .site-nav .home { color: var(--ink); font-weight: 700; flex-basis: 100%; margin-bottom: 2px; }
+  /* Site header (matches homepage) */
+  .site-header { background: var(--navy); border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .site-header-in { max-width: 1200px; margin: 0 auto; padding: 18px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; }
+  .wordmark { display: flex; align-items: baseline; gap: 10px; text-decoration: none; color: #FFFFFF; font-family: var(--mono); font-size: 17px; }
+  .wordmark b { font-weight: 600; letter-spacing: 0.02em; }
+  .wordmark span { color: #8FA3B6; }
+  .site-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; font-size: 15px; }
+  .site-nav a { color: #C9D2DB; text-decoration: none; }
+  .site-nav a:hover { color: #FFFFFF; text-decoration: underline; text-underline-offset: 4px; }
+  .site-nav a[aria-current="page"] { color: #FFFFFF; }
+  .site-nav .cta { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; background: #FFFFFF; color: var(--ink); border-radius: 4px; font-weight: 600; }
+  .site-nav .cta:hover { color: var(--ink); text-decoration: none; background: #E9EDF0; }
 
-  .wrap { max-width: 760px; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
-  h1, h3, .slabel, .stitle { font-family: var(--head); font-weight: 600; line-height: 1.15; }
-  h1 { font-size: clamp(34px, 6vw, 46px); margin: 0 0 1rem; max-width: 20ch; }
-  .sub { font-size: 19px; margin: 0; max-width: 62ch; }
+  .wrap { max-width: 800px; margin: 0 auto; padding: 3.5rem 24px 2rem; }
+  h1, h3, .slabel { font-family: var(--head); font-weight: 500; line-height: 1.15; }
+  h1 { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.015em; margin: 0 0 1rem; max-width: 20ch; }
+  .sub { font-size: 17px; margin: 0; max-width: 62ch; color: #3A4A5A; }
   p { margin: 0 0 1rem; }
 
   section { margin-top: 3.5rem; }
-  .slabel { font-size: 26px; padding-bottom: 0.6rem; border-bottom: 2px solid var(--ink); margin-bottom: 1rem; }
-  .stitle { font-family: var(--body); font-weight: 400; font-size: 17px; line-height: 1.6; margin-bottom: 1.25rem; }
+  .slabel { font-size: clamp(1.6rem, 2.6vw, 2.1rem); letter-spacing: -0.01em; padding-bottom: 0.6rem; border-bottom: 1px solid var(--ink); margin-bottom: 1rem; }
+  .stitle { font-family: var(--body); font-weight: 400; font-size: 16px; line-height: 1.6; margin-bottom: 1.25rem; color: #3A4A5A; }
 
-  .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.75rem; margin-bottom: 1.5rem; }
-  .method-card h3 { font-size: 22px; margin: 0 0 0.5rem; }
-  .method-card p { margin: 0; }
-  .method-note { background: var(--tint); border-radius: 6px; padding: 1rem 1.25rem; }
+  .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .method-card { background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; padding: 1.25rem; }
+  .method-card h3 { font-size: 20px; font-weight: 600; margin: 0 0 0.5rem; }
+  .method-card p { margin: 0; color: #3A4A5A; font-size: 15px; }
+  .method-note { background: var(--accent-soft); border-left: 4px solid var(--accent); border-radius: 4px; padding: 1rem 1.25rem; }
   .method-note p:last-child { margin-bottom: 0; }
 
-  .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 1.5rem; }
+  .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 1.5rem; background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; padding: 1.5rem; }
   .field { display: flex; flex-direction: column; gap: 6px; }
-  .field label { font-weight: 700; }
-  .field input { font: inherit; color: var(--ink); background: var(--field); border: 1.5px solid var(--ink); border-radius: 6px; padding: 9px 12px; }
-  .scenario-toggle { display: inline-flex; flex-wrap: wrap; border: 1.5px solid var(--ink); border-radius: 6px; overflow: hidden; align-self: flex-start; }
-  .scenario-btn { font: inherit; font-size: 16px; background: transparent; color: var(--ink); border: 0; border-right: 1.5px solid var(--ink); padding: 8px 16px; cursor: pointer; }
+  .field label { font-weight: 600; font-size: 15px; }
+  .field input { font: inherit; color: var(--ink); background: var(--field); border: 1px solid #C3CBD2; border-radius: 4px; padding: 9px 12px; min-height: 44px; transition: border-color .15s; }
+  .field input:hover { border-color: var(--muted); }
+  .field input:focus { border-color: var(--ink); }
+  .scenario-toggle { display: inline-flex; flex-wrap: wrap; border: 1px solid #C3CBD2; border-radius: 4px; overflow: hidden; align-self: flex-start; }
+  .scenario-btn { font: inherit; font-size: 15px; background: #FFFFFF; color: var(--ink); border: 0; border-right: 1px solid #C3CBD2; padding: 10px 18px; min-height: 44px; cursor: pointer; transition: background .15s, color .15s; }
   .scenario-btn:last-child { border-right: 0; }
   .scenario-btn:hover { background: var(--tint); }
-  .scenario-btn.active { background: var(--ink); color: var(--paper); }
+  .scenario-btn.active { background: var(--accent); color: #FFFFFF; }
 
-  .out-block { margin-bottom: 2rem; }
-  .out-label { font-weight: 700; margin-bottom: 0.5rem; }
-  .range-row, .co2e-row { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .range-seg, .co2e-card { padding: 0.9rem 1rem 0.9rem 0; }
-  .range-seg + .range-seg, .co2e-card + .co2e-card { padding-left: 1rem; border-left: 1px solid var(--line); }
+  .out-block { margin-bottom: 1.5rem; }
+  .out-label { font-weight: 600; font-size: 15px; margin-bottom: 0.5rem; }
+  .range-row, .co2e-row { display: grid; grid-template-columns: repeat(3, 1fr); background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+  .range-seg, .co2e-card { padding: 1rem 1.1rem; }
+  .range-seg + .range-seg, .co2e-card + .co2e-card { border-left: 1px solid var(--line); }
+  .seg-mid { background: var(--accent-soft); box-shadow: inset 0 3px 0 var(--accent); }
   .val { font-family: var(--head); font-weight: 600; font-size: 30px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .seg-mid .val { color: var(--money); }
   .seg-low .val, .seg-high .val { color: var(--muted); font-size: 24px; }
-  .lbl { font-size: 15px; color: var(--muted); margin-top: 2px; }
-  .pending-tag { font-size: 15px; color: var(--muted); padding-left: 0.9rem; border-left: 3px solid var(--muted); margin: 0; }
+  .lbl { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .pending-tag { font-size: 14px; color: var(--muted); padding-left: 0.9rem; border-left: 3px solid var(--line); margin: 0; }
 
-  .chart-note { font-size: 15px; color: var(--muted); }
-  #chartWrap { position: relative; width: 100%; height: 320px; }
+  .chart-note { font-size: 14px; color: var(--muted); }
+  #chartWrap { position: relative; width: 100%; height: 320px; background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; padding: 12px 16px; }
 
-  #footnote { font-size: 15px; }
-  .fn-title { display: block; font-weight: 700; margin-bottom: 0.5rem; }
+  #footnote { font-size: 14px; color: #3A4A5A; }
+  .fn-title { display: block; font-weight: 600; color: var(--ink); margin-bottom: 0.5rem; }
   #footnote ul { margin: 0; padding-left: 1.2rem; }
   #footnote li { margin-bottom: 0.4rem; }
 
-  .page-footer { font-size: 15px; color: var(--muted); margin-top: 3rem; padding-top: 1.5rem; border-top: 2px solid var(--ink); }
+  .page-footer { font-size: 14px; color: var(--muted); margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+
+  .site-footer { margin-top: 3rem; background: var(--navy); color: #C9D2DB; }
+  .site-footer-in { max-width: 1200px; margin: 0 auto; padding: 40px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px 32px; font-size: 14px; }
+  .site-footer a { color: #FFFFFF; }
 
   @media (max-width: 620px) {
-    body { font-size: 16px; }
     .method-grid, .input-grid { grid-template-columns: 1fr; }
+    .input-grid { padding: 1.1rem; }
     .scenario-toggle { flex-direction: column; width: 100%; }
-    .scenario-btn { border-right: 0; border-bottom: 1.5px solid var(--ink); text-align: left; }
+    .scenario-btn { border-right: 0; border-bottom: 1px solid #C3CBD2; text-align: left; }
     .scenario-btn:last-child { border-bottom: 0; }
     .range-row, .co2e-row { grid-template-columns: 1fr; }
-    .range-seg + .range-seg, .co2e-card + .co2e-card { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
+    .range-seg + .range-seg, .co2e-card + .co2e-card { border-left: 0; border-top: 1px solid var(--line); }
     #chartWrap { height: 360px; }
   }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
-<nav class="site-nav" aria-label="Site">
-  <a class="home" href="/aviation-emissions/">Aviation emissions</a>
-  <a href="/aviation-emissions/policy-map/">Policy map</a>
-  <a href="/aviation-emissions/climate-policies/">Climate rules</a>
-  <a href="/aviation-emissions/corsia-calculator/">ETS vs CORSIA</a>
-  <a href="/aviation-emissions/gtf-exposure-calculator/" aria-current="page">GTF calculator</a>
-  <a href="/aviation-emissions/gtf-non-co2-supplement/">GTF pollution</a>
-  <a href="/aviation-emissions/smbc-jsa-brief/">SMBC / JSA brief</a>
-  <a href="/aviation-emissions/engagement-overview/">How I can help</a>
-</nav>
+<header class="site-header">
+  <div class="site-header-in">
+    <a class="wordmark" href="/aviation-emissions/"><b>AVIATION EMISSIONS</b><span>// explained</span></a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="/aviation-emissions/#insights">Insights</a>
+      <a href="/aviation-emissions/#tools" aria-current="page">Tools</a>
+      <a href="/aviation-emissions/#services">Services</a>
+      <a href="/aviation-emissions/#contact">Contact</a>
+      <a class="cta" href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">Book a briefing</a>
+    </nav>
+  </div>
+</header>
 
 <div class="wrap">
  
@@ -213,6 +227,13 @@
  
 </div>
  
+<footer class="site-footer">
+  <div class="site-footer-in">
+    <a class="wordmark" href="/aviation-emissions/" style="font-size:15px"><b>AVIATION EMISSIONS</b><span>// explained</span></a>
+    <div><a href="mailto:becharjaymal@gmail.com">becharjaymal@gmail.com</a></div>
+  </div>
+</footer>
+ 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
 // ---- Certified per-aircraft, per-LTO-cycle figures (ICAO EEDB v32, validated) ----
@@ -306,7 +327,7 @@ function updateChart(labels, datasets) {
       plugins: {
         legend: {
           position: 'top', align: 'start',
-          labels: { color: css('--ink'), font: { size: 14, family: "'Atkinson Hyperlegible', 'Segoe UI', Arial, sans-serif" }, boxWidth: 14, usePointStyle: true, pointStyle: 'rect' }
+          labels: { color: css('--ink'), font: { size: 14, family: "'Public Sans', system-ui, sans-serif" }, boxWidth: 14, usePointStyle: true, pointStyle: 'rect' }
         },
         tooltip: {
           callbacks: {
@@ -321,9 +342,9 @@ function updateChart(labels, datasets) {
       scales: {
         x: {
           grid: { color: function(ctx2) { return ctx2.tick.value === 0 ? css('--ink') : css('--line'); }, lineWidth: function(ctx2) { return ctx2.tick.value === 0 ? 2 : 1; } },
-          ticks: { color: css('--muted'), font: { size: 13, family: "'Atkinson Hyperlegible', 'Segoe UI', Arial, sans-serif" } }
+          ticks: { color: css('--muted'), font: { size: 13, family: "'Public Sans', system-ui, sans-serif" } }
         },
-        y: { grid: { display: false }, ticks: { color: css('--ink'), font: { size: 14, family: "'Atkinson Hyperlegible', 'Segoe UI', Arial, sans-serif", weight: '700' } } }
+        y: { grid: { display: false }, ticks: { color: css('--ink'), font: { size: 14, family: "'Public Sans', system-ui, sans-serif", weight: '600' } } }
       }
     }
   });
@@ -370,5 +391,6 @@ recalc();
 <script>
   if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(){ recalc(); });
 </script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "99311d4c453e49c091ebf8972f3c2200"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
