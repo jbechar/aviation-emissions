@@ -29,10 +29,18 @@
 .pol-inner{overflow:hidden}
 .pol-content{padding:4px 22px 22px 64px}
 .pol-desc{margin:0 0 16px;font-size:15px;color:#3A4A5A}
-.pol-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;border-top:1px solid #D8DDE2;padding-top:14px;font-size:14px}
+.pol-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;border-top:1px solid #D8DDE2;padding-top:14px;font-size:14px}
 .pol-label{color:#51606E}
 .pol-stat{font-weight:600}
-@media (max-width:520px){.pol-content{padding-left:22px}.pol-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.pol-content{padding-left:22px}}
+.pol-range{margin-top:16px;padding-top:14px;border-top:1px solid #D8DDE2;font-size:14px}
+.rng-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;margin-bottom:10px}
+.rng-vals{font-weight:600}
+.rng-c{font-weight:400;color:#51606E}
+.rng-track{position:relative;display:block;height:10px;border-radius:5px;background:#DDE2E6}
+.rng-band{position:absolute;top:0;bottom:0;border-radius:5px;opacity:.55}
+.rng-mark{position:absolute;top:-4px;width:2px;height:18px;margin-left:-1px;background:#0E1A24;border-radius:1px}
+.rng-axis{display:flex;justify-content:space-between;margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6B7885}
 @media (prefers-reduced-motion: reduce){.pol,.pol-head,.pol-bar,.pol-val,.pol-body{transition:none}}
 body{margin:0;background:#F5F6F3}
 a{color:#1F3A5F}a:hover{color:#0E1A24}
@@ -65,7 +73,6 @@ a{color:#1F3A5F}a:hover{color:#0E1A24}
 <a class="navlink" href="#insights">Insights</a>
 <a class="navlink" href="#tools">Tools</a>
 <a class="navlink" href="#services">Services</a>
-<a class="navlink" href="#about">About</a>
 <a class="navlink" href="#contact">Contact</a>
 <a href="#contact" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; background: #FFFFFF; color: #0E1A24; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 15px">Book a briefing</a>
 </nav>
@@ -271,7 +278,14 @@ a{color:#1F3A5F}a:hover{color:#0E1A24}
 <div class="pol-stats">
 <div><div class="pol-label">Lasts</div><div class="pol-stat">Hours</div></div>
 <div><div class="pol-label">Priced today</div><div class="pol-stat">Not yet. EU monitoring since 2025</div></div>
-<div><div class="pol-label">90% range</div><div class="pol-stat">17 to 98 mW/m²</div></div>
+</div>
+<div class="pol-range">
+<div class="rng-head"><span class="pol-label">90% range</span><span class="rng-vals">17 to 98 mW/m² <span class="rng-c">(best estimate 57.4)</span></span></div>
+<div class="rng-track" role="img" aria-label="Range 17 to 98, best estimate 57.4, on a 0 to 100 scale">
+<span class="rng-band" style="left: 17%; width: 81.0%; background: #2A7AD5"></span>
+<span class="rng-mark" style="left: 57.4%"></span>
+</div>
+<div class="rng-axis"><span>0</span><span>50</span><span>100 mW/m²</span></div>
 </div>
 </div></div></div>
 </div>
@@ -286,7 +300,14 @@ a{color:#1F3A5F}a:hover{color:#0E1A24}
 <div class="pol-stats">
 <div><div class="pol-label">Lasts</div><div class="pol-stat">Centuries</div></div>
 <div><div class="pol-label">Priced today</div><div class="pol-stat">Yes. EU ETS, UK ETS, CORSIA</div></div>
-<div><div class="pol-label">90% range</div><div class="pol-stat">31 to 38 mW/m²</div></div>
+</div>
+<div class="pol-range">
+<div class="rng-head"><span class="pol-label">90% range</span><span class="rng-vals">31 to 38 mW/m² <span class="rng-c">(best estimate 34.3)</span></span></div>
+<div class="rng-track" role="img" aria-label="Range 31 to 38, best estimate 34.3, on a 0 to 100 scale">
+<span class="rng-band" style="left: 31%; width: 7.0%; background: #EEA000"></span>
+<span class="rng-mark" style="left: 34.3%"></span>
+</div>
+<div class="rng-axis"><span>0</span><span>50</span><span>100 mW/m²</span></div>
 </div>
 </div></div></div>
 </div>
@@ -301,7 +322,14 @@ a{color:#1F3A5F}a:hover{color:#0E1A24}
 <div class="pol-stats">
 <div><div class="pol-label">Lasts</div><div class="pol-stat">Weeks to a decade</div></div>
 <div><div class="pol-label">Priced today</div><div class="pol-stat">Not yet</div></div>
-<div><div class="pol-label">90% range</div><div class="pol-stat">0.6 to 29 mW/m²</div></div>
+</div>
+<div class="pol-range">
+<div class="rng-head"><span class="pol-label">90% range</span><span class="rng-vals">0.6 to 29 mW/m² <span class="rng-c">(best estimate 17.5)</span></span></div>
+<div class="rng-track" role="img" aria-label="Range 0.6 to 29, best estimate 17.5, on a 0 to 100 scale">
+<span class="rng-band" style="left: 0.6%; width: 28.4%; background: #E5484D"></span>
+<span class="rng-mark" style="left: 17.5%"></span>
+</div>
+<div class="rng-axis"><span>0</span><span>50</span><span>100 mW/m²</span></div>
 </div>
 </div></div></div>
 </div>
@@ -355,23 +383,6 @@ a{color:#1F3A5F}a:hover{color:#0E1A24}
 <div style="font-size: 13px; font-weight: 600; color: #B0601F">Tool</div>
 <div style="margin-top: 6px; font-family: 'Source Serif 4', Georgia, serif; font-size: 20px; line-height: 1.3">GTF groundings: what they cost a fleet</div>
 </a>
-</div>
-</section>
-
-<section id="about" aria-label="Background" style="border-top: 1px solid #D8DDE2; border-bottom: 1px solid #D8DDE2; background: #FFFFFF">
-<div style="max-width: 1200px; margin: 0 auto; padding: 28px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px 48px">
-<div>
-<div style="font-weight: 600; font-size: 15px">University of Manchester</div>
-<div style="font-size: 14px; color: #51606E">PhD research in aviation emissions modelling</div>
-</div>
-<div>
-<div style="font-weight: 600; font-size: 15px">Tyndall Centre for Climate Research</div>
-<div style="font-size: 14px; color: #51606E">Background in air quality and transport emissions</div>
-</div>
-<div>
-<div style="font-weight: 600; font-size: 15px">Peer-reviewed methods</div>
-<div style="font-size: 14px; color: #51606E">Climate forcing built on Lee et al. (2021)</div>
-</div>
 </div>
 </section>
 
