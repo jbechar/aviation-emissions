@@ -11,7 +11,29 @@
 <style>
 *{box-sizing:border-box}
 .seg:hover{opacity:.85 !important}
-.legend-btn:focus-visible{outline:2px solid #FFFFFF;outline-offset:3px}
+.pol{border-radius:4px;border:1px solid rgba(255,255,255,0.18);background:#11304A;color:#FFFFFF;transition:background .35s ease,border-color .35s ease,color .35s ease}
+.pol:not(.open):hover{border-color:rgba(255,255,255,0.4)}
+.pol.open{background:#F2F5F7;border-color:#F2F5F7;color:#0E1A24}
+.pol-head{display:flex;align-items:center;gap:14px;width:100%;min-height:46px;padding:10px 16px;font:inherit;font-size:15px;color:inherit;background:none;border:0;text-align:left;cursor:pointer;transition:padding .35s ease}
+.pol.open .pol-head{padding:20px 22px 6px;cursor:default}
+.pol-head:focus-visible{outline:2px solid #FFFFFF;outline-offset:3px;border-radius:4px}
+.pol.open .pol-head:focus-visible{outline-color:#0E1A24}
+.pol-bar{width:22px;height:3px;border-radius:2px;flex-shrink:0;transition:width .35s ease,height .35s ease}
+.pol.open .pol-bar{width:28px;height:6px}
+.pol-name{flex:1;font-weight:600}
+.pol.open .pol-name{font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:600}
+.pol-val{font-family:'IBM Plex Mono',monospace;font-size:14px;color:#3A4A5A;opacity:0;width:0;overflow:hidden;white-space:nowrap;transition:opacity .3s ease}
+.pol.open .pol-val{opacity:1;width:auto}
+.pol-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s cubic-bezier(.2,.7,.2,1)}
+.pol.open .pol-body{grid-template-rows:1fr}
+.pol-inner{overflow:hidden}
+.pol-content{padding:4px 22px 22px 64px}
+.pol-desc{margin:0 0 16px;font-size:15px;color:#3A4A5A}
+.pol-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;border-top:1px solid #D8DDE2;padding-top:14px;font-size:14px}
+.pol-label{color:#51606E}
+.pol-stat{font-weight:600}
+@media (max-width:520px){.pol-content{padding-left:22px}.pol-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (prefers-reduced-motion: reduce){.pol,.pol-head,.pol-bar,.pol-val,.pol-body{transition:none}}
 body{margin:0;background:#F5F6F3}
 a{color:#1F3A5F}a:hover{color:#0E1A24}
 .seg{cursor:pointer;transition:opacity .25s ease, stroke-width .25s ease}
@@ -235,33 +257,53 @@ a{color:#1F3A5F}a:hover{color:#0E1A24}
 </svg>
 </div>
 
-<div style="order: 1; flex: 2 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<div style="order: 1; flex: 2 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
 <h1 style="margin: 0; font-family: 'Source Serif 4', Georgia, serif; font-weight: 500; font-size: clamp(1.9rem, 3vw, 2.6rem); line-height: 1.15; letter-spacing: -0.015em">What aviation emissions do to the climate</h1>
 <p style="margin: 6px 0 22px; font-size: 16px; color: #B8C4CF">Carbon prices only cover CO₂. Contrails and NOx add more warming, and rules for them are starting to form. Pick one to see how it works.</p>
-<button type="button" class="legend-btn" data-id="contrail" aria-pressed="true" style="display: flex; align-items: center; gap: 14px; width: 100%; min-height: 56px; padding: 12px 16px; text-align: left; font: inherit; cursor: pointer; border-radius: 4px; border: 1px solid #F2F5F7; background: #F2F5F7; color: #0E1A24">
-<span class="bar" aria-hidden="true" style="width: 28px; border-radius: 2px; flex-shrink: 0; height: 6px; background: #2A7AD5"></span>
-<span style="flex: 1; font-weight: 600">Contrail cirrus</span>
-<span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px">57.4 mW/m²</span>
+<div class="pol open" data-id="contrail">
+<button type="button" class="pol-head" data-id="contrail" aria-expanded="true" aria-controls="pol-contrail">
+<span class="pol-bar" aria-hidden="true" style="background: #2A7AD5"></span>
+<span class="pol-name">Contrail cirrus</span>
+<span class="pol-val">57.4 mW/m²</span>
 </button>
-<button type="button" class="legend-btn" data-id="co2" aria-pressed="false" style="display: flex; align-items: center; gap: 14px; width: 100%; min-height: 56px; padding: 12px 16px; text-align: left; font: inherit; cursor: pointer; border-radius: 4px; border: 1px solid rgba(255,255,255,0.18); background: #11304A; color: #FFFFFF">
-<span class="bar" aria-hidden="true" style="width: 28px; border-radius: 2px; flex-shrink: 0; height: 4px; background: #EEA000"></span>
-<span style="flex: 1; font-weight: 600">CO₂</span>
-<span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px">34.3 mW/m²</span>
-</button>
-<button type="button" class="legend-btn" data-id="nox" aria-pressed="false" style="display: flex; align-items: center; gap: 14px; width: 100%; min-height: 56px; padding: 12px 16px; text-align: left; font: inherit; cursor: pointer; border-radius: 4px; border: 1px solid rgba(255,255,255,0.18); background: #11304A; color: #FFFFFF">
-<span class="bar" aria-hidden="true" style="width: 28px; border-radius: 2px; flex-shrink: 0; height: 4px; background: #E5484D"></span>
-<span style="flex: 1; font-weight: 600">NOx (net)</span>
-<span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px">17.5 mW/m²</span>
-</button>
-
-<div style="margin-top: 8px; padding: 22px; background: #14334C; border: 1px solid rgba(255,255,255,0.14); color: #FFFFFF; border-radius: 4px">
-<div style="font-family: 'Source Serif 4', Georgia, serif; font-size: 24px; font-weight: 600"><span id="sel-name">Contrail cirrus</span></div>
-<p style="margin: 8px 0 16px; font-size: 15px; color: #C9D2DB"><span id="sel-desc">Ice clouds that form behind aircraft in cold, humid air. Each one lasts only hours, but together they are the largest warming effect. They are also the least certain.</span></p>
-<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; border-top: 1px solid rgba(255,255,255,0.14); padding-top: 14px; font-size: 14px">
-<div><div style="color: #A9B6C2">Lasts</div><div style="font-weight: 600" id="sel-life">Hours</div></div>
-<div><div style="color: #A9B6C2">Priced today</div><div style="font-weight: 600" id="sel-priced">Not yet. EU monitoring since 2025</div></div>
-<div><div style="color: #A9B6C2">90% range</div><div style="font-weight: 600" id="sel-range">17 to 98 mW/m²</div></div>
+<div class="pol-body" id="pol-contrail"><div class="pol-inner"><div class="pol-content">
+<p class="pol-desc">Ice clouds that form behind aircraft in cold, humid air. Each one lasts only hours, but together they are the largest warming effect. They are also the least certain.</p>
+<div class="pol-stats">
+<div><div class="pol-label">Lasts</div><div class="pol-stat">Hours</div></div>
+<div><div class="pol-label">Priced today</div><div class="pol-stat">Not yet. EU monitoring since 2025</div></div>
+<div><div class="pol-label">90% range</div><div class="pol-stat">17 to 98 mW/m²</div></div>
 </div>
+</div></div></div>
+</div>
+<div class="pol" data-id="co2">
+<button type="button" class="pol-head" data-id="co2" aria-expanded="false" aria-controls="pol-co2">
+<span class="pol-bar" aria-hidden="true" style="background: #EEA000"></span>
+<span class="pol-name">CO₂</span>
+<span class="pol-val">34.3 mW/m²</span>
+</button>
+<div class="pol-body" id="pol-co2"><div class="pol-inner"><div class="pol-content">
+<p class="pol-desc">Carbon dioxide from burning fuel. It stays in the air for centuries, so each flight keeps warming the planet long after it lands. It is the only part priced today.</p>
+<div class="pol-stats">
+<div><div class="pol-label">Lasts</div><div class="pol-stat">Centuries</div></div>
+<div><div class="pol-label">Priced today</div><div class="pol-stat">Yes. EU ETS, UK ETS, CORSIA</div></div>
+<div><div class="pol-label">90% range</div><div class="pol-stat">31 to 38 mW/m²</div></div>
+</div>
+</div></div></div>
+</div>
+<div class="pol" data-id="nox">
+<button type="button" class="pol-head" data-id="nox" aria-expanded="false" aria-controls="pol-nox">
+<span class="pol-bar" aria-hidden="true" style="background: #E5484D"></span>
+<span class="pol-name">NOx (net)</span>
+<span class="pol-val">17.5 mW/m²</span>
+</button>
+<div class="pol-body" id="pol-nox"><div class="pol-inner"><div class="pol-content">
+<p class="pol-desc">Nitrogen oxides make ozone, which warms, and remove methane, which cools. The warming is larger, so the net effect is warming.</p>
+<div class="pol-stats">
+<div><div class="pol-label">Lasts</div><div class="pol-stat">Weeks to a decade</div></div>
+<div><div class="pol-label">Priced today</div><div class="pol-stat">Not yet</div></div>
+<div><div class="pol-label">90% range</div><div class="pol-stat">0.6 to 29 mW/m²</div></div>
+</div>
+</div></div></div>
 </div>
 <p style="margin: 4px 0 0; font-size: 13px; color: #A9B6C2">Share of net effective radiative forcing, 2018. Source: Lee et al. (2021). Shares add to just over 100% because the total also includes a small cooling term.</p>
 </div>
@@ -496,28 +538,18 @@ a{color:#1F3A5F}a:hover{color:#0E1A24}
 </div>
 <script>
 (function(){
-  var data={
-    contrail:{name:'Contrail cirrus',desc:'Ice clouds that form behind aircraft in cold, humid air. Each one lasts only hours, but together they are the largest warming effect. They are also the least certain.',life:'Hours',priced:'Not yet. EU monitoring since 2025',range:'17 to 98 mW/m²'},
-    co2:{name:'CO₂',desc:'Carbon dioxide from burning fuel. It stays in the air for centuries, so each flight keeps warming the planet long after it lands. It is the only part priced today.',life:'Centuries',priced:'Yes. EU ETS, UK ETS, CORSIA',range:'31 to 38 mW/m²'},
-    nox:{name:'NOx (net)',desc:'Nitrogen oxides make ozone, which warms, and remove methane, which cools. The warming is larger, so the net effect is warming.',life:'Weeks to a decade',priced:'Not yet',range:'0.6 to 29 mW/m²'}
-  };
   function pick(id){
     document.querySelectorAll('.seg').forEach(function(c){
       var on=c.getAttribute('data-id')===id;
       c.style.strokeWidth=on?'12px':'7px'; c.style.opacity=on?'1':'0.4';
     });
-    document.querySelectorAll('.legend-btn').forEach(function(b){
-      var on=b.getAttribute('data-id')===id;
-      b.setAttribute('aria-pressed',on?'true':'false');
-      b.style.background=on?'#F2F5F7':'#11304A';
-      b.style.borderColor=on?'#F2F5F7':'rgba(255,255,255,0.18)';
-      b.style.color=on?'#0E1A24':'#FFFFFF';
-      b.querySelector('.bar').style.height=on?'6px':'4px';
+    document.querySelectorAll('.pol').forEach(function(el){
+      var on=el.getAttribute('data-id')===id;
+      el.classList.toggle('open',on);
+      el.querySelector('.pol-head').setAttribute('aria-expanded',on?'true':'false');
     });
-    var d=data[id];
-    ['name','desc','life','priced','range'].forEach(function(k){document.getElementById('sel-'+k).textContent=d[k];});
   }
-  document.querySelectorAll('.seg,.legend-btn').forEach(function(el){
+  document.querySelectorAll('.seg,.pol-head').forEach(function(el){
     el.addEventListener('click',function(){pick(el.getAttribute('data-id'));});
   });
 })();
