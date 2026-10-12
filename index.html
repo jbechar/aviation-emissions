@@ -29,10 +29,11 @@
 .pol-inner{overflow:hidden}
 .pol-content{padding:4px 22px 22px 64px}
 .pol-desc{margin:0 0 16px;font-size:15px;color:#3A4A5A}
-.pol-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;border-top:1px solid #D8DDE2;padding-top:14px;font-size:14px}
+.pol-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;border-top:1px solid #D8DDE2;padding-top:14px;font-size:14px}
 .pol-label{color:#51606E}
 .pol-stat{font-weight:600}
-@media (max-width:520px){.pol-content{padding-left:22px}}
+.pol-sure{font-size:13px;color:#51606E;line-height:1.45;margin-top:2px}
+@media (max-width:520px){.pol-content{padding-left:22px}.pol-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .pol-range{margin-top:16px;padding-top:14px;border-top:1px solid #D8DDE2;font-size:14px}
 .rng-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;margin-bottom:10px}
 .rng-vals{font-weight:600}
@@ -271,21 +272,14 @@ a{color:#1F3A5F}a:hover{color:#0E1A24}
 <button type="button" class="pol-head" data-id="contrail" aria-expanded="true" aria-controls="pol-contrail">
 <span class="pol-bar" aria-hidden="true" style="background: #2A7AD5"></span>
 <span class="pol-name">Contrail cirrus</span>
-<span class="pol-val">57.4 mW/m²</span>
+<span class="pol-val">~57% of warming</span>
 </button>
 <div class="pol-body" id="pol-contrail"><div class="pol-inner"><div class="pol-content">
 <p class="pol-desc">Ice clouds that form behind aircraft in cold, humid air. Each one lasts only hours, but together they are the largest warming effect. They are also the least certain.</p>
 <div class="pol-stats">
 <div><div class="pol-label">Lasts</div><div class="pol-stat">Hours</div></div>
 <div><div class="pol-label">Priced today</div><div class="pol-stat">Not yet. EU monitoring since 2025</div></div>
-</div>
-<div class="pol-range">
-<div class="rng-head"><span class="pol-label">90% range</span><span class="rng-vals">17 to 98 mW/m² <span class="rng-c">(best estimate 57.4)</span></span></div>
-<div class="rng-track" role="img" aria-label="Range 17 to 98, best estimate 57.4, on a 0 to 100 scale">
-<span class="rng-band" style="left: 17%; width: 81.0%; background: #2A7AD5"></span>
-<span class="rng-mark" style="left: 57.4%"></span>
-</div>
-<div class="rng-axis"><span>0</span><span>50</span><span>100 mW/m²</span></div>
+<div><div class="pol-label">How sure</div><div class="pol-stat">Least sure</div><div class="pol-sure">Could be a third of this, or nearly double.</div></div>
 </div>
 </div></div></div>
 </div>
@@ -293,21 +287,14 @@ a{color:#1F3A5F}a:hover{color:#0E1A24}
 <button type="button" class="pol-head" data-id="co2" aria-expanded="false" aria-controls="pol-co2">
 <span class="pol-bar" aria-hidden="true" style="background: #EEA000"></span>
 <span class="pol-name">CO₂</span>
-<span class="pol-val">34.3 mW/m²</span>
+<span class="pol-val">~34% of warming</span>
 </button>
 <div class="pol-body" id="pol-co2"><div class="pol-inner"><div class="pol-content">
 <p class="pol-desc">Carbon dioxide from burning fuel. It stays in the air for centuries, so each flight keeps warming the planet long after it lands. It is the only part priced today.</p>
 <div class="pol-stats">
 <div><div class="pol-label">Lasts</div><div class="pol-stat">Centuries</div></div>
 <div><div class="pol-label">Priced today</div><div class="pol-stat">Yes. EU ETS, UK ETS, CORSIA</div></div>
-</div>
-<div class="pol-range">
-<div class="rng-head"><span class="pol-label">90% range</span><span class="rng-vals">31 to 38 mW/m² <span class="rng-c">(best estimate 34.3)</span></span></div>
-<div class="rng-track" role="img" aria-label="Range 31 to 38, best estimate 34.3, on a 0 to 100 scale">
-<span class="rng-band" style="left: 31%; width: 7.0%; background: #EEA000"></span>
-<span class="rng-mark" style="left: 34.3%"></span>
-</div>
-<div class="rng-axis"><span>0</span><span>50</span><span>100 mW/m²</span></div>
+<div><div class="pol-label">How sure</div><div class="pol-stat">Very sure</div><div class="pol-sure">Within about 10% either way.</div></div>
 </div>
 </div></div></div>
 </div>
@@ -315,25 +302,18 @@ a{color:#1F3A5F}a:hover{color:#0E1A24}
 <button type="button" class="pol-head" data-id="nox" aria-expanded="false" aria-controls="pol-nox">
 <span class="pol-bar" aria-hidden="true" style="background: #E5484D"></span>
 <span class="pol-name">NOx (net)</span>
-<span class="pol-val">17.5 mW/m²</span>
+<span class="pol-val">~17% of warming</span>
 </button>
 <div class="pol-body" id="pol-nox"><div class="pol-inner"><div class="pol-content">
 <p class="pol-desc">Nitrogen oxides make ozone, which warms, and remove methane, which cools. The warming is larger, so the net effect is warming.</p>
 <div class="pol-stats">
 <div><div class="pol-label">Lasts</div><div class="pol-stat">Weeks to a decade</div></div>
 <div><div class="pol-label">Priced today</div><div class="pol-stat">Not yet</div></div>
-</div>
-<div class="pol-range">
-<div class="rng-head"><span class="pol-label">90% range</span><span class="rng-vals">0.6 to 29 mW/m² <span class="rng-c">(best estimate 17.5)</span></span></div>
-<div class="rng-track" role="img" aria-label="Range 0.6 to 29, best estimate 17.5, on a 0 to 100 scale">
-<span class="rng-band" style="left: 0.6%; width: 28.4%; background: #E5484D"></span>
-<span class="rng-mark" style="left: 17.5%"></span>
-</div>
-<div class="rng-axis"><span>0</span><span>50</span><span>100 mW/m²</span></div>
+<div><div class="pol-label">How sure</div><div class="pol-stat">Not very sure</div><div class="pol-sure">Could be close to zero, or two thirds more.</div></div>
 </div>
 </div></div></div>
 </div>
-<p style="margin: 4px 0 0; font-size: 13px; color: #A9B6C2">Share of net effective radiative forcing, 2018. Source: Lee et al. (2021). Shares add to just over 100% because the total also includes a small cooling term.</p>
+<p style="margin: 4px 0 0; font-size: 13px; color: #A9B6C2">Share of aviation's warming in 2018. Source: Lee et al. (2021). Shares add to just over 100% because the total also includes a small cooling effect.</p>
 </div>
 </div>
 </div>
@@ -419,7 +399,7 @@ a{color:#1F3A5F}a:hover{color:#0E1A24}
 
 <div style="max-width: 1200px; margin: -128px auto 0; padding: 0 24px 96px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 64px 40px">
 
-<a class="card" href="/aviation-emissions/gtf-non-co2-supplement/">
+<a class="card" href="/aviation-emissions/contrails/">
 <div style="position: relative">
 <div style="aspect-ratio: 16 / 9; overflow: hidden; background: #A9CBEA">
 <svg class="art" viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
