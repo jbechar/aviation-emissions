@@ -3,163 +3,187 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Policy map - Aviation emissions</title>
+<title>Policy map | Aviation Emissions Explained</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --paper: #f1f3ee; --ink: #1b2733; --muted: #5a6672; --line: #cbd2cc;
-    --money: #a3246f; --link: #2b5c8a; --tint: #e6e9e3; --field: #ffffff; --panel: #fbfcf9;
-    --water: #dde6e8; --land-edge: #f1f3ee;
-    --regime-eu: #2f6ea3; --regime-uk: #3f8a78; --regime-ch: #c79a3e; --regime-corsia: #9b86b5; --regime-none: #cfd4cc;
+    --paper: #F5F6F3; --ink: #0E1A24; --muted: #51606E; --line: #D8DDE2;
+    --navy: #0E2A40; --accent: #E8C26A; --accent-deep: #D4AC4E;
+    --money: #8A5A0A; --link: #1F3A5F; --tint: #EEF1F3; --field: #FFFFFF; --panel: #FFFFFF;
+    --water: #E4ECF3; --land-edge: #FFFFFF;
+    --regime-eu: #2A5C8F; --regime-uk: #3F8A78; --regime-ch: #C79A3E; --regime-corsia: #9B86B5; --regime-none: #D3D8DC;
     --text-muted: var(--muted); --text: var(--ink);
-    --body: 'Atkinson Hyperlegible', 'Segoe UI', Arial, sans-serif;
-    --head: 'Barlow Semi Condensed', 'Arial Narrow', Arial, sans-serif;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --paper: #151b21; --ink: #e6eae6; --muted: #97a3ac; --line: #2e3a42;
-      --money: #e27db8; --link: #8db8e0; --tint: #1c242b; --field: #1c242b; --panel: #1a2128;
-      --water: #10161b; --land-edge: #151b21;
-      --regime-eu: #4f8fc4; --regime-uk: #56a792; --regime-ch: #d2aa55; --regime-corsia: #9a87b4; --regime-none: #2c353c;
-    }
+    --body: 'Public Sans', system-ui, sans-serif;
+    --head: 'Source Serif 4', Georgia, serif;
+    --mono: 'IBM Plex Mono', monospace;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
-  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; }
   a { color: var(--link); text-underline-offset: 3px; }
   a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
 
-  .site-nav { max-width: 1020px; margin: 0 auto; padding: 1.25rem 1.5rem 0; display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 15px; }
-  .site-nav a { color: var(--muted); text-decoration: none; }
-  .site-nav a:hover { color: var(--ink); text-decoration: underline; }
-  .site-nav a[aria-current="page"] { color: var(--ink); font-weight: 700; }
-  .site-nav .home { color: var(--ink); font-weight: 700; flex-basis: 100%; margin-bottom: 2px; }
+  /* Site header (matches homepage) */
+  .site-header { background: var(--navy); border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .site-header-in { max-width: 1200px; margin: 0 auto; padding: 18px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; }
+  .wordmark { display: flex; align-items: baseline; gap: 10px; text-decoration: none; color: #FFFFFF; font-family: var(--mono); font-size: 17px; }
+  .wordmark b { font-weight: 600; letter-spacing: 0.02em; }
+  .wordmark span { color: #8FA3B6; }
+  .site-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; font-size: 15px; }
+  .site-nav a { color: #C9D2DB; text-decoration: none; }
+  .site-nav a:hover { color: #FFFFFF; text-decoration: underline; text-underline-offset: 4px; }
+  .site-nav a[aria-current="page"] { color: #FFFFFF; }
+  .site-nav .cta { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; background: #FFFFFF; color: var(--ink); border-radius: 4px; font-weight: 600; }
+  .site-nav .cta:hover { color: var(--ink); text-decoration: none; background: #E9EDF0; }
 
-  .wrap { max-width: 1020px; margin: 0 auto; padding: 3.5rem 1.5rem 0; }
-  .wrap.intro { padding-top: 3rem; padding-bottom: 1.5rem; }
-  .wrap:last-of-type { padding-bottom: 4rem; }
-  .wrap-gutter { max-width: 1020px; margin: 0 auto; padding: 0 1.5rem; }
-  h1, h2 { font-family: var(--head); font-weight: 600; line-height: 1.15; }
-  h1 { font-size: clamp(34px, 6vw, 46px); margin: 0 0 1rem; }
-  h2 { font-size: 26px; margin: 0 0 1rem; padding-bottom: 0.6rem; border-bottom: 2px solid var(--ink); }
-  .subtitle { font-size: 19px; margin: 0 0 1.25rem; max-width: 62ch; }
+  /* Banner (matches the Policy map card) */
+  .banner { background: var(--navy); background-image: linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px); background-size: 200px 100%; color: #FFFFFF; }
+  .banner-in { max-width: 1200px; margin: 0 auto; padding: 48px 24px 150px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 32px 48px; }
+  .banner-text { flex: 1 1 480px; min-width: 0; }
+  .tag { display: inline-flex; align-items: center; padding: 10px 18px; background: var(--accent); color: var(--ink); font-size: 16px; font-weight: 500; margin-bottom: 22px; }
+  .banner h1 { font-family: var(--head); font-weight: 500; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 16px; }
+  .banner .subtitle { color: #C9D2DB; font-size: 17px; max-width: 60ch; margin: 0; }
+  .banner-art { flex: 0 1 300px; min-width: 0; }
+  .banner-art svg { display: block; width: 100%; height: auto; }
+
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 4rem 24px 0; }
+  .wrap-gutter { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  .wrap.intro { padding-top: 3.5rem; padding-bottom: 1.75rem; }
+  .wrap.intro h1 { font-family: var(--head); font-weight: 500; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 1rem; }
+  h1, h2 { font-family: var(--head); font-weight: 500; line-height: 1.15; }
+  h2 { font-size: clamp(1.7rem, 3vw, 2.3rem); letter-spacing: -0.01em; margin: 0 0 0.75rem; }
+  .subtitle { font-size: 17px; margin: 0 0 1.5rem; max-width: 62ch; color: #3A4A5A; }
 
   /* Map */
-  .map-stage { position: relative; background: var(--water); border-radius: 6px; overflow: hidden; color: var(--muted); }
-  .map-stage #worldMap { width: 100%; height: auto; display: block; max-height: 66vh; }
-  .country { stroke: var(--land-edge); stroke-width: 0.5; cursor: pointer; fill: var(--regime-none); }
+  .map-stage { position: relative; background: var(--water); border-radius: 4px; overflow: hidden; color: var(--muted);  }
+  .map-stage #worldMap { width: 100%; height: auto; display: block; max-height: 70vh; }
+  .country { stroke: var(--land-edge); stroke-width: 0.5; cursor: pointer; fill: var(--regime-none); transition: opacity .15s; }
   .country:hover { stroke: var(--ink); stroke-width: 1; }
   .country.regime-eu-ets { fill: var(--regime-eu); }
   .country.regime-uk-ets { fill: var(--regime-uk); }
   .country.regime-ch-ets { fill: var(--regime-ch); }
   .country.regime-corsia-only { fill: var(--regime-corsia); }
   .country.regime-none { fill: var(--regime-none); }
-  .great-circle-line { stroke: var(--ink); stroke-width: 2.25; stroke-dasharray: 6 4; fill: none; }
-  .route-endpoint { fill: var(--paper); stroke: var(--ink); stroke-width: 2; }
-  .route-endpoint-label { font-family: var(--body); font-weight: 700; font-size: 12px; fill: var(--ink); paint-order: stroke; stroke: var(--paper); stroke-width: 3.5px; }
+  .great-circle-line { stroke: var(--ink); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+  .route-endpoint { fill: var(--accent); stroke: var(--ink); stroke-width: 2; }
+  .route-endpoint-label { font-family: var(--body); font-weight: 600; font-size: 12px; fill: var(--ink); paint-order: stroke; stroke: #FFFFFF; stroke-width: 3.5px; }
 
-  #tooltip { position: absolute; display: none; pointer-events: none; z-index: 10; max-width: 240px; background: var(--panel); color: var(--ink); border: 1.5px solid var(--ink); border-radius: 6px; padding: 8px 12px; font-size: 15px; }
-  #tooltip .t-name { font-weight: 700; }
+  #tooltip { position: absolute; display: none; pointer-events: none; z-index: 10; max-width: 240px; background: var(--panel); color: var(--ink); border: 1px solid var(--line); box-shadow: 0 8px 24px -12px rgba(14,26,36,0.4); border-radius: 4px; padding: 8px 12px; font-size: 14px; }
+  #tooltip .t-name { font-weight: 600; }
   #tooltip .t-regime { color: var(--muted); }
 
-  .map-legend-float { position: absolute; left: 12px; bottom: 12px; z-index: 25; background: var(--panel); border-radius: 6px; padding: 8px 12px; display: flex; gap: 6px 16px; flex-wrap: wrap; font-size: 14px; color: var(--ink); max-width: calc(100% - 24px); }
+  .map-legend-float { position: absolute; left: 12px; bottom: 12px; z-index: 25; background: var(--panel); border-radius: 4px; padding: 8px 14px; display: flex; gap: 6px 16px; flex-wrap: wrap; font-size: 13px; color: var(--ink); max-width: calc(100% - 24px); box-shadow: 0 4px 16px -8px rgba(14,26,36,0.35); }
   .legend-item { display: flex; align-items: center; gap: 6px; }
-  .swatch { width: 14px; height: 14px; border-radius: 3px; }
+  .swatch { width: 12px; height: 12px; border-radius: 2px; }
 
-  .route-toggle-btn { position: absolute; top: 12px; right: 12px; z-index: 30; font: inherit; font-weight: 700; background: var(--ink); color: var(--paper); border: 0; border-radius: 6px; padding: 10px 18px; cursor: pointer; }
-  .route-toggle-btn:hover { background: var(--link); }
+  .route-toggle-btn { position: absolute; top: 12px; right: 12px; z-index: 30; display: inline-flex; align-items: center; gap: 10px; font: inherit; font-weight: 600; background: var(--accent); color: var(--ink); border: 0; border-radius: 0; padding: 12px 20px; min-height: 44px; cursor: pointer; transition: background .2s, padding .2s; }
+  .route-toggle-btn::after { content: "\2192"; transition: transform .2s; }
+  .route-toggle-btn:hover { background: var(--accent-deep); padding-right: 26px; }
+  .route-toggle-btn:hover::after { transform: translateX(4px); }
   .route-float-panel, .map-legend-float { color: var(--ink); }
-  .route-float-panel { position: absolute; top: 12px; right: 12px; bottom: 12px; width: 380px; max-width: calc(100% - 24px); overflow-y: auto; background: var(--panel); border: 1.5px solid var(--ink); border-radius: 6px; padding: 1rem 1.25rem 1.25rem; z-index: 31; display: none; }
+  .route-float-panel { position: absolute; top: 12px; right: 12px; bottom: 12px; width: 390px; max-width: calc(100% - 24px); overflow-y: auto; background: var(--panel); border-radius: 4px; box-shadow: 0 16px 40px -16px rgba(14,26,36,0.5); padding: 1.1rem 1.25rem 1.25rem; z-index: 31; display: none; }
   .route-float-panel.open { display: block; }
-  .rfp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+  .rfp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--line); }
   .rfp-title { font-family: var(--head); font-weight: 600; font-size: 22px; }
-  .rfp-close { font: inherit; font-size: 15px; background: none; border: 1.5px solid var(--ink); color: var(--ink); border-radius: 6px; padding: 2px 10px; cursor: pointer; }
+  .rfp-close { font: inherit; font-size: 18px; line-height: 1; background: none; border: 1px solid var(--line); color: var(--ink); border-radius: 4px; width: 36px; height: 36px; cursor: pointer; }
+  .rfp-close:hover { border-color: var(--ink); }
   .route-row { display: block; }
   .route-field { margin-bottom: 0.9rem; min-width: 0; }
-  .route-field label { display: block; font-weight: 700; font-size: 15px; margin-bottom: 4px; }
-  select, .airport-field input[type="text"], .portfolio-row input[type="number"] { width: 100%; font: inherit; font-size: 16px; color: var(--ink); background: var(--field); border: 1.5px solid var(--ink); border-radius: 6px; padding: 8px 10px; min-height: 44px; }
+  .route-field label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  select, .airport-field input[type="text"], .portfolio-row input[type="number"] { width: 100%; font: inherit; font-size: 15px; color: var(--ink); background: var(--field); border: 1px solid #C3CBD2; border-radius: 4px; padding: 8px 10px; min-height: 44px; transition: border-color .15s; }
+  select:hover, .airport-field input[type="text"]:hover, .portfolio-row input[type="number"]:hover { border-color: var(--muted); }
+  select:focus, .airport-field input[type="text"]:focus, .portfolio-row input[type="number"]:focus { border-color: var(--ink); }
   .airport-field { position: relative; }
-  .airport-field input[type="text"]:disabled { color: var(--muted); }
-  .airport-suggestions { position: absolute; top: calc(100% + 2px); left: 0; right: 0; background: var(--field); border: 1.5px solid var(--ink); border-radius: 6px; max-height: 240px; overflow-y: auto; z-index: 40; display: none; }
-  .airport-suggestion-item { padding: 8px 10px; font-size: 15px; cursor: pointer; border-bottom: 1px solid var(--line); }
+  .airport-field input[type="text"]:disabled { color: var(--muted); background: var(--tint); }
+  .airport-suggestions { position: absolute; top: calc(100% + 2px); left: 0; right: 0; background: var(--field); border: 1px solid var(--line); box-shadow: 0 12px 28px -12px rgba(14,26,36,0.4); border-radius: 4px; max-height: 240px; overflow-y: auto; z-index: 40; display: none; }
+  .airport-suggestion-item { padding: 8px 10px; font-size: 14px; cursor: pointer; border-bottom: 1px solid var(--line); }
   .airport-suggestion-item:last-child { border-bottom: 0; }
   .airport-suggestion-item:hover { background: var(--tint); }
-  .airport-suggestion-item .as-code { font-weight: 700; margin-right: 6px; }
+  .airport-suggestion-item .as-code { font-family: var(--mono); font-weight: 500; margin-right: 6px; }
 
   .route-result { margin-top: 0.5rem; }
   .reg-card { padding: 0.75rem 0; border-top: 1px solid var(--line); }
-  .reg-card .r-name { font-family: var(--head); font-weight: 600; font-size: 21px; }
-  .reg-card .r-desc { font-size: 15px; }
+  .reg-card .r-name { font-family: var(--head); font-weight: 600; font-size: 20px; }
+  .reg-card .r-desc { font-size: 14px; color: #3A4A5A; }
   .no-reg { color: var(--muted); }
 
-  .cost-panel { margin-top: 0.5rem; padding-top: 1rem; border-top: 2px solid var(--ink); }
-  .cost-header { font-weight: 700; margin-bottom: 0.5rem; }
+  .cost-panel { margin-top: 0.5rem; padding-top: 1rem; border-top: 1px solid var(--ink); }
+  .cost-header { font-weight: 600; margin-bottom: 0.5rem; }
   .cost-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 0.75rem; }
-  .cs-label { font-size: 14px; color: var(--muted); }
+  .cs-label { font-size: 13px; color: var(--muted); }
   .cs-value { font-family: var(--head); font-weight: 600; font-size: 24px; line-height: 1.1; font-variant-numeric: tabular-nums; }
-  .cs-unit { font-family: var(--body); font-weight: 400; font-size: 14px; color: var(--muted); margin-left: 3px; }
-  .range-table { width: 100%; border-collapse: collapse; margin: 0 0 1rem; font-size: 15px; font-variant-numeric: tabular-nums; }
+  .cs-unit { font-family: var(--body); font-weight: 400; font-size: 13px; color: var(--muted); margin-left: 3px; }
+  .range-table { width: 100%; border-collapse: collapse; margin: 0 0 1rem; font-size: 14px; font-variant-numeric: tabular-nums; }
   .range-table th, .range-table td { padding: 6px 0 6px 8px; text-align: right; border-bottom: 1px solid var(--line); }
   .range-table th:first-child, .range-table td:first-child { text-align: left; padding-left: 0; }
-  .range-table th { font-weight: 700; font-size: 14px; }
-  .range-table tbody tr:last-child td { border-bottom: 0; font-weight: 700; color: var(--money); }
+  .range-table th { font-weight: 600; font-size: 13px; color: var(--muted); }
+  .range-table tbody tr:last-child td { border-bottom: 0; font-weight: 600; color: var(--money); }
   .range-table tbody tr:last-child td:first-child { color: var(--ink); }
-  .cost-big { display: flex; flex-direction: column; padding: 0.75rem 0 0.75rem 0.9rem; border-left: 3px solid var(--money); margin-top: 0.5rem; }
-  .cb-label { font-weight: 700; font-size: 15px; }
+  .cost-big { display: flex; flex-direction: column; padding: 0.9rem 1rem; background: #FBF5E6; border-left: 4px solid var(--accent); margin-top: 0.5rem; }
+  .cb-label { font-weight: 600; font-size: 14px; }
   .cb-value { font-family: var(--head); font-weight: 600; font-size: 32px; line-height: 1.1; color: var(--money); font-variant-numeric: tabular-nums; }
-  .cb-note { font-size: 14px; color: var(--muted); }
-  .cost-disclaimer { font-size: 14px; color: var(--muted); margin-top: 0.75rem; }
+  .cb-note { font-size: 13px; color: var(--muted); }
+  .cost-disclaimer { font-size: 13px; color: var(--muted); margin-top: 0.75rem; }
 
   .scenario-compare { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--line); }
-  .sc-header { font-family: var(--head); font-weight: 600; font-size: 20px; margin-bottom: 0.4rem; }
-  .sc-tag { display: block; font-family: var(--body); font-weight: 400; font-size: 14px; color: var(--muted); }
+  .sc-header { font-family: var(--head); font-weight: 600; font-size: 19px; margin-bottom: 0.4rem; }
+  .sc-tag { display: block; font-family: var(--body); font-weight: 400; font-size: 13px; color: var(--muted); }
   .sc-grid { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; gap: 8px; }
-  .sc-col { background: var(--tint); border-radius: 6px; padding: 0.6rem 0.75rem; }
-  .sc-col-changed { box-shadow: inset 0 0 0 2px var(--ink); }
-  .sc-col-label { font-size: 13px; color: var(--muted); }
-  .sc-col-regime { font-weight: 700; }
-  .sc-col-cost { color: var(--money); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .sc-col { background: var(--tint); border-radius: 4px; padding: 0.6rem 0.75rem; }
+  .sc-col-changed { background: #FBF5E6; box-shadow: inset 0 0 0 1.5px var(--accent-deep); }
+  .sc-col-label { font-size: 12px; color: var(--muted); }
+  .sc-col-regime { font-weight: 600; }
+  .sc-col-cost { color: var(--money); font-weight: 600; font-variant-numeric: tabular-nums; }
   .sc-arrow { align-self: center; color: var(--muted); }
-  .sc-note { font-size: 14px; color: var(--muted); margin-top: 0.5rem; }
+  .sc-note { font-size: 13px; color: var(--muted); margin-top: 0.5rem; }
 
   /* Portfolio */
+  .portfolio-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 0.5rem 1.5rem 1.5rem; }
   .portfolio-row { display: grid; grid-template-columns: 1.6fr 0.7fr 1.4fr 1.4fr 0.9fr auto; gap: 10px; align-items: end; padding: 0.9rem 0; border-bottom: 1px solid var(--line); }
   .portfolio-row .route-field { margin: 0; }
-  .portfolio-row-remove { font: inherit; font-size: 15px; background: none; border: 1.5px solid var(--ink); color: var(--ink); border-radius: 6px; height: 42px; padding: 0 12px; cursor: pointer; }
-  .portfolio-row-remove:hover { background: var(--tint); }
-  .portfolio-row-invalid { grid-column: 1 / -1; font-size: 15px; color: var(--money); }
-  .portfolio-add-btn { font: inherit; font-weight: 700; background: none; color: var(--ink); border: 1.5px dashed var(--ink); border-radius: 6px; padding: 10px 18px; margin: 1rem 0 1.5rem; cursor: pointer; }
-  .portfolio-add-btn:hover { background: var(--tint); }
-  .portfolio-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem 1.5rem; border-top: 2px solid var(--ink); padding-top: 1.25rem; }
-  .ps-label { font-weight: 700; font-size: 15px; margin-bottom: 2px; }
+  .portfolio-row-remove { font: inherit; font-size: 14px; background: none; border: 1px solid var(--line); color: var(--ink); border-radius: 4px; height: 44px; padding: 0 12px; cursor: pointer; }
+  .portfolio-row-remove:hover { border-color: var(--ink); background: var(--tint); }
+  .portfolio-row-invalid { grid-column: 1 / -1; font-size: 14px; color: #B3261E; }
+  .portfolio-add-btn { font: inherit; font-weight: 600; background: none; color: var(--ink); border: 1px dashed var(--muted); border-radius: 4px; padding: 10px 18px; min-height: 44px; margin: 1rem 0 1.5rem; cursor: pointer; }
+  .portfolio-add-btn:hover { border-color: var(--ink); background: var(--tint); }
+  .portfolio-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem 1.5rem; border-top: 1px solid var(--ink); padding-top: 1.25rem; }
+  .ps-label { font-weight: 600; font-size: 14px; margin-bottom: 2px; color: var(--muted); }
   .ps-value { font-family: var(--head); font-weight: 600; font-size: 30px; line-height: 1.15; color: var(--money); font-variant-numeric: tabular-nums; }
-  .ps-text { font-size: 15px; }
+  .ps-text { font-size: 14px; }
 
-  .footer-note { font-size: 15px; color: var(--muted); margin-top: 3rem; padding-top: 1.5rem; border-top: 2px solid var(--ink); }
+  .footer-note { font-size: 14px; color: var(--muted); margin: 3rem 0 0; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+
+  .site-footer { margin-top: 4rem; background: var(--navy); color: #C9D2DB; }
+  .site-footer-in { max-width: 1200px; margin: 0 auto; padding: 40px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px 32px; font-size: 14px; }
+  .site-footer a { color: #FFFFFF; }
 
   @media (max-width: 760px) {
-    body { font-size: 16px; }
-    .route-float-panel { position: fixed; inset: 0; width: auto; max-width: none; border-radius: 0; border: 0; z-index: 100; }
-    .map-legend-float { position: static; background: none; padding: 10px 0 0; }
+    .route-float-panel { position: fixed; inset: 0; width: auto; max-width: none; border-radius: 0; z-index: 100; }
+    .map-legend-float { position: static; background: none; box-shadow: none; padding: 10px 0 0; }
     .map-stage { overflow: visible; }
+    .portfolio-panel { padding: 0.5rem 1rem 1rem; }
     .portfolio-row { grid-template-columns: 1fr 1fr; }
     .portfolio-row .route-field:nth-child(1), .portfolio-row .airport-field { grid-column: 1 / -1; }
+    .banner-art { display: none; }
   }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
-<nav class="site-nav" aria-label="Site">
-  <a class="home" href="/aviation-emissions/">Aviation emissions</a>
-  <a href="/aviation-emissions/policy-map/" aria-current="page">Policy map</a>
-  <a href="/aviation-emissions/climate-policies/">Climate rules</a>
-  <a href="/aviation-emissions/corsia-calculator/">ETS vs CORSIA</a>
-  <a href="/aviation-emissions/gtf-exposure-calculator/">GTF calculator</a>
-  <a href="/aviation-emissions/gtf-non-co2-supplement/">GTF pollution</a>
-  <a href="/aviation-emissions/smbc-jsa-brief/">SMBC / JSA brief</a>
-  <a href="/aviation-emissions/engagement-overview/">How I can help</a>
-</nav>
+<header class="site-header">
+  <div class="site-header-in">
+    <a class="wordmark" href="/aviation-emissions/"><b>AVIATION EMISSIONS</b><span>// explained</span></a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="/aviation-emissions/#insights">Insights</a>
+      <a href="/aviation-emissions/#tools" aria-current="page">Tools</a>
+      <a href="/aviation-emissions/#services">Services</a>
+      <a href="/aviation-emissions/#contact">Contact</a>
+      <a class="cta" href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">Book a briefing</a>
+    </nav>
+  </div>
+</header>
 <div class="wrap intro">
   <h1>Which carbon rules cover a flight?</h1>
   <p class="subtitle">Point at a country to see which carbon rules it has. Or open the route checker. Pick two airports anywhere in the world and a plane, and it shows you which rules apply, draws the route, and guesses the carbon cost. For now it only covers the EU, UK and Swiss schemes and CORSIA. It is an early version, so don&apos;t treat it as the final word on the rules.</p>
@@ -237,10 +261,15 @@
 </div>
 <div class="wrap">
   <p class="footer-note">
-    What this covers: the EU, UK and Swiss schemes, and CORSIA. The country shapes are rough, not exact borders. The rules text comes from the same places as the Climate rules page. Airports come from the OpenFlights list (about 6,000 airports with normal flights). The distance is the shortest line between the two airports. Real flights go further, because of air traffic control, busy skies and weather. I last checked carbon prices on 24 July 2026 (EU about &euro;80 a tonne, UK about &pound;72, CORSIA about $5). The UK price could move a lot while the UK and EU talk about joining their schemes, so check it before you use it. Fuel numbers are rough, based on the ICAO BFFM2 method and data from plane makers. Real costs change with how full the plane is, how high it flies, and the route. This is not advice. For what to file, or fines, ask a compliance advisor.<br><br>
-    Jaymal Bechar, PhD researcher, aviation emissions, University of Manchester
+    What this covers: the EU, UK and Swiss schemes, and CORSIA. The country shapes are rough, not exact borders. The rules text comes from the same places as the Climate rules page. Airports come from the OpenFlights list (about 6,000 airports with normal flights). The distance is the shortest line between the two airports. Real flights go further, because of air traffic control, busy skies and weather. I last checked carbon prices on 24 July 2026 (EU about &euro;80 a tonne, UK about &pound;72, CORSIA about $5). The UK price could move a lot while the UK and EU talk about joining their schemes, so check it before you use it. Fuel numbers are rough, based on the ICAO BFFM2 method and data from plane makers. Real costs change with how full the plane is, how high it flies, and the route. This is not advice. For what to file, or fines, ask a compliance advisor.
   </p>
 </div>
+<footer class="site-footer">
+  <div class="site-footer-in">
+    <a class="wordmark" href="/aviation-emissions/" style="font-size:15px"><b>AVIATION EMISSIONS</b><span>// explained</span></a>
+    <div><a href="mailto:becharjaymal@gmail.com">becharjaymal@gmail.com</a></div>
+  </div>
+</footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <script src="https://unpkg.com/topojson-client@3"></script>
 <script>
@@ -926,5 +955,6 @@ fetch('https://raw.githubusercontent.com/jpatokal/openflights/master/data/airpor
     setTimeout(() => clearInterval(check), 8000);
   });
 </script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "99311d4c453e49c091ebf8972f3c2200"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
