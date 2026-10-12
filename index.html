@@ -1,620 +1,528 @@
-
-
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aviation emissions explained</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<title>Aviation Emissions Explained</title>
+<meta name="description" content="Clear numbers on what aviation's carbon rules cost: EU ETS, UK ETS, CORSIA, SAF and contrail policy.">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&amp;family=Public+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <style>
-  :root[data-theme="dark"] {
-    --bg: #0e1417; --panel: #161d22; --panel-raised: #1c242a;
-    --line: #2c383f; --line-strong: #435159;
-    --text: #eef0ee; --text-muted: #8ea3ac;
-    --amber: #eeab4c; --teal: #57c2b1; --blueprint: #1a4a5c;
-  }
-  :root[data-theme="light"] {
-    --bg: #f6f5f0; --panel: #ffffff; --panel-raised: #ffffff;
-    --line: #dcdad0; --line-strong: #b7b4a6;
-    --text: #16191a; --text-muted: #5c6a6f;
-    --amber: #b8791f; --teal: #1f8a79; --blueprint: #cfe3e8;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; }
-  body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', sans-serif; transition: background 0.2s, color 0.2s; display: flex; flex-direction: column; min-height: 100vh; }
-  .mono { font-family: 'IBM Plex Mono', monospace; }
-  header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2rem; border-bottom: 1px solid var(--line); flex-shrink: 0; }
-  .title { font-size: 14px; font-weight: 600; letter-spacing: 0.06em; }
-  .title span { color: var(--text-muted); font-weight: 400; letter-spacing: 0; }
-  .header-actions { display: flex; align-items: center; gap: 10px; }
-  .btn { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.03em; background: none; border: 1px solid var(--line-strong); color: var(--text-muted); padding: 9px 16px; cursor: pointer; border-radius: 3px; transition: color 0.3s cubic-bezier(.16,1,.3,1), border-color 0.3s cubic-bezier(.16,1,.3,1); }
-  .btn:hover { color: var(--text); border-color: var(--teal); }
-
-  .blueprint-grid {
-    position: fixed; inset: 0; z-index: -1; pointer-events: none;
-    background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
-    background-size: 48px 48px;
-    opacity: 0.3;
-    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 42%, black 0%, transparent 78%);
-    mask-image: radial-gradient(ellipse 70% 60% at 50% 42%, black 0%, transparent 78%);
-  }
-
-  .telemetry { display: flex; align-items: center; justify-content: center; gap: 1.5rem; flex-wrap: wrap; padding: 0.55rem 2rem 0; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-muted); flex-shrink: 0; }
-  .telemetry .tstat { display: inline-flex; align-items: center; gap: 6px; color: var(--teal); }
-  .telemetry .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
-  @media (prefers-reduced-motion: no-preference) {
-    .telemetry .dot { animation: pulseDot 2.4s infinite; }
-  }
-  @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(87,194,177,0.55); } 70% { box-shadow: 0 0 0 6px rgba(87,194,177,0); } 100% { box-shadow: 0 0 0 0 rgba(87,194,177,0); } }
-
-  .hero { text-align: center; padding: 1.1rem 2rem 0; flex-shrink: 0; }
-  .hero .eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal); margin: 0 0 8px; }
-  .hero h1 { font-size: 24px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.01em; }
-  .hero p { font-size: 13px; color: var(--text-muted); margin: 0 auto; max-width: 480px; line-height: 1.6; }
-
-  .hud-corner { position: absolute; width: 22px; height: 22px; border-color: var(--line-strong); opacity: 0.55; pointer-events: none; z-index: 4; }
-  .hud-corner.tl { top: 10px; left: 10px; border-top: 1px solid; border-left: 1px solid; }
-  .hud-corner.tr { top: 10px; right: 10px; border-top: 1px solid; border-right: 1px solid; }
-  .hud-corner.bl { bottom: 10px; left: 10px; border-bottom: 1px solid; border-left: 1px solid; }
-  .hud-corner.br { bottom: 10px; right: 10px; border-bottom: 1px solid; border-right: 1px solid; }
-
-  .uncert-dial { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); overflow: hidden; }
-  .uncert-dial .dial-label { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
-  .uncert-dial .dial-note { font-size: 11px; color: var(--text-muted); margin: 6px 0 0; line-height: 1.5; }
-  .uncert-dial .dial-note.flag { color: #e34948; }
-  .uncert-dial svg text { font-family: 'IBM Plex Mono', monospace; }
-
-  .ring-seg path { transition: filter 0.2s ease; }
-  .ring-seg:hover path { filter: brightness(1.18); }
-
-  .viewport { position: relative; flex: 1; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-  .world { position: relative; width: 1px; height: 1px; transition: transform 2.2s cubic-bezier(.65,0,.35,1); transform: translate(0px, 0px); }
-  .world > svg { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: block; }
-  .uncert-dial svg { position: static; display: block; }
-
-  .back-btn {
-    position: absolute; top: 16px; left: 16px;
-    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
-    background: var(--panel); border: 1px solid var(--line-strong); color: var(--text-muted);
-    padding: 7px 14px; border-radius: 3px; cursor: pointer;
-    opacity: 0; pointer-events: none; transition: opacity 0.5s cubic-bezier(.16,1,.3,1); z-index: 6;
-  }
-  .back-btn.shown { opacity: 1; pointer-events: auto; }
-
-  .pan-card {
-    position: absolute; left: 50%; top: 50%; width: 300px;
-    background: var(--panel);
-    border: 1px solid var(--line-strong); border-top-width: 3px; border-radius: 8px;
-    padding: 1.1rem 1.3rem;
-    box-shadow: 0 24px 48px -24px rgba(0,0,0,0.55);
-    opacity: 0; pointer-events: none; transition: opacity 0.9s cubic-bezier(.16,1,.3,1) 1.3s;
-  }
-  .pan-card.shown { opacity: 1; pointer-events: auto; }
-  .pan-card .eyebrow-mono { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 6px; }
-  .pan-card .ctitle { font-size: 14px; font-weight: 600; margin: 0 0 6px; }
-  .pan-card .csub { font-size: 12px; color: var(--text-muted); margin: 0; line-height: 1.6; }
-  #card-nox { transform: translate(calc(-50% - 480px), calc(-50% - 320px)); }
-  #card-contrail { transform: translate(calc(-50% - 480px), calc(-50% + 320px)); }
-  #card-co2 { transform: translate(calc(-50% + 480px), calc(-50%)); }
-
-  .source-note { font-size: 11px; color: var(--text-muted); text-align: center; max-width: 520px; margin: 0 auto; line-height: 1.6; padding: 0.5rem 2rem 1.5rem; flex-shrink: 0; }
-  .empty-hint { font-size: 12px; color: var(--text-muted); text-align: center; padding-bottom: 0.5rem; flex-shrink: 0; }
-
-  @keyframes spinOnce { from { transform: rotate(0deg); } to { transform: rotate(1080deg); } }
-  @keyframes radarSweep { from { transform: rotate(0deg); opacity: 0.5; } to { transform: rotate(360deg); opacity: 0; } }
-  @media (prefers-reduced-motion: no-preference) {
-    #fanAssembly { animation: spinOnce 3.4s cubic-bezier(.19,.85,.24,1) 1; }
-    #radarSweep { animation: radarSweep 1.6s cubic-bezier(.4,0,.2,1) 0.3s 1 forwards; }
-  }
-  #fanAssembly { transform-origin: 220px 220px; }
-  #radarSweep { transform-origin: 220px 220px; opacity: 0; }
-
-  .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 10; }
-  .drawer-overlay.open { opacity: 1; pointer-events: auto; }
-  .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: 420px; max-width: 92vw; background: var(--panel); border-left: 1px solid var(--line); transform: translateX(100%); transition: transform 0.28s ease; z-index: 11; display: flex; flex-direction: column; }
-  .drawer.open { transform: translateX(0); }
-  .drawer-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--line); }
-  .drawer-header h2 { font-size: 15px; font-weight: 600; margin: 0; }
-  .drawer-close { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; line-height: 1; padding: 4px; }
-  .drawer-close:hover { color: var(--text); }
-  .drawer-body { flex: 1; overflow-y: auto; padding: 0.5rem 0; }
-  .policy-row { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 1.5rem; cursor: pointer; border-bottom: 1px solid var(--line); transition: background 0.15s; }
-  .policy-row:hover { background: var(--panel-raised); }
-  .policy-row .pname { font-size: 13px; font-weight: 500; }
-  .policy-row .chev { color: var(--text-muted); font-size: 13px; }
-  .policy-detail { padding: 1.5rem; }
-  .back-link { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--teal); background: none; border: none; cursor: pointer; padding: 0 0 1.25rem; display: block; }
-  .policy-detail h3 { font-size: 16px; font-weight: 600; margin: 0 0 12px; }
-  .policy-detail .section-label { font-size: 11px; font-family: 'IBM Plex Mono', monospace; color: var(--teal); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 4px; }
-  .policy-detail p { font-size: 13px; color: var(--text-muted); line-height: 1.7; margin: 0 0 16px; }
+*{box-sizing:border-box}
+.seg:hover{opacity:.85 !important}
+.legend-btn:focus-visible{outline:2px solid #FFFFFF;outline-offset:3px}
+body{margin:0;background:#F5F6F3}
+a{color:#1F3A5F}a:hover{color:#0E1A24}
+.seg{cursor:pointer;transition:opacity .25s ease, stroke-width .25s ease}
+.navlink{color:#C9D2DB;text-decoration:none}
+.navlink:hover{color:#FFFFFF;text-decoration:underline;text-underline-offset:4px}
+.card{display:block;text-decoration:none;color:#0E1A24}
+.card .art{display:block;width:100%;height:100%;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.card:hover .art,.card:focus-visible .art{transform:scale(1.05)}
+.card .tag{transition:padding .25s ease, filter .25s ease}
+.card:hover .tag,.card:focus-visible .tag{padding-right:30px;filter:brightness(.93)}
+.card .arrow{transition:transform .25s ease}
+.card:hover .arrow,.card:focus-visible .arrow{transform:translateX(5px)}
+.card .blurb{transition:color .25s ease}
+.card:hover .blurb{color:#0E1A24}
+.card:focus-visible{outline:2px solid #1F3A5F;outline-offset:6px}
+@media (prefers-reduced-motion: reduce){.card .art,.card .tag,.card .arrow{transition:none}}
 </style>
 </head>
 <body>
-<div style="background:#05070a;color:#9aa5b1;font-family:'IBM Plex Mono',monospace;font-size:11px;padding:12px 24px;display:flex;gap:22px;flex-wrap:wrap;letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid #222;position:relative;z-index:10;">
-  <a href="/aviation-emissions/smbc-jsa-brief/" style="color:#9aa5b1;text-decoration:none;">SMBC / JSA Brief</a>
-  <a href="/aviation-emissions/gtf-non-co2-supplement/" style="color:#9aa5b1;text-decoration:none;">Non-CO2 Supplement</a>
-  <a href="/aviation-emissions/gtf-exposure-calculator/" style="color:#eeab4c;text-decoration:none;">Exposure Calculator</a>
+<div style="min-height: 100vh; background: #F5F6F3; color: #0E1A24; font-family: 'Public Sans', system-ui, sans-serif; font-size: 16px; line-height: 1.6">
+
+<header style="border-bottom: 1px solid rgba(255,255,255,0.1); background: #0E2A40">
+<div style="max-width: 1200px; margin: 0 auto; padding: 18px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px">
+<a href="#top" style="display: flex; align-items: baseline; gap: 10px; text-decoration: none; color: #FFFFFF; font-family: 'IBM Plex Mono', monospace; font-size: 17px">
+<span style="font-weight: 600; letter-spacing: 0.02em">AVIATION EMISSIONS</span>
+<span style="color: #8FA3B6; font-weight: 400">// explained</span>
+</a>
+<nav aria-label="Main" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; font-size: 15px">
+<a class="navlink" href="#insights">Insights</a>
+<a class="navlink" href="#tools">Tools</a>
+<a class="navlink" href="#services">Services</a>
+<a class="navlink" href="#about">About</a>
+<a class="navlink" href="#contact">Contact</a>
+<a href="#contact" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; background: #FFFFFF; color: #0E1A24; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 15px">Book a briefing</a>
+</nav>
 </div>
-
-<div class="blueprint-grid"></div>
-
-<header>
-  <div class="title mono">AVIATION EMISSIONS <span>// explained</span></div>
-  <div class="header-actions">
-    <button class="btn" onclick="openDrawer()">CURRENT NEWS</button>
-    <a class="btn" href="/aviation-emissions/climate-policies/" style="text-decoration:none; display:inline-flex; align-items:center;">CLIMATE POLICIES</a>
-    <button class="btn" id="themeBtn" onclick="toggleTheme()">DARK MODE</button>
-    <a class="btn" href="/aviation-emissions/engagement-overview/" style="text-decoration:none; display:inline-flex; align-items:center;">ENGAGEMENT OVERVIEW</a>
-    <a class="btn" href="/aviation-emissions/policy-map/" style="text-decoration:none; display:inline-flex; align-items:center;">POLICY MAP</a>
-    <a class="btn" href="/aviation-emissions/corsia-calculator/" style="text-decoration:none; display:inline-flex; align-items:center;">ETS VS CORSIA</a>
-  </div>
 </header>
 
-<div class="telemetry">
-  <span class="tstat"><span class="dot"></span>LIVE MODEL</span>
-  <span>SOURCE — LEE ET AL. 2021</span>
-  <span>METRIC — ERF (EFFECTIVE RADIATIVE FORCING)</span>
+<section id="insights" style="color: #FFFFFF; background-color: #0E2A40; background-image: linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px); background-size: 200px 100%">
+<div style="max-width: 1200px; margin: 0 auto; padding: 56px 24px 72px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 40px 64px">
+<div style="order: 2; flex: 3 1 460px; min-width: 0; display: flex; justify-content: center">
+<svg viewBox="-300 -300 600 600" role="img" aria-label="Turbofan diagram ringed by aviation's three main warming effects: contrail cirrus 57 percent, CO2 34 percent, NOx 17 percent of net effective radiative forcing." style="width: 100%; max-width: 640px; height: auto; display: block">
+<defs>
+<linearGradient id="bladeMetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2E363E"></stop><stop offset="0.35" stop-color="#8E98A2"></stop><stop offset="0.58" stop-color="#F3F5F7"></stop><stop offset="0.78" stop-color="#AEB7BF"></stop><stop offset="1" stop-color="#3F4851"></stop></linearGradient>
+<linearGradient id="nacelleChrome" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F4F6F8"></stop><stop offset="0.3" stop-color="#7D8790"></stop><stop offset="0.55" stop-color="#E9EDF0"></stop><stop offset="0.8" stop-color="#5A646E"></stop><stop offset="1" stop-color="#C9D0D6"></stop></linearGradient>
+<linearGradient id="bladeLight" x1="1" y1="0" x2="0" y2="0.25"><stop offset="0" stop-color="#F3F5F6"></stop><stop offset="0.3" stop-color="#D2D7DB"></stop><stop offset="0.7" stop-color="#9DA5AC"></stop><stop offset="1" stop-color="#666F77"></stop></linearGradient>
+<radialGradient id="coreShade" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#2B3239"></stop><stop offset="1" stop-color="#090C0F"></stop></radialGradient>
+<linearGradient id="bladeSilver" x1="0" y1="1" x2="0.7" y2="0"><stop offset="0" stop-color="#4E565E"></stop><stop offset="0.38" stop-color="#B9C0C6"></stop><stop offset="0.55" stop-color="#FFFFFF"></stop><stop offset="0.72" stop-color="#AEB5BC"></stop><stop offset="1" stop-color="#5A626A"></stop></linearGradient>
+<radialGradient id="faceDark" cx="0.5" cy="0.5" r="0.5"><stop offset="0.3" stop-color="#1C2127"></stop><stop offset="1" stop-color="#050709"></stop></radialGradient>
+<radialGradient id="spinnerDark" cx="0.35" cy="0.3" r="0.8"><stop offset="0" stop-color="#4A525B"></stop><stop offset="0.6" stop-color="#1A1F24"></stop><stop offset="1" stop-color="#080A0C"></stop></radialGradient>
+<linearGradient id="bladeSilver2" x1="0.6" y1="1" x2="0.2" y2="0" gradientUnits="objectBoundingBox"><stop offset="0" stop-color="#5F676F"></stop><stop offset="0.3" stop-color="#C4CACF"></stop><stop offset="0.55" stop-color="#F6F8F9"></stop><stop offset="0.8" stop-color="#C9CFD4"></stop><stop offset="1" stop-color="#8D959C"></stop></linearGradient>
+<filter id="bladeBlur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3"></feGaussianBlur></filter>
+<radialGradient id="fanShade" cx="0.5" cy="0.5" r="0.5"><stop offset="0.72" stop-color="#000000" stop-opacity="0"></stop><stop offset="1" stop-color="#000000" stop-opacity="0.45"></stop></radialGradient>
+<radialGradient id="spinnerShade" cx="0.36" cy="0.3" r="0.8"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset="0.55" stop-color="#C3CAD1"></stop><stop offset="1" stop-color="#5E6872"></stop></radialGradient>
+</defs>
+<circle cx="0" cy="0" r="232" style="fill: none; stroke: #5E7A93; stroke-width: 5; stroke-dasharray: 0.7 13.88"></circle>
+<circle cx="0" cy="0" r="246" style="fill: none; stroke: #2C4760; stroke-width: 0.75"></circle>
+<circle cx="0" cy="0" r="200" style="fill: none; stroke: #2C4760; stroke-width: 0.75"></circle>
+
+<g transform="rotate(-90)">
+<circle class="seg" cx="0" cy="0" r="215" data-id="co2" style="fill: none; stroke: #EEA000; stroke-dasharray: 416.8 1350.88; stroke-dashoffset: 0; stroke-width: 7px; opacity: 0.4"></circle>
+<circle class="seg" cx="0" cy="0" r="215" data-id="contrail" style="fill: none; stroke: #2A7AD5; stroke-dasharray: 697.4 1350.88; stroke-dashoffset: -424.8; stroke-width: 12px; opacity: 1"></circle>
+<circle class="seg" cx="0" cy="0" r="215" data-id="nox" style="fill: none; stroke: #E5484D; stroke-dasharray: 212.7 1350.88; stroke-dashoffset: -1130.2; stroke-width: 7px; opacity: 0.4"></circle>
+</g>
+
+<line x1="183" y1="-125.7" x2="202.7" y2="-139.2" style="stroke: #C9D2DB; stroke-width: 1"></line>
+<text x="212" y="-150" style="font-family: 'Public Sans', sans-serif; font-size: 13px; font-weight: 600; fill: #FFFFFF">CO₂</text>
+<text x="212" y="-134" style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; fill: #EEA000">~34%</text>
+
+<line x1="-97.7" y1="199.4" x2="-108.2" y2="220.9" style="stroke: #C9D2DB; stroke-width: 1"></line>
+<text x="-114" y="240" text-anchor="end" style="font-family: 'Public Sans', sans-serif; font-size: 13px; font-weight: 600; fill: #FFFFFF">Contrail cirrus</text>
+<text x="-114" y="256" text-anchor="end" style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; fill: #4A93E6">~57%</text>
+
+<line x1="-112.8" y1="-191.4" x2="-125" y2="-212" style="stroke: #C9D2DB; stroke-width: 1"></line>
+<text x="-131" y="-236" text-anchor="end" style="font-family: 'Public Sans', sans-serif; font-size: 13px; font-weight: 600; fill: #FFFFFF">NOx (net)</text>
+<text x="-131" y="-220" text-anchor="end" style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; fill: #F06A6E">~17%</text>
+
+<circle cx="0" cy="0" r="180" style="fill: url(#nacelleChrome)"></circle>
+<circle cx="0" cy="0" r="170" style="fill: #07090B; stroke: #2A333C; stroke-width: 1.2"></circle>
+<path d="M-188 0H-178M178 0H188M0 -188V-178M0 178V188" style="stroke: #5E7A93; stroke-width: 0.75"></path>
+
+<g>
+<circle cx="0" cy="0" r="169" style="fill: url(#faceDark)"></circle>
+<g style="fill: none; stroke: #000000; stroke-width: 15; opacity: 0.55; filter: url(#bladeBlur)">
+<path transform="rotate(0.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(15.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(30.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(45.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(60.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(75.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(90.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(105.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(120.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(135.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(150.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(165.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(180.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(195.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(210.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(225.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(240.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(255.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(270.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(285.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(300.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(315.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(330.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(345.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+</g>
+<g style="fill: none; stroke: #23292F; stroke-width: 13">
+<path transform="rotate(0.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(15.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(30.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(45.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(60.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(75.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(90.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(105.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(120.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(135.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(150.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(165.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(180.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(195.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(210.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(225.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(240.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(255.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(270.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(285.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(300.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(315.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(330.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(345.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+</g>
+<g style="fill: none; stroke: url(#bladeSilver2); stroke-width: 11.5">
+<path transform="rotate(0.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(15.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(30.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(45.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(60.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(75.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(90.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(105.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(120.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(135.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(150.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(165.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(180.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(195.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(210.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(225.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(240.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(255.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(270.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(285.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(300.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(315.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(330.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(345.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+</g>
+<g style="fill: none; stroke: #0B0F13; stroke-width: 11.5">
+<path transform="rotate(0.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.08"></path>
+<path transform="rotate(15.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.14"></path>
+<path transform="rotate(30.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.20"></path>
+<path transform="rotate(45.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.28"></path>
+<path transform="rotate(60.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.35"></path>
+<path transform="rotate(75.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.41"></path>
+<path transform="rotate(90.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.47"></path>
+<path transform="rotate(105.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.51"></path>
+<path transform="rotate(120.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.54"></path>
+<path transform="rotate(135.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.55"></path>
+<path transform="rotate(150.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.54"></path>
+<path transform="rotate(165.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.51"></path>
+<path transform="rotate(180.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.47"></path>
+<path transform="rotate(195.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.41"></path>
+<path transform="rotate(210.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.35"></path>
+<path transform="rotate(225.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.28"></path>
+<path transform="rotate(240.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.20"></path>
+<path transform="rotate(255.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.14"></path>
+<path transform="rotate(270.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.08"></path>
+<path transform="rotate(285.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.04"></path>
+<path transform="rotate(300.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.01"></path>
+<path transform="rotate(315.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.00"></path>
+<path transform="rotate(330.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.01"></path>
+<path transform="rotate(345.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158" style="opacity: 0.04"></path>
+</g>
+<g style="fill: none; stroke: #FFFFFF; stroke-width: 2.2; opacity: 0.8">
+<path transform="rotate(0.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(15.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(30.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(45.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(60.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(75.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(90.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(105.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(120.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(135.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(150.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(165.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(180.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(195.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(210.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(225.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(240.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(255.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(270.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(285.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(300.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(315.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(330.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+<path transform="rotate(345.00)" d="M0 -50 C9 -84 5 -116 -16 -140 C-26 -151 -37 -156 -48 -158"></path>
+</g>
+<circle cx="0" cy="0" r="169" style="fill: url(#fanShade)"></circle>
+<circle cx="0" cy="0" r="167" style="fill: none; stroke: rgba(255,255,255,0.14); stroke-width: 1"></circle>
+<circle cx="0" cy="0" r="56" style="fill: #000000; opacity: 0.65; filter: url(#bladeBlur)"></circle>
+<circle cx="0" cy="0" r="50" style="fill: url(#spinnerDark); stroke: rgba(255,255,255,0.16); stroke-width: 0.8"></circle>
+<path d="M15 -12 C7 -21 -12 -18 -15 -2 C-17 12 -3 19 7 13 C13 9 12 1 6 -1" style="fill: none; stroke: #F2F4F6; stroke-width: 4.5; stroke-linecap: round"></path>
+</g>
+</svg>
 </div>
 
-<div class="hero">
-  <p class="eyebrow">RF BREAKDOWN // BY POLLUTANT</p>
-  <h1>What's actually warming the planet, per pollutant</h1>
-  <p>Share of aviation's effective radiative forcing (ERF) by pollutant, Lee et al. (2021). Click a segment to see how it works.</p>
-  <p style="font-size: 12.5px; color: var(--text-muted); max-width: 640px; margin-top: 6px;">These three are aviation's dominant ERF terms and add to just over 100% of Lee et al.'s total (100.9 mW/m&sup2;) — the total also includes smaller warming terms (soot, water vapour) offset in part by a cooling sulfate aerosol term, not shown individually here.</p>
+<div style="order: 1; flex: 2 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<h1 style="margin: 0; font-family: 'Source Serif 4', Georgia, serif; font-weight: 500; font-size: clamp(1.9rem, 3vw, 2.6rem); line-height: 1.15; letter-spacing: -0.015em">What aviation emissions do to the climate</h1>
+<p style="margin: 6px 0 22px; font-size: 16px; color: #B8C4CF">Carbon prices only cover CO₂. Contrails and NOx add more warming, and rules for them are starting to form. Pick one to see how it works.</p>
+<button type="button" class="legend-btn" data-id="contrail" aria-pressed="true" style="display: flex; align-items: center; gap: 14px; width: 100%; min-height: 56px; padding: 12px 16px; text-align: left; font: inherit; cursor: pointer; border-radius: 4px; border: 1px solid #F2F5F7; background: #F2F5F7; color: #0E1A24">
+<span class="bar" aria-hidden="true" style="width: 28px; border-radius: 2px; flex-shrink: 0; height: 6px; background: #2A7AD5"></span>
+<span style="flex: 1; font-weight: 600">Contrail cirrus</span>
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px">57.4 mW/m²</span>
+</button>
+<button type="button" class="legend-btn" data-id="co2" aria-pressed="false" style="display: flex; align-items: center; gap: 14px; width: 100%; min-height: 56px; padding: 12px 16px; text-align: left; font: inherit; cursor: pointer; border-radius: 4px; border: 1px solid rgba(255,255,255,0.18); background: #11304A; color: #FFFFFF">
+<span class="bar" aria-hidden="true" style="width: 28px; border-radius: 2px; flex-shrink: 0; height: 4px; background: #EEA000"></span>
+<span style="flex: 1; font-weight: 600">CO₂</span>
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px">34.3 mW/m²</span>
+</button>
+<button type="button" class="legend-btn" data-id="nox" aria-pressed="false" style="display: flex; align-items: center; gap: 14px; width: 100%; min-height: 56px; padding: 12px 16px; text-align: left; font: inherit; cursor: pointer; border-radius: 4px; border: 1px solid rgba(255,255,255,0.18); background: #11304A; color: #FFFFFF">
+<span class="bar" aria-hidden="true" style="width: 28px; border-radius: 2px; flex-shrink: 0; height: 4px; background: #E5484D"></span>
+<span style="flex: 1; font-weight: 600">NOx (net)</span>
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px">17.5 mW/m²</span>
+</button>
+
+<div style="margin-top: 8px; padding: 22px; background: #14334C; border: 1px solid rgba(255,255,255,0.14); color: #FFFFFF; border-radius: 4px">
+<div style="font-family: 'Source Serif 4', Georgia, serif; font-size: 24px; font-weight: 600"><span id="sel-name">Contrail cirrus</span></div>
+<p style="margin: 8px 0 16px; font-size: 15px; color: #C9D2DB"><span id="sel-desc">Ice clouds that form behind aircraft in cold, humid air. Each one lasts only hours, but together they are the largest warming effect. They are also the least certain.</span></p>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; border-top: 1px solid rgba(255,255,255,0.14); padding-top: 14px; font-size: 14px">
+<div><div style="color: #A9B6C2">Lasts</div><div style="font-weight: 600" id="sel-life">Hours</div></div>
+<div><div style="color: #A9B6C2">Priced today</div><div style="font-weight: 600" id="sel-priced">Not yet. EU monitoring since 2025</div></div>
+<div><div style="color: #A9B6C2">90% range</div><div style="font-weight: 600" id="sel-range">17 to 98 mW/m²</div></div>
+</div>
+</div>
+<p style="margin: 4px 0 0; font-size: 13px; color: #A9B6C2">Share of net effective radiative forcing, 2018. Source: Lee et al. (2021). Shares add to just over 100% because the total also includes a small cooling term.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="top" style="max-width: 1200px; margin: 0 auto; padding: 56px 24px 0">
+<div style="display: flex; flex-wrap: wrap; align-items: stretch; gap: 40px 56px">
+<div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; justify-content: center; padding: 24px 0">
+<h2 style="margin: 0; font-family: 'Source Serif 4', Georgia, serif; font-weight: 500; font-size: clamp(2.3rem, 4.4vw, 3.6rem); line-height: 1.1; letter-spacing: -0.02em">Clear numbers on what aviation's carbon rules cost.</h2>
+<p style="margin: 24px 0 0; max-width: 520px; font-size: 18px; color: #3A4A5A">We help airlines, lessors and lenders see what EU ETS, UK ETS and CORSIA cost today, and how that changes with new aircraft, SAF and contrail rules.</p>
+<div style="margin-top: 36px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px">
+<a href="#contact" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 26px; background: #0E1A24; color: #FFFFFF; text-decoration: none; border-radius: 4px; font-weight: 600">Book a briefing</a>
+<a href="#tools" style="font-weight: 500; text-underline-offset: 4px">Try the free tools</a>
+</div>
 </div>
 
-<div class="viewport" id="viewport">
-  <span class="hud-corner tl"></span>
-  <span class="hud-corner tr"></span>
-  <span class="hud-corner bl"></span>
-  <span class="hud-corner br"></span>
-  <button class="back-btn" id="backBtn" onclick="resetPan()">&lsaquo; back to centre</button>
-  <div class="world" id="world">
-    <svg id="rings" width="440" height="440" viewBox="0 0 440 440" role="img" aria-label="A turbofan engine surrounded by a ring showing each pollutant's share of aviation effective radiative forcing. Contrail cirrus about 57 percent, CO2 about 34 percent, NOx net about 17 percent. Click a segment to see its explanation card."></svg>
-
-    <div class="pan-card" id="card-nox" style="border-top-color:#e34948;">
-      <span class="eyebrow-mono">DATA SHEET // NOx</span>
-      <p class="ctitle">NOx (net, ~17%)</p>
-      <p class="csub">At cruise altitude, NOx speeds up ozone formation, a warming effect, but also raises hydroxyl radicals that break down methane, a cooling effect. The two partially offset, leaving a net warming that's smaller than CO2 or contrail cirrus but still genuinely debated in size.</p>
-      <div class="uncert-dial" id="dial-nox-wrap">
-        <span class="dial-label">90% confidence range — Lee et al. 2021</span>
-        <div id="ringdetail-nox"></div>
-        <p class="dial-note flag">The shaded wings show how much wider this slice could be at the high estimate (29 mW/m²). At the low estimate (0.6), the slice shrinks to almost nothing — the ozone warming and methane cooling nearly cancel out — but on this ERF basis the range stays just on the warming side throughout, it doesn't cross into net cooling.</p>
-      </div>
-    </div>
-    <div class="pan-card" id="card-contrail" style="border-top-color:#2a78d6;">
-      <span class="eyebrow-mono">DATA SHEET // CONTRAIL CIRRUS</span>
-      <p class="ctitle">Contrail cirrus (~57%)</p>
-      <p class="csub">Water vapour in engine exhaust freezes onto soot particles at cruise altitude, forming ice crystal trails that can spread into thin cirrus cloud cover. Like natural cirrus, they let sunlight through but trap outgoing heat, giving a net warming effect.</p>
-      <p class="csub" style="margin-top:10px;">The 57% figure is a fleet-wide average: Teoh et al. (2020, 2024) find that roughly 2-3% of flights, mostly long-haul, high-altitude, night-time routes, drive about 80% of total contrail warming.</p>
-      <div class="uncert-dial" id="dial-contrail-wrap">
-        <span class="dial-label">90% confidence range — Lee et al. 2021</span>
-        <div id="ringdetail-contrail"></div>
-        <p class="dial-note">The widest wings of any term here: at the high estimate (98 mW/m²) the slice would be so much bigger that its two wings meet and overlap on the far side of the ring — the darker patch where they cross. At the low estimate (17 mW/m²) the tick mark shows it could shrink to a fraction of what's shown. Contrail cirrus is the biggest slice of aviation's warming and the least precisely known.</p>
-      </div>
-    </div>
-    <div class="pan-card" id="card-co2" style="border-top-color:#eda100;">
-      <span class="eyebrow-mono">DATA SHEET // CO2</span>
-      <p class="ctitle">CO<sub>2</sub> (~34%)</p>
-      <p class="csub">Burning jet fuel releases CO<sub>2</sub>, which traps outgoing heat the way a blanket traps body heat. It persists in the atmosphere for centuries, so its warming effect accumulates and lasts long after the flight itself.</p>
-      <div class="uncert-dial" id="dial-co2-wrap">
-        <span class="dial-label">90% confidence range — Lee et al. 2021</span>
-        <div id="ringdetail-co2"></div>
-        <p class="dial-note">The narrowest wings of any term here: 31 to 38 mW/m². CO2's physics are well understood, so the slice barely moves either side of the solid wedge. This is the number regulators build policy on.</p>
-      </div>
-    </div>
-  </div>
+<figure style="flex: 1 1 460px; min-width: 0; margin: 0">
+<div style="aspect-ratio: 5 / 4; overflow: hidden; background: #6E9FCF">
+<svg viewBox="0 0 600 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="display: block; width: 100%; height: 100%">
+<defs><linearGradient id="skyHero" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#3F78AE"></stop><stop offset="0.6" stop-color="#8DB8DE"></stop><stop offset="1" stop-color="#E4EEF6"></stop></linearGradient></defs>
+<rect width="600" height="480" style="fill: url(#skyHero)"></rect>
+<path d="M-40 560 L700 120" style="stroke: #FFFFFF; stroke-width: 70; opacity: 0.1; fill: none"></path>
+<path d="M-40 560 L700 120" style="stroke: #FFFFFF; stroke-width: 26; opacity: 0.2; fill: none"></path>
+<path d="M120 -20 L-60 300" style="stroke: #FFFFFF; stroke-width: 34; opacity: 0.12; fill: none"></path>
+<path d="M120 -20 L-60 300" style="stroke: #FFFFFF; stroke-width: 9; opacity: 0.26; fill: none"></path>
+<path d="M-30 420 L440 150" style="stroke: #FFFFFF; stroke-width: 14; opacity: 0.2; fill: none"></path>
+<path d="M-30 420 L440 150" style="stroke: #FFFFFF; stroke-width: 3; opacity: 0.95; fill: none"></path>
+<path d="M-30 406 L436 143" style="stroke: #FFFFFF; stroke-width: 1.6; opacity: 0.6; fill: none"></path>
+<path d="M340 60 C410 48 480 56 560 44 M380 92 C440 84 510 90 600 78 M300 380 C380 368 460 376 560 362 M60 120 C110 112 150 118 210 108" style="stroke: #FFFFFF; stroke-width: 1.4; opacity: 0.32; fill: none; stroke-linecap: round"></path>
+<g transform="translate(446 147) rotate(-30)"><path d="M13 0 L5 -2 L-2 -2 L-9 -14 L-13 -14 L-9 -2 L-18 -2 L-22 -6.5 L-24.5 -6.5 L-22.5 0 L-24.5 6.5 L-22 6.5 L-18 2 L-9 2 L-13 14 L-9 14 L-2 2 L5 2 Z" style="fill: #FFFFFF"></path></g>
+</svg>
 </div>
-<p class="empty-hint" id="emptyHint">Click a ring segment or its label to see its card.</p>
-
-
-
-<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
-<div class="drawer" id="drawer">
-  <div class="drawer-header">
-    <h2 id="drawerTitle">Climate policies</h2>
-    <button class="drawer-close" onclick="closeDrawer()">&times;</button>
-  </div>
-  <p id="drawerNote" style="font-size: 12px; color: var(--text-muted); line-height: 1.6; padding: 1rem 1.5rem 0.25rem; margin: 0;">Almost everything below prices or regulates CO2 specifically. Non-CO2 effects, contrail cirrus and NOx, are a larger share of aviation's actual warming, but are only newly and partially addressed, see the EU non-CO2 MRV entry.</p>
-  <div class="drawer-body" id="drawerList"></div>
+<figcaption style="margin-top: 10px; font-size: 13px; color: #51606E">Contrails spread into cirrus cloud. Together they warm the planet more than aviation's CO₂ does.</figcaption>
+</figure>
 </div>
 
+<div style="margin-top: 56px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0 32px; border-top: 1px solid #0E1A24">
+<a href="/aviation-emissions/climate-policies/" style="display: block; padding: 20px 0 28px; text-decoration: none; color: #0E1A24">
+<div style="font-size: 13px; font-weight: 600; color: #B0601F">Briefing</div>
+<div style="margin-top: 6px; font-family: 'Source Serif 4', Georgia, serif; font-size: 20px; line-height: 1.3">What the EU's non-CO₂ rules mean for airlines</div>
+</a>
+<a href="/aviation-emissions/corsia-calculator/" style="display: block; padding: 20px 0 28px; text-decoration: none; color: #0E1A24">
+<div style="font-size: 13px; font-weight: 600; color: #B0601F">Explainer</div>
+<div style="margin-top: 6px; font-family: 'Source Serif 4', Georgia, serif; font-size: 20px; line-height: 1.3">EU ETS or CORSIA: which scheme covers a flight?</div>
+</a>
+<a href="/aviation-emissions/gtf-exposure-calculator/" style="display: block; padding: 20px 0 28px; text-decoration: none; color: #0E1A24">
+<div style="font-size: 13px; font-weight: 600; color: #B0601F">Tool</div>
+<div style="margin-top: 6px; font-family: 'Source Serif 4', Georgia, serif; font-size: 20px; line-height: 1.3">GTF groundings: what they cost a fleet</div>
+</a>
+</div>
+</section>
+
+<section id="about" aria-label="Background" style="border-top: 1px solid #D8DDE2; border-bottom: 1px solid #D8DDE2; background: #FFFFFF">
+<div style="max-width: 1200px; margin: 0 auto; padding: 28px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px 48px">
+<div>
+<div style="font-weight: 600; font-size: 15px">University of Manchester</div>
+<div style="font-size: 14px; color: #51606E">PhD research in aviation emissions modelling</div>
+</div>
+<div>
+<div style="font-weight: 600; font-size: 15px">Tyndall Centre for Climate Research</div>
+<div style="font-size: 14px; color: #51606E">Background in air quality and transport emissions</div>
+</div>
+<div>
+<div style="font-weight: 600; font-size: 15px">Peer-reviewed methods</div>
+<div style="font-size: 14px; color: #51606E">Climate forcing built on Lee et al. (2021)</div>
+</div>
+</div>
+</section>
+
+<section id="services" style="border-top: 1px solid #D8DDE2">
+<div style="max-width: 1200px; margin: 0 auto; padding: 96px 24px">
+<h2 style="margin: 0 0 40px; font-family: 'Source Serif 4', Georgia, serif; font-weight: 500; font-size: clamp(1.9rem, 3.2vw, 2.7rem); letter-spacing: -0.015em">What we do</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0; border-top: 1px solid #0E1A24">
+<div style="padding: 28px 28px 28px 0">
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #51606E">01</div>
+<h3 style="margin: 10px 0 10px; font-size: 20px; font-weight: 600">Carbon cost exposure</h3>
+<p style="margin: 0; color: #3A4A5A">What a fleet pays under EU ETS and UK ETS today, and how that moves with new aircraft or fuel.</p>
+</div>
+<div style="padding: 28px 28px 28px 0">
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #51606E">02</div>
+<h3 style="margin: 10px 0 10px; font-size: 20px; font-weight: 600">CORSIA obligations</h3>
+<p style="margin: 0; color: #3A4A5A">Which routes are covered, how many offsets are due, and what that may cost over time.</p>
+</div>
+<div style="padding: 28px 28px 28px 0">
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #51606E">03</div>
+<h3 style="margin: 10px 0 10px; font-size: 20px; font-weight: 600">SAF and contrail policy</h3>
+<p style="margin: 0; color: #3A4A5A">Plain briefings on fuel mandates and the new rules taking shape for non-CO₂ effects.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="tools" style="background: #FFFFFF; border-bottom: 1px solid #D8DDE2">
+<div style="background: #0E2A40; background-image: linear-gradient(90deg, rgba(255,255,255,0.09) 1px, transparent 1px); background-size: 200px 100%">
+<div style="max-width: 1200px; margin: 0 auto; padding: 72px 24px 168px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+<h2 style="margin: 0; color: #FFFFFF; font-family: 'Source Serif 4', Georgia, serif; font-weight: 500; font-size: clamp(1.9rem, 3.2vw, 2.7rem); letter-spacing: -0.015em">Tools and research</h2>
+<p style="margin: 0; max-width: 420px; color: #C9D2DB">Free to use. Built on public data and the same methods we use in client work.</p>
+</div>
+</div>
+
+<div style="max-width: 1200px; margin: -128px auto 0; padding: 0 24px 96px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 64px 40px">
+
+<a class="card" href="/aviation-emissions/gtf-non-co2-supplement/">
+<div style="position: relative">
+<div style="aspect-ratio: 16 / 9; overflow: hidden; background: #A9CBEA">
+<svg class="art" viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<defs><linearGradient id="skyA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5E93C6"></stop><stop offset="1" stop-color="#D6E6F4"></stop></linearGradient></defs>
+<rect width="640" height="360" style="fill: url(#skyA)"></rect>
+<path d="M60 420 L700 80" style="stroke: #FFFFFF; stroke-width: 46; opacity: 0.12; fill: none"></path>
+<path d="M60 420 L700 80" style="stroke: #FFFFFF; stroke-width: 16; opacity: 0.28; fill: none"></path>
+<path d="M-60 170 L320 -20" style="stroke: #FFFFFF; stroke-width: 24; opacity: 0.14; fill: none"></path>
+<path d="M-60 170 L320 -20" style="stroke: #FFFFFF; stroke-width: 6; opacity: 0.35; fill: none"></path>
+<path d="M-20 330 L478 106" style="stroke: #FFFFFF; stroke-width: 12; opacity: 0.22; fill: none"></path>
+<path d="M-20 330 L478 106" style="stroke: #FFFFFF; stroke-width: 2.6; opacity: 0.95; fill: none"></path>
+<path d="M-20 318 L476 100" style="stroke: #FFFFFF; stroke-width: 1.4; opacity: 0.6; fill: none"></path>
+<path d="M380 40 C440 30 500 36 560 26 M420 62 C470 54 530 60 600 50 M350 300 C420 288 480 296 560 284" style="stroke: #FFFFFF; stroke-width: 1.2; opacity: 0.35; fill: none; stroke-linecap: round"></path>
+<g transform="translate(482 104) rotate(-24)"><path d="M10 0 L4 -1.5 L-2 -1.5 L-7 -11 L-10 -11 L-7 -1.5 L-14 -1.5 L-17 -5 L-19 -5 L-17.5 0 L-19 5 L-17 5 L-14 1.5 L-7 1.5 L-10 11 L-7 11 L-2 1.5 L4 1.5 Z" style="fill: #FFFFFF"></path></g>
+</svg>
+</div>
+<span class="tag" style="position: absolute; left: 0; bottom: -24px; display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; background: #8EC0E8; color: #0E1A24; font-size: 18px; font-weight: 500">Contrails and non-CO₂<svg class="arrow" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"></path></svg></span>
+</div>
+<p class="blurb" style="margin: 48px 0 0; padding: 0 20px; font-size: 17px; color: #3A4A5A">How contrails and NOx add to aviation's warming, and the EU rules now forming to measure them.</p>
+</a>
+
+<a class="card" href="/aviation-emissions/corsia-calculator/">
+<div style="position: relative">
+<div style="aspect-ratio: 16 / 9; overflow: hidden; background: #F2E4D2">
+<svg class="art" viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<rect width="640" height="360" style="fill: #F2E4D2"></rect>
+<path d="M0 60H640M0 120H640M0 180H640M0 240H640M0 300H640M80 0V360M160 0V360M240 0V360M320 0V360M400 0V360M480 0V360M560 0V360" style="stroke: #E2C9AA; stroke-width: 1"></path>
+<path d="M80 250 Q320 40 560 200" style="fill: none; stroke: #C2621A; stroke-width: 1.8"></path>
+<path d="M120 170 Q300 90 480 290" style="fill: none; stroke: #C2621A; stroke-width: 1.8"></path>
+<path d="M200 300 Q420 110 600 120" style="fill: none; stroke: #C2621A; stroke-width: 1.8"></path>
+<path d="M60 110 Q230 20 400 140" style="fill: none; stroke: #0E2A40; stroke-width: 1.4; stroke-dasharray: 5 5"></path>
+<path d="M300 230 Q450 160 580 300" style="fill: none; stroke: #0E2A40; stroke-width: 1.4; stroke-dasharray: 5 5"></path>
+<g style="fill: #0E2A40; stroke: #F2E4D2; stroke-width: 3">
+<circle cx="80" cy="250" r="6"></circle><circle cx="560" cy="200" r="6"></circle><circle cx="120" cy="170" r="6"></circle><circle cx="480" cy="290" r="6"></circle><circle cx="200" cy="300" r="6"></circle><circle cx="600" cy="120" r="6"></circle><circle cx="60" cy="110" r="6"></circle><circle cx="400" cy="140" r="6"></circle><circle cx="300" cy="230" r="6"></circle><circle cx="580" cy="300" r="6"></circle>
+</g>
+</svg>
+</div>
+<span class="tag" style="position: absolute; left: 0; bottom: -24px; display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; background: #E39A55; color: #0E1A24; font-size: 18px; font-weight: 500">CORSIA calculator<svg class="arrow" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"></path></svg></span>
+</div>
+<p class="blurb" style="margin: 48px 0 0; padding: 0 20px; font-size: 17px; color: #3A4A5A">EU ETS and CORSIA side by side, and which one covers a given flight.</p>
+</a>
+
+<a class="card" href="/aviation-emissions/policy-map/">
+<div style="position: relative">
+<div style="aspect-ratio: 16 / 9; overflow: hidden; background: #102335">
+<svg class="art" viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<rect width="640" height="360" style="fill: #102335"></rect>
+<circle cx="320" cy="190" r="150" style="fill: #16314B; stroke: #6FA8DC; stroke-width: 1.4"></circle>
+<g style="fill: none; stroke: #6FA8DC; stroke-width: 0.8; opacity: 0.55">
+<ellipse cx="320" cy="190" rx="112" ry="150"></ellipse>
+<ellipse cx="320" cy="190" rx="75" ry="150"></ellipse>
+<ellipse cx="320" cy="190" rx="38" ry="150"></ellipse>
+<path d="M320 40V340"></path>
+<ellipse cx="320" cy="190" rx="150" ry="20"></ellipse>
+<ellipse cx="320" cy="115" rx="130" ry="16"></ellipse>
+<ellipse cx="320" cy="265" rx="130" ry="16"></ellipse>
+<ellipse cx="320" cy="60" rx="75" ry="9"></ellipse>
+<ellipse cx="320" cy="320" rx="75" ry="9"></ellipse>
+</g>
+<path d="M332 108 C350 100 372 104 384 116 C376 132 352 136 336 128 Z" style="fill: #E8C26A; opacity: 0.85"></path>
+<path d="M312 102 C318 96 326 98 326 106 C322 112 314 112 312 102 Z" style="fill: #E8C26A"></path>
+<path d="M360 118 Q430 120 452 196" style="fill: none; stroke: #E8C26A; stroke-width: 1.4; stroke-dasharray: 4 4"></path>
+<circle cx="452" cy="196" r="4" style="fill: #E8C26A"></circle>
+<circle cx="452" cy="196" r="11" style="fill: none; stroke: #E8C26A; stroke-width: 1; opacity: 0.6"></circle>
+</svg>
+</div>
+<span class="tag" style="position: absolute; left: 0; bottom: -24px; display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; background: #E8C26A; color: #0E1A24; font-size: 18px; font-weight: 500">Policy map<svg class="arrow" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"></path></svg></span>
+</div>
+<p class="blurb" style="margin: 48px 0 0; padding: 0 20px; font-size: 17px; color: #3A4A5A">EU ETS, UK ETS and CORSIA by country, so you can see which scheme applies to a flight.</p>
+</a>
+
+<a class="card" href="/aviation-emissions/gtf-exposure-calculator/">
+<div style="position: relative">
+<div style="aspect-ratio: 16 / 9; overflow: hidden; background: #E4ECF3">
+<svg class="art" viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<rect width="640" height="360" style="fill: #E4ECF3"></rect>
+<path d="M0 90H640M0 150H640M0 210H640M0 270H640" style="stroke: #CBD7E2; stroke-width: 1"></path>
+<path d="M30 280 C100 280 130 110 230 100 L420 100 C510 100 540 280 610 280 Z" style="fill: #1F3A5F; opacity: 0.08"></path>
+<path d="M30 280 C100 280 130 110 230 100 L420 100 C510 100 540 280 610 280" style="fill: none; stroke: #1F3A5F; stroke-width: 2.4"></path>
+<path d="M230 100V330M420 100V330" style="stroke: #1F3A5F; stroke-width: 1; stroke-dasharray: 3 5; opacity: 0.5"></path>
+<g style="fill: #D9822B">
+<rect x="50" y="296" width="22" height="34"></rect><rect x="80" y="286" width="22" height="44"></rect><rect x="110" y="300" width="22" height="30"></rect><rect x="140" y="310" width="22" height="20"></rect><rect x="170" y="314" width="22" height="16"></rect>
+<rect x="250" y="318" width="22" height="12"></rect><rect x="280" y="318" width="22" height="12"></rect><rect x="310" y="317" width="22" height="13"></rect><rect x="340" y="318" width="22" height="12"></rect><rect x="370" y="319" width="22" height="11"></rect>
+<rect x="440" y="320" width="22" height="10"></rect><rect x="470" y="318" width="22" height="12"></rect><rect x="500" y="314" width="22" height="16"></rect><rect x="530" y="306" width="22" height="24"></rect><rect x="560" y="300" width="22" height="30"></rect>
+</g>
+<g transform="translate(330 100)"><path d="M12 0 L5 -1.8 L-2 -1.8 L-8 -13 L-12 -13 L-8 -1.8 L-16 -1.8 L-20 -6 L-22 -6 L-20.5 0 L-22 6 L-20 6 L-16 1.8 L-8 1.8 L-12 13 L-8 13 L-2 1.8 L5 1.8 Z" style="fill: #0E2A40"></path></g>
+</svg>
+</div>
+<span class="tag" style="position: absolute; left: 0; bottom: -24px; display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; background: #1F3A5F; color: #FFFFFF; font-size: 18px; font-weight: 500">Exposure calculator<svg class="arrow" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"></path></svg></span>
+</div>
+<p class="blurb" style="margin: 48px 0 0; padding: 0 20px; font-size: 17px; color: #3A4A5A">What the GTF engine groundings cost a fleet: lease costs, extra fuel burn and disruption.</p>
+</a>
+
+</div>
+</section>
+
+<section id="contact" style="background: #0E1A24; color: #FFFFFF">
+<div style="max-width: 1200px; margin: 0 auto; padding: 88px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 32px">
+<div style="max-width: 640px">
+<h2 style="margin: 0; font-family: 'Source Serif 4', Georgia, serif; font-weight: 500; font-size: clamp(1.9rem, 3.2vw, 2.7rem); line-height: 1.15; letter-spacing: -0.015em">Book a 30-minute briefing</h2>
+<p style="margin: 14px 0 0; font-size: 17px; color: #C9D2DB">Tell us your fleet or portfolio. We will walk you through what the carbon rules mean for it.</p>
+</div>
+<a href="mailto:[email]" style="display: inline-flex; align-items: center; min-height: 52px; padding: 0 28px; background: #FFFFFF; color: #0E1A24; text-decoration: none; border-radius: 4px; font-weight: 600">Book a briefing</a>
+</div>
+</section>
+
+<footer style="background: #F5F6F3">
+<div style="max-width: 1200px; margin: 0 auto; padding: 56px 24px 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 32px 48px; font-size: 14px; color: #3A4A5A">
+<div>
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #0E1A24"><span style="font-weight: 600; letter-spacing: 0.02em">AVIATION EMISSIONS</span> <span style="color: #6B7885">// explained</span></div>
+<div style="margin-top: 8px">Aviation emissions and carbon markets</div>
+</div>
+<div>
+<div style="font-weight: 600; color: #0E1A24; margin-bottom: 8px">Contact</div>
+<div><a href="mailto:[email]">[email]</a></div>
+<div><a href="/aviation-emissions/engagement-overview/">Engagement overview</a></div>
+<div><a href="/aviation-emissions/climate-policies/">Climate policies</a></div>
+</div>
+<div style="grid-column: span 2; min-width: 0">
+<div style="font-weight: 600; color: #0E1A24; margin-bottom: 8px">Methods and sources</div>
+<p style="margin: 0">Climate forcing figures come from Lee et al. (2021), "The contribution of global aviation to anthropogenic climate forcing for 2000 to 2018", Atmospheric Environment 244. Shares are of net effective radiative forcing. Tool outputs are estimates for planning, not compliance filings.</p>
+</div>
+</div>
+<div style="max-width: 1200px; margin: 0 auto; padding: 0 24px 40px; font-size: 13px; color: #51606E">© 2026 Aviation Emissions Explained</div>
+</footer>
+
+</div>
 <script>
-const newsItems = [
-  { name: 'GTF grounding: certified pollutant exposure',
-    desc: 'Certified engine data quantifying the emissions consequences of the Pratt and Whitney GTF grounding: fuel burn, NOx, and soot compared across the grounded neo engine and both certified ceo alternatives. NOx and soot findings are solid; CO and HC are flagged as genuinely uncertain rather than claimed either way.',
-    url: 'https://mellifluous-heliotrope-3665a2.netlify.app/' },
-  { name: 'GTF exposure calculator',
-    desc: 'An interactive tool for modelling fleet-wide financial exposure from the GTF grounding: lease drag, fuel-burn penalty, and direct disruption costs, with fleet-wide, Spirit-scale, and single-aircraft presets.',
-    url: '/aviation-emissions/gtf-exposure-calculator/' }
-];
-
-function renderNewsList() {
-  const list = document.getElementById('drawerList');
-  list.innerHTML = '';
-  newsItems.forEach(function(n) {
-    const card = document.createElement('div');
-    card.className = 'policy-detail';
-    card.innerHTML =
-      '<button class="back-link" onclick="closeDrawer()">&lsaquo; back to homepage</button>' +
-      '<h3>' + n.name + '</h3>' +
-      '<p>' + n.desc + '</p>' +
-      '<a href="' + n.url + '" target="_blank" rel="noopener" class="back-link" style="padding:0;">Open exposure page &rsaquo;</a>';
-    list.appendChild(card);
+(function(){
+  var data={
+    contrail:{name:'Contrail cirrus',desc:'Ice clouds that form behind aircraft in cold, humid air. Each one lasts only hours, but together they are the largest warming effect. They are also the least certain.',life:'Hours',priced:'Not yet. EU monitoring since 2025',range:'17 to 98 mW/m²'},
+    co2:{name:'CO₂',desc:'Carbon dioxide from burning fuel. It stays in the air for centuries, so each flight keeps warming the planet long after it lands. It is the only part priced today.',life:'Centuries',priced:'Yes. EU ETS, UK ETS, CORSIA',range:'31 to 38 mW/m²'},
+    nox:{name:'NOx (net)',desc:'Nitrogen oxides make ozone, which warms, and remove methane, which cools. The warming is larger, so the net effect is warming.',life:'Weeks to a decade',priced:'Not yet',range:'0.6 to 29 mW/m²'}
+  };
+  function pick(id){
+    document.querySelectorAll('.seg').forEach(function(c){
+      var on=c.getAttribute('data-id')===id;
+      c.style.strokeWidth=on?'12px':'7px'; c.style.opacity=on?'1':'0.4';
+    });
+    document.querySelectorAll('.legend-btn').forEach(function(b){
+      var on=b.getAttribute('data-id')===id;
+      b.setAttribute('aria-pressed',on?'true':'false');
+      b.style.background=on?'#F2F5F7':'#11304A';
+      b.style.borderColor=on?'#F2F5F7':'rgba(255,255,255,0.18)';
+      b.style.color=on?'#0E1A24':'#FFFFFF';
+      b.querySelector('.bar').style.height=on?'6px':'4px';
+    });
+    var d=data[id];
+    ['name','desc','life','priced','range'].forEach(function(k){document.getElementById('sel-'+k).textContent=d[k];});
+  }
+  document.querySelectorAll('.seg,.legend-btn').forEach(function(el){
+    el.addEventListener('click',function(){pick(el.getAttribute('data-id'));});
   });
-}
-
-function openDrawer() {
-  document.getElementById('drawerTitle').textContent = 'Current news';
-  document.getElementById('drawerNote').style.display = 'none';
-  renderNewsList();
-  document.getElementById('drawer').classList.add('open');
-  document.getElementById('drawerOverlay').classList.add('open');
-}
-function closeDrawer() { document.getElementById('drawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('open'); }
-
-function toggleTheme() {
-  const root = document.documentElement;
-  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  root.setAttribute('data-theme', next);
-  document.getElementById('themeBtn').textContent = next === 'dark' ? 'DARK MODE' : 'LIGHT MODE';
-  localStorage.setItem('theme', next);
-}
-(function() {
-  const saved = localStorage.getItem('theme');
-  if (saved) { document.documentElement.setAttribute('data-theme', saved); document.getElementById('themeBtn').textContent = saved === 'dark' ? 'DARK MODE' : 'LIGHT MODE'; }
 })();
-
-const PAN_TARGETS = {
-  nox: 'translate(480px, 320px)',
-  contrail: 'translate(480px, -320px)',
-  co2: 'translate(-480px, 0px)'
-};
-let pannedTo = null;
-
-function resetPan() {
-  document.getElementById('world').style.transform = 'translate(0px, 0px)';
-  document.querySelectorAll('.pan-card').forEach(function(c) { c.classList.remove('shown'); });
-  document.getElementById('backBtn').classList.remove('shown');
-  document.getElementById('emptyHint').style.display = 'block';
-  pannedTo = null;
-}
-function panTo(id) {
-  if (pannedTo === id) { resetPan(); return; }
-  document.getElementById('world').style.transform = PAN_TARGETS[id];
-  document.querySelectorAll('.pan-card').forEach(function(c) {
-    c.classList.toggle('shown', c.id === 'card-' + id);
-  });
-  document.getElementById('backBtn').classList.add('shown');
-  document.getElementById('emptyHint').style.display = 'none';
-  pannedTo = id;
-}
-
-function animateCount(el, target, prefix, suffix, duration, delay) {
-  const startTime = performance.now() + delay;
-  function tick(now) {
-    const p = Math.min(1, Math.max(0, (now - startTime) / duration));
-    const eased = 1 - Math.pow(1 - p, 3);
-    el.textContent = prefix + Math.round(target * eased) + suffix;
-    if (p < 1) requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
-}
-
-function buildSegmentDetail(containerId, seg) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  const ns = 'http://www.w3.org/2000/svg';
-  const cx = 220, cy = 220;
-  const ringInner = 100, ringOuter = 150;
-  const start = seg.startAngle, end = seg.endAngle;
-  const mid = (start + end) / 2;
-  const halfActual = (end - start) / 2;
-
-  function toXY(r, angleDeg) {
-    const rad = angleDeg * Math.PI / 180;
-    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
-  }
-  function sectorPath(rInner, rOuter, startAngle, endAngle) {
-    const so = toXY(rOuter, startAngle), eo = toXY(rOuter, endAngle);
-    const si = toXY(rInner, endAngle), ei = toXY(rInner, startAngle);
-    const large = (endAngle - startAngle) > 180 ? 1 : 0;
-    return 'M ' + so.x + ' ' + so.y + ' A ' + rOuter + ' ' + rOuter + ' 0 ' + large + ' 1 ' + eo.x + ' ' + eo.y + ' L ' + si.x + ' ' + si.y + ' A ' + rInner + ' ' + rInner + ' 0 ' + large + ' 0 ' + ei.x + ' ' + ei.y + ' Z';
-  }
-  // Half-angle for a hypothetical value, scaled relative to this wedge's own actual
-  // half-angle - a true linear scale. For a term as uncertain as contrail cirrus, the
-  // high-estimate wings are wide enough that they'll meet and cross on the far side of
-  // the ring - that's not a bug to hide, it's the honest size of the error bar.
-  function halfAngleFor(v) {
-    if (v <= 0) return 0;
-    return halfActual * (v / seg.share);
-  }
-  const halfHigh = halfAngleFor(seg.high);
-  const halfLow = halfAngleFor(seg.low);
-
-  const svg = document.createElementNS(ns, 'svg');
-  svg.setAttribute('viewBox', '0 0 440 440');
-  svg.setAttribute('width', '230');
-  svg.setAttribute('height', '230');
-  svg.setAttribute('style', 'display:block;margin:0 auto;');
-
-  // Wings either side: the slice as it would look at the high estimate.
-  const wingL = document.createElementNS(ns, 'path');
-  wingL.setAttribute('d', sectorPath(ringInner, ringOuter, mid - halfHigh, start));
-  wingL.setAttribute('fill', seg.color);
-  wingL.setAttribute('opacity', '0.22');
-  svg.appendChild(wingL);
-
-  const wingR = document.createElementNS(ns, 'path');
-  wingR.setAttribute('d', sectorPath(ringInner, ringOuter, end, mid + halfHigh));
-  wingR.setAttribute('fill', seg.color);
-  wingR.setAttribute('opacity', '0.22');
-  svg.appendChild(wingR);
-
-  // The actual wedge, solid, exactly as it appears on the home ring.
-  const solid = document.createElementNS(ns, 'path');
-  solid.setAttribute('d', sectorPath(ringInner, ringOuter, start, end));
-  solid.setAttribute('fill', seg.color);
-  svg.appendChild(solid);
-
-  // Error-bar style caps marking the low-estimate edges, sitting inside the solid wedge
-  // (or coinciding at the centre if the low estimate is zero or negative).
-  [mid - halfLow, mid + halfLow].forEach(function(capAngle) {
-    const p1 = toXY(ringInner - 8, capAngle);
-    const p2 = toXY(ringOuter + 8, capAngle);
-    const cap = document.createElementNS(ns, 'line');
-    cap.setAttribute('x1', p1.x); cap.setAttribute('y1', p1.y);
-    cap.setAttribute('x2', p2.x); cap.setAttribute('y2', p2.y);
-    cap.setAttribute('stroke', 'var(--text)');
-    cap.setAttribute('stroke-width', '1.5');
-    cap.setAttribute('opacity', '0.75');
-    svg.appendChild(cap);
-  });
-
-  const highPt = toXY(ringOuter + 22, mid + halfHigh);
-  const highLabel = document.createElementNS(ns, 'text');
-  highLabel.setAttribute('x', highPt.x); highLabel.setAttribute('y', highPt.y);
-  highLabel.setAttribute('font-size', '12');
-  highLabel.setAttribute('font-family', 'IBM Plex Mono, monospace');
-  highLabel.setAttribute('fill', seg.color);
-  highLabel.setAttribute('text-anchor', 'middle');
-  highLabel.textContent = (seg.high > 0 ? '+' : '') + seg.high;
-  svg.appendChild(highLabel);
-
-  const lowPt = toXY(ringInner - 22, seg.low <= 0 ? mid : mid - halfLow);
-  const lowLabel = document.createElementNS(ns, 'text');
-  lowLabel.setAttribute('x', lowPt.x); lowLabel.setAttribute('y', lowPt.y);
-  lowLabel.setAttribute('font-size', '12');
-  lowLabel.setAttribute('font-family', 'IBM Plex Mono, monospace');
-  lowLabel.setAttribute('fill', seg.color);
-  lowLabel.setAttribute('text-anchor', 'middle');
-  lowLabel.textContent = (seg.low > 0 ? '+' : '') + seg.low;
-  svg.appendChild(lowLabel);
-
-  container.appendChild(svg);
-}
-
-(function() {
-  const svg = document.getElementById('rings');
-  const cx = 220, cy = 220;
-  const segments = [
-    { id: 'co2', label: 'CO2', pct: '~34%', share: 34.3, color: '#eda100', low: 31, high: 38 },
-    { id: 'contrail', label: 'Contrail cirrus', pct: '~57%', share: 57.4, color: '#2a78d6', low: 17, high: 98 },
-    { id: 'nox', label: 'NOx (net)', pct: '~17%', share: 17.5, color: '#e34948', low: 0.6, high: 29 }
-  ];
-  const total = segments.reduce(function(s, seg) { return s + seg.share; }, 0);
-  const ns = 'http://www.w3.org/2000/svg';
-
-  function toXY(r, angleDeg) {
-    const rad = angleDeg * Math.PI / 180;
-    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
-  }
-  function sectorPath(rInner, rOuter, startAngle, endAngle) {
-    const so = toXY(rOuter, startAngle), eo = toXY(rOuter, endAngle);
-    const si = toXY(rInner, endAngle), ei = toXY(rInner, startAngle);
-    const large = (endAngle - startAngle) > 180 ? 1 : 0;
-    return 'M ' + so.x + ' ' + so.y + ' A ' + rOuter + ' ' + rOuter + ' 0 ' + large + ' 1 ' + eo.x + ' ' + eo.y + ' L ' + si.x + ' ' + si.y + ' A ' + rInner + ' ' + rInner + ' 0 ' + large + ' 0 ' + ei.x + ' ' + ei.y + ' Z';
-  }
-
-  let angle = -90;
-  const ringInner = 100, ringOuter = 150;
-
-  function renderLabel(el, label) {
-    const idx = label.indexOf('CO2');
-    if (idx === -1) { el.textContent = label; return; }
-    if (idx > 0) el.appendChild(document.createTextNode(label.slice(0, idx)));
-    el.appendChild(document.createTextNode('CO'));
-    const sub = document.createElementNS(ns, 'tspan');
-    sub.setAttribute('baseline-shift', 'sub');
-    sub.setAttribute('font-size', '9');
-    sub.textContent = '2';
-    el.appendChild(sub);
-    const rest = label.slice(idx + 3);
-    if (rest) el.appendChild(document.createTextNode(rest));
-  }
-
-  segments.forEach(function(seg, segIndex) {
-    const sweep = (seg.share / total) * 360;
-    const start = angle, end = angle + sweep;
-    const mid = (start + end) / 2;
-    seg.startAngle = start;
-    seg.endAngle = end;
-
-    const group = document.createElementNS(ns, 'g');
-    group.setAttribute('class', 'ring-seg');
-    group.setAttribute('style', 'cursor:pointer;');
-    group.addEventListener('click', function() { panTo(seg.id); });
-
-    const p = document.createElementNS(ns, 'path');
-    p.setAttribute('d', sectorPath(ringInner, ringOuter, start, end));
-    p.setAttribute('fill', seg.color);
-    group.appendChild(p);
-
-    const leaderStart = toXY(ringOuter, mid);
-    const leaderBend = toXY(ringOuter + 20, mid);
-    const labelSide = Math.cos(mid * Math.PI / 180) >= 0 ? 1 : -1;
-    const leaderEnd = { x: leaderBend.x + labelSide * 40, y: leaderBend.y };
-
-    const leader = document.createElementNS(ns, 'path');
-    leader.setAttribute('d', 'M ' + leaderStart.x + ' ' + leaderStart.y + ' L ' + leaderBend.x + ' ' + leaderBend.y + ' L ' + leaderEnd.x + ' ' + leaderEnd.y);
-    leader.setAttribute('fill', 'none');
-    leader.setAttribute('stroke', seg.color);
-    leader.setAttribute('stroke-width', '1');
-    leader.setAttribute('opacity', '0.7');
-    group.appendChild(leader);
-
-    const dot = document.createElementNS(ns, 'circle');
-    dot.setAttribute('cx', leaderStart.x); dot.setAttribute('cy', leaderStart.y); dot.setAttribute('r', 2.5);
-    dot.setAttribute('fill', seg.color);
-    group.appendChild(dot);
-
-    const nameText = document.createElementNS(ns, 'text');
-    nameText.setAttribute('x', leaderEnd.x);
-    nameText.setAttribute('y', leaderEnd.y - 6);
-    nameText.setAttribute('text-anchor', labelSide > 0 ? 'start' : 'end');
-    nameText.setAttribute('font-size', '13');
-    nameText.setAttribute('font-family', 'IBM Plex Sans, sans-serif');
-    nameText.setAttribute('font-weight', '500');
-    nameText.setAttribute('fill', 'var(--text)');
-    renderLabel(nameText, seg.label);
-    group.appendChild(nameText);
-
-    const pctText = document.createElementNS(ns, 'text');
-    pctText.setAttribute('x', leaderEnd.x);
-    pctText.setAttribute('y', leaderEnd.y + 12);
-    pctText.setAttribute('text-anchor', labelSide > 0 ? 'start' : 'end');
-    pctText.setAttribute('font-size', '12');
-    pctText.setAttribute('font-family', 'IBM Plex Mono, monospace');
-    pctText.setAttribute('fill', seg.color);
-    const pctMatch = seg.pct.match(/^(~?)(\d+)(%)$/);
-    if (pctMatch && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
-      animateCount(pctText, parseInt(pctMatch[2], 10), pctMatch[1], pctMatch[3], 900, 300 + segIndex * 130);
-    } else {
-      pctText.textContent = seg.pct;
-    }
-    group.appendChild(pctText);
-
-    svg.appendChild(group);
-    angle = end;
-  });
-
-  segments.forEach(function(seg) {
-    buildSegmentDetail('ringdetail-' + seg.id, seg);
-  });
-
-  const tickGroup = document.createElementNS(ns, 'g');
-  tickGroup.setAttribute('opacity', '0.55');
-  for (let d = 0; d < 360; d += 5) {
-    const major = d % 30 === 0;
-    const p1 = toXY(major ? 152 : 156, d);
-    const p2 = toXY(161, d);
-    const tick = document.createElementNS(ns, 'line');
-    tick.setAttribute('x1', p1.x); tick.setAttribute('y1', p1.y);
-    tick.setAttribute('x2', p2.x); tick.setAttribute('y2', p2.y);
-    tick.setAttribute('stroke', 'var(--line-strong)');
-    tick.setAttribute('stroke-width', major ? 1.25 : 0.6);
-    tickGroup.appendChild(tick);
-  }
-  svg.appendChild(tickGroup);
-
-  const bezel = document.createElementNS(ns, 'circle');
-  bezel.setAttribute('cx', cx); bezel.setAttribute('cy', cy); bezel.setAttribute('r', 165);
-  bezel.setAttribute('fill', 'none');
-  bezel.setAttribute('stroke', 'var(--line)');
-  bezel.setAttribute('stroke-width', '0.75');
-  svg.appendChild(bezel);
-
-  const sweepGrad = document.createElementNS(ns, 'linearGradient');
-  sweepGrad.setAttribute('id', 'sweepGrad');
-  sweepGrad.setAttribute('x1', '0%'); sweepGrad.setAttribute('y1', '0%');
-  sweepGrad.setAttribute('x2', '100%'); sweepGrad.setAttribute('y2', '0%');
-  const stopA = document.createElementNS(ns, 'stop');
-  stopA.setAttribute('offset', '0%'); stopA.setAttribute('stop-color', 'var(--teal)'); stopA.setAttribute('stop-opacity', '0');
-  const stopB = document.createElementNS(ns, 'stop');
-  stopB.setAttribute('offset', '100%'); stopB.setAttribute('stop-color', 'var(--teal)'); stopB.setAttribute('stop-opacity', '0.55');
-  sweepGrad.appendChild(stopA); sweepGrad.appendChild(stopB);
-  const defs = document.createElementNS(ns, 'defs');
-  defs.appendChild(sweepGrad);
-  svg.appendChild(defs);
-
-  const radarSweep = document.createElementNS(ns, 'path');
-  radarSweep.setAttribute('id', 'radarSweep');
-  radarSweep.setAttribute('d', sectorPath(0, 165, -90 - 22, -90));
-  radarSweep.setAttribute('fill', 'url(#sweepGrad)');
-  svg.appendChild(radarSweep);
-
-  const fanAssembly = document.createElementNS(ns, 'g');
-  fanAssembly.setAttribute('id', 'fanAssembly');
-
-  const blades = 18;
-  const slot = 360 / blades;
-  const rootArc = slot * 0.75;
-  const sweep = 27;
-  for (let i = 0; i < blades; i++) {
-    const a1 = i * slot;
-    const a2 = a1 + rootArc;
-    const rootLead = toXY(20, a1);
-    const rootTrail = toXY(20, a2);
-    const tipLead = toXY(76, a1 - sweep);
-    const tipTrail = toXY(76, a2 - sweep);
-    const ctrlLead = toXY(48, a1 - sweep * 0.3);
-    const ctrlTrail = toXY(48, a2 - sweep * 0.3);
-    const blade = document.createElementNS(ns, 'path');
-    blade.setAttribute('d',
-      'M ' + rootLead.x + ' ' + rootLead.y +
-      ' Q ' + ctrlLead.x + ' ' + ctrlLead.y + ' ' + tipLead.x + ' ' + tipLead.y +
-      ' L ' + tipTrail.x + ' ' + tipTrail.y +
-      ' Q ' + ctrlTrail.x + ' ' + ctrlTrail.y + ' ' + rootTrail.x + ' ' + rootTrail.y +
-      ' Z');
-    blade.setAttribute('fill', 'var(--blueprint)');
-    blade.setAttribute('fill-opacity', '0.6');
-    blade.setAttribute('stroke', 'var(--line-strong)');
-    blade.setAttribute('stroke-width', '0.75');
-    fanAssembly.appendChild(blade);
-  }
-
-  const hubOuter = document.createElementNS(ns, 'circle');
-  hubOuter.setAttribute('cx', cx); hubOuter.setAttribute('cy', cy); hubOuter.setAttribute('r', 20);
-  hubOuter.setAttribute('fill', 'var(--panel)');
-  hubOuter.setAttribute('stroke', 'var(--line-strong)');
-  hubOuter.setAttribute('stroke-width', '1');
-  fanAssembly.appendChild(hubOuter);
-
-  const spiral = document.createElementNS(ns, 'path');
-  let sd = '';
-  for (let t = 0; t <= 540; t += 12) {
-    const r = 2 + (t / 540) * 14;
-    const sp = toXY(r, t - 90);
-    sd += (t === 0 ? 'M' : 'L') + ' ' + sp.x + ' ' + sp.y + ' ';
-  }
-  spiral.setAttribute('d', sd);
-  spiral.setAttribute('fill', 'none');
-  spiral.setAttribute('stroke', 'var(--teal)');
-  spiral.setAttribute('stroke-width', '1.25');
-  fanAssembly.appendChild(spiral);
-
-  svg.appendChild(fanAssembly);
-
-  const nacelleOuter = document.createElementNS(ns, 'circle');
-  nacelleOuter.setAttribute('cx', cx); nacelleOuter.setAttribute('cy', cy); nacelleOuter.setAttribute('r', 88);
-  nacelleOuter.setAttribute('fill', 'none');
-  nacelleOuter.setAttribute('stroke', 'var(--line-strong)');
-  nacelleOuter.setAttribute('stroke-width', '1');
-  svg.appendChild(nacelleOuter);
-
-  const nacelleInner = document.createElementNS(ns, 'circle');
-  nacelleInner.setAttribute('cx', cx); nacelleInner.setAttribute('cy', cy); nacelleInner.setAttribute('r', 82);
-  nacelleInner.setAttribute('fill', 'none');
-  nacelleInner.setAttribute('stroke', 'var(--line)');
-  nacelleInner.setAttribute('stroke-width', '0.5');
-  svg.appendChild(nacelleInner);
-  })();
 </script>
 
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "99311d4c453e49c091ebf8972f3c2200"}'></script><!-- End Cloudflare Web Analytics -->
-
 </body>
 </html>
