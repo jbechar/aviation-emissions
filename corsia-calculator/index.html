@@ -3,117 +3,133 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ETS and CORSIA - Aviation emissions</title>
+<title>ETS vs CORSIA | Aviation Emissions Explained</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --paper: #f1f3ee; --ink: #1b2733; --muted: #5a6672; --line: #cbd2cc;
-    --money: #a3246f; --link: #2b5c8a; --tint: #e6e9e3; --field: #ffffff;
-    --body: 'Atkinson Hyperlegible', 'Segoe UI', Arial, sans-serif;
-    --head: 'Barlow Semi Condensed', 'Arial Narrow', Arial, sans-serif;
-    --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --paper: #151b21; --ink: #e6eae6; --muted: #97a3ac; --line: #2e3a42;
-      --money: #e27db8; --link: #8db8e0; --tint: #1c242b; --field: #1c242b;
-    }
+    --paper: #F5F6F3; --ink: #0E1A24; --muted: #51606E; --line: #D8DDE2;
+    --navy: #0E2A40; --accent: #E39A55; --accent-deep: #CF8441; --accent-soft: #FBEFE3;
+    --money: #A04A10; --link: #1F3A5F; --tint: #EEF1F3; --field: #FFFFFF;
+    --body: 'Public Sans', system-ui, sans-serif;
+    --head: 'Source Serif 4', Georgia, serif;
+    --mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
-  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; }
   a { color: var(--link); text-underline-offset: 3px; }
   a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
 
-  .site-nav { max-width: 760px; margin: 0 auto; padding: 1.25rem 1.5rem 0; display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 15px; }
-  .site-nav a { color: var(--muted); text-decoration: none; }
-  .site-nav a:hover { color: var(--ink); text-decoration: underline; }
-  .site-nav a[aria-current="page"] { color: var(--ink); font-weight: 700; }
-  .site-nav .home { color: var(--ink); font-weight: 700; flex-basis: 100%; margin-bottom: 2px; }
+  /* Site header (matches homepage) */
+  .site-header { background: var(--navy); border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .site-header-in { max-width: 1200px; margin: 0 auto; padding: 18px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; }
+  .wordmark { display: flex; align-items: baseline; gap: 10px; text-decoration: none; color: #FFFFFF; font-family: var(--mono); font-size: 17px; }
+  .wordmark b { font-weight: 600; letter-spacing: 0.02em; }
+  .wordmark span { color: #8FA3B6; }
+  .site-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; font-size: 15px; }
+  .site-nav a { color: #C9D2DB; text-decoration: none; }
+  .site-nav a:hover { color: #FFFFFF; text-decoration: underline; text-underline-offset: 4px; }
+  .site-nav a[aria-current="page"] { color: #FFFFFF; }
+  .site-nav .cta { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; background: #FFFFFF; color: var(--ink); border-radius: 4px; font-weight: 600; }
+  .site-nav .cta:hover { color: var(--ink); text-decoration: none; background: #E9EDF0; }
 
-  .wrap { max-width: 760px; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
-  h1, h2, h3 { font-family: var(--head); font-weight: 600; line-height: 1.15; }
-  h1 { font-size: clamp(34px, 6vw, 46px); margin: 0 0 1rem; max-width: 20ch; }
-  h2 { font-size: 26px; margin: 3.5rem 0 1rem; }
-  h3 { font-size: 23px; margin: 0 0 0.5rem; }
-  .subtitle { font-size: 19px; margin: 0; max-width: 62ch; }
+  .wrap { max-width: 800px; margin: 0 auto; padding: 3.5rem 24px 2rem; }
+  h1, h2, h3 { font-family: var(--head); font-weight: 500; line-height: 1.15; }
+  h1 { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.015em; margin: 0 0 1rem; max-width: 20ch; }
+  h2 { font-size: clamp(1.6rem, 2.6vw, 2.1rem); letter-spacing: -0.01em; margin: 3.5rem 0 1rem; }
+  h3 { font-size: 22px; font-weight: 600; margin: 0 0 0.5rem; }
+  .subtitle { font-size: 17px; margin: 0; max-width: 62ch; color: #3A4A5A; }
 
   /* Timeline */
   .timeline-wrap { position: relative; height: 90px; margin: 1.5rem 0 0.5rem; }
-  .timeline-line { position: absolute; top: 33px; left: 0; right: 0; height: 2px; background: var(--ink); }
+  .timeline-line { position: absolute; top: 33px; left: 0; right: 0; height: 1px; background: var(--ink); }
   .tl-point, .tl-range { position: absolute; top: 34px; cursor: pointer; text-align: center; }
   .tl-point { transform: translate(-50%, -8px); }
   .tl-range { transform: translateY(-8px); }
-  .tl-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--paper); border: 2px solid var(--ink); margin: 0 auto; }
-  .tl-range-bar { height: 16px; border-radius: 8px; background: var(--paper); border: 2px solid var(--ink); }
-  .tl-year { font-family: var(--head); font-weight: 600; font-size: 17px; color: var(--muted); margin-top: 8px; white-space: nowrap; }
+  .tl-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--paper); border: 2px solid var(--ink); margin: 0 auto; transition: background .2s, border-color .2s, transform .2s; }
+  .tl-range-bar { height: 16px; border-radius: 8px; background: var(--paper); border: 2px solid var(--ink); transition: background .2s, border-color .2s; }
+  .tl-year { font-family: var(--mono); font-weight: 500; font-size: 14px; color: var(--muted); margin-top: 8px; white-space: nowrap; }
   .tl-point:hover .tl-year, .tl-range:hover .tl-year { color: var(--ink); }
-  .tl-point.active .tl-dot, .tl-range.active .tl-range-bar { background: var(--link); border-color: var(--link); }
-  .tl-point.active .tl-year, .tl-range.active .tl-year { color: var(--link); }
-  .tl-detail { padding: 0 0 0 1rem; border-left: 3px solid var(--link); min-height: 5.5em; }
-  .tl-detail-title { font-weight: 700; margin-bottom: 4px; }
+  .tl-point:hover .tl-dot { transform: scale(1.15); }
+  .tl-point.active .tl-dot, .tl-range.active .tl-range-bar { background: var(--accent); border-color: var(--accent-deep); }
+  .tl-point.active .tl-year, .tl-range.active .tl-year { color: var(--ink); font-weight: 600; }
+  .tl-detail { padding: 1rem 1.25rem; background: #FFFFFF; border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 4px; min-height: 6.5em; }
+  .tl-detail-title { font-family: var(--head); font-weight: 600; font-size: 19px; margin-bottom: 4px; }
+  .tl-detail-body { color: #3A4A5A; }
 
   /* Comparison */
-  .compare-table, .sgf-table { width: 100%; border-collapse: collapse; margin: 0.5rem 0 1.5rem; font-size: 16px; }
-  .compare-table th, .compare-table td, .sgf-table th, .sgf-table td { padding: 12px 12px 12px 0; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
-  .compare-table tr:first-child th, .sgf-table tr:first-child th { font-family: var(--head); font-weight: 600; font-size: 20px; border-bottom: 2px solid var(--ink); }
-  .compare-table td:first-child { font-weight: 700; width: 9rem; }
-  .compare-note { background: var(--tint); border-radius: 6px; padding: 1rem 1.25rem; margin: 0 0 1rem; }
+  .compare-table, .sgf-table { width: 100%; border-collapse: collapse; margin: 0.5rem 0 1.5rem; font-size: 15px; background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; }
+  .compare-table th, .compare-table td, .sgf-table th, .sgf-table td { padding: 12px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+  .compare-table tr:last-child td, .sgf-table tr:last-child td { border-bottom: 0; }
+  .compare-table tr:first-child th, .sgf-table tr:first-child th { font-family: var(--head); font-weight: 600; font-size: 19px; border-bottom: 1px solid var(--ink); }
+  .compare-table td:first-child { font-weight: 600; width: 9rem; }
+  .sgf-table td:nth-child(2) { font-family: var(--mono); font-size: 14px; }
+  .compare-note { background: var(--accent-soft); border-left: 4px solid var(--accent); border-radius: 4px; padding: 1rem 1.25rem; margin: 0 0 1rem; }
 
-  .draft-flag { border: 2px dashed var(--muted); border-radius: 6px; padding: 1rem 1.25rem; margin: 2.5rem 0 0; }
+  .draft-flag { border: 1px dashed var(--muted); border-radius: 4px; padding: 1rem 1.25rem; margin: 2.5rem 0 0; background: #FFFFFF; color: #3A4A5A; }
 
   /* Calculator */
-  .calc-panel { border-top: 2px solid var(--ink); padding-top: 1.25rem; }
+  .calc-panel { background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; padding: 1.5rem; }
   .field { margin-bottom: 1.25rem; }
-  .field label { display: block; font-weight: 700; margin-bottom: 6px; }
-  .field input, .field select { width: 100%; max-width: 26rem; font: inherit; color: var(--ink); background: var(--field); border: 1.5px solid var(--ink); border-radius: 6px; padding: 9px 12px; }
-  .field .hint { font-size: 15px; color: var(--muted); margin-top: 6px; max-width: 60ch; }
-  .result-panel { margin-top: 1.75rem; }
-  .result-row { display: flex; justify-content: space-between; gap: 1rem; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .field label { display: block; font-weight: 600; font-size: 15px; margin-bottom: 6px; }
+  .field input, .field select { width: 100%; max-width: 26rem; font: inherit; color: var(--ink); background: var(--field); border: 1px solid #C3CBD2; border-radius: 4px; padding: 9px 12px; min-height: 44px; transition: border-color .15s; }
+  .field input:hover, .field select:hover { border-color: var(--muted); }
+  .field input:focus, .field select:focus { border-color: var(--ink); }
+  .field .hint { font-size: 14px; color: var(--muted); margin-top: 6px; max-width: 60ch; }
+  .result-panel { margin-top: 1.75rem; padding-top: 0.5rem; border-top: 1px solid var(--ink); }
+  .result-row { display: flex; justify-content: space-between; gap: 1rem; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
   .result-row .rlabel { color: var(--muted); }
   .result-row .rval { font-variant-numeric: tabular-nums; text-align: right; }
-  .result-final { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; padding: 1rem 0 0.25rem; }
-  .rf-label { font-weight: 700; }
+  #outSgf { font-family: var(--mono); font-size: 14px; }
+  .result-final { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; padding: 1rem 1.25rem; background: var(--accent-soft); border-left: 4px solid var(--accent); }
+  .rf-label { font-weight: 600; }
   .rf-val { font-family: var(--head); font-weight: 600; font-size: 40px; line-height: 1; color: var(--money); font-variant-numeric: tabular-nums; }
-  .worked { font-size: 15px; color: var(--muted); margin: 0.5rem 0 0; }
+  .worked { font-size: 14px; color: var(--muted); margin: 0.75rem 0 0; }
   .worked code, .formula-box { font-family: var(--mono); font-size: 0.92em; }
   .worked code { color: var(--ink); }
 
   /* Explainer sections */
   .policy-card { padding: 1.75rem 0; border-top: 1px solid var(--line); }
-  h2 + .policy-card { border-top: 2px solid var(--ink); }
-  .policy-card p { margin: 0; }
+  h2 + .policy-card { border-top: 1px solid var(--ink); }
+  .policy-card p { margin: 0; color: #3A4A5A; }
   .policy-card p + p { margin-top: 0.75rem !important; }
-  .formula-box { background: var(--tint); border-radius: 6px; padding: 12px 16px; margin: 0.75rem 0; overflow-x: auto; white-space: nowrap; }
+  .formula-box { background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; padding: 12px 16px; margin: 0.75rem 0; overflow-x: auto; white-space: nowrap; }
 
-  .footer-note { font-size: 15px; color: var(--muted); margin-top: 3rem; padding-top: 1.5rem; border-top: 2px solid var(--ink); }
+  .footer-note { font-size: 14px; color: var(--muted); margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+
+  .site-footer { margin-top: 3rem; background: var(--navy); color: #C9D2DB; }
+  .site-footer-in { max-width: 1200px; margin: 0 auto; padding: 40px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px 32px; font-size: 14px; }
+  .site-footer a { color: #FFFFFF; }
 
   @media (max-width: 620px) {
-    body { font-size: 16px; }
-    .tl-year { font-size: 14px; }
+    .tl-year { font-size: 12px; }
     .compare-table, .compare-table tbody, .compare-table tr, .compare-table td { display: block; width: 100%; }
     .compare-table tr:first-child { display: none; }
-    .compare-table tr { padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .compare-table tr { padding: 12px 14px; border-bottom: 1px solid var(--line); }
     .compare-table td { border: 0; padding: 2px 0; }
-    .compare-table td:nth-child(2)::before { content: "EU / UK ETS: "; font-weight: 700; }
-    .compare-table td:nth-child(3)::before { content: "CORSIA: "; font-weight: 700; }
+    .compare-table td:nth-child(2)::before { content: "EU / UK ETS: "; font-weight: 600; }
+    .compare-table td:nth-child(3)::before { content: "CORSIA: "; font-weight: 600; }
+    .calc-panel { padding: 1.1rem; }
     .rf-val { font-size: 34px; }
   }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
-<nav class="site-nav" aria-label="Site">
-  <a class="home" href="/aviation-emissions/">Aviation emissions</a>
-  <a href="/aviation-emissions/policy-map/">Policy map</a>
-  <a href="/aviation-emissions/climate-policies/">Climate rules</a>
-  <a href="/aviation-emissions/corsia-calculator/" aria-current="page">ETS vs CORSIA</a>
-  <a href="/aviation-emissions/gtf-exposure-calculator/">GTF calculator</a>
-  <a href="/aviation-emissions/gtf-non-co2-supplement/">GTF pollution</a>
-  <a href="/aviation-emissions/smbc-jsa-brief/">SMBC / JSA brief</a>
-  <a href="/aviation-emissions/engagement-overview/">How I can help</a>
-</nav>
+<header class="site-header">
+  <div class="site-header-in">
+    <a class="wordmark" href="/aviation-emissions/"><b>AVIATION EMISSIONS</b><span>// explained</span></a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="/aviation-emissions/#insights">Insights</a>
+      <a href="/aviation-emissions/#tools" aria-current="page">Tools</a>
+      <a href="/aviation-emissions/#services">Services</a>
+      <a href="/aviation-emissions/#contact">Contact</a>
+      <a class="cta" href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">Book a briefing</a>
+    </nav>
+  </div>
+</header>
 
 <div class="wrap">
   <h1>ETS and CORSIA, and why there are two</h1>
@@ -219,10 +235,15 @@
   </table>
 
   <p class="footer-note">
-    Where this comes from: ICAO Assembly Resolutions A39-3 and A41-22, the ICAO Environmental Technical Manual (Doc 9501) Volume IV, ICAO&apos;s CORSIA webinars (Sessions 5 and 6), and ICAO&apos;s 2024 growth factor announcement. This is a draft tool, not advice. For what an airline really has to file, ask a compliance advisor or the country&apos;s regulator.<br><br>
-    Jaymal Bechar, PhD researcher, aviation emissions, University of Manchester
+    Where this comes from: ICAO Assembly Resolutions A39-3 and A41-22, the ICAO Environmental Technical Manual (Doc 9501) Volume IV, ICAO&apos;s CORSIA webinars (Sessions 5 and 6), and ICAO&apos;s 2024 growth factor announcement. This is a draft tool, not advice. For what an airline really has to file, ask a compliance advisor or the country&apos;s regulator.
   </p>
 </div>
+<footer class="site-footer">
+  <div class="site-footer-in">
+    <a class="wordmark" href="/aviation-emissions/" style="font-size:15px"><b>AVIATION EMISSIONS</b><span>// explained</span></a>
+    <div><a href="mailto:becharjaymal@gmail.com">becharjaymal@gmail.com</a></div>
+  </div>
+</footer>
 
 <script>
 const timelineData = {
@@ -298,5 +319,6 @@ document.getElementById('operatorEmissions').addEventListener('input', calculate
 yearSelect.addEventListener('change', calculate);
 calculate();
 </script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "99311d4c453e49c091ebf8972f3c2200"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
