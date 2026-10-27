@@ -4,266 +4,208 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Policy map | Aviation Emissions Explained</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --paper: #F7F8F5; --ink: #0E1A24; --muted: #51606E; --line: #D8DDE2; --grid: rgba(14,42,64,0.045);
-    --navy: #0E2A40; --navy-line: #5B7FA8; --accent: #E8C26A; --accent-deep: #D4AC4E;
-    --copper: #C98340; --sky: #9DBDE6;
-    --money: #8A5A0A; --link: #1F3A5F; --tint: #EEF1F3; --field: #FFFFFF; --panel: #FFFFFF;
-    --water: #E4ECF3; --land-edge: #FFFFFF;
-    --regime-eu: #2A5C8F; --regime-uk: #3F8A78; --regime-ch: #C79A3E; --regime-corsia: #9B86B5; --regime-none: #D3D8DC;
-    --body: 'Public Sans', system-ui, sans-serif;
-    --head: 'Source Serif 4', Georgia, serif;
-    --mono: 'IBM Plex Mono', monospace;
+    --ink: #111111; --muted: #555555; --rule: #BBBBBB; --box: #F4F4F2; --link: #1A3D6D;
+    --navy: #0E2A40; --money: #111111; --highlight: #FFF4D6;
+    --water: #F2F5F8; --land-edge: #FFFFFF;
+    --regime-eu: #2A5C8F; --regime-uk: #3F8A78; --regime-ch: #C79A3E; --regime-corsia: #9B86B5; --regime-none: #D3D6D9;
+    --serif: 'Times New Roman', Times, serif;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
-  body {
-    background-color: var(--paper);
-    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-    background-size: 40px 40px;
-    color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6;
-  }
-  a { color: var(--link); text-underline-offset: 3px; }
-  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+  body { background: #FFFFFF; color: var(--ink); font-family: var(--serif); font-size: 18px; line-height: 1.5; }
+  button, input, select { font-family: var(--serif); }
+  a { color: var(--link); }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
 
-  /* Site header (matches homepage) */
-  .site-header { background: var(--navy); border-bottom: 1px solid rgba(255,255,255,0.1); }
-  .site-header-in { max-width: 1200px; margin: 0 auto; padding: 18px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; }
-  .wordmark { display: flex; align-items: baseline; gap: 10px; text-decoration: none; color: #FFFFFF; font-family: var(--mono); font-size: 17px; }
-  .wordmark b { font-weight: 600; letter-spacing: 0.02em; }
-  .wordmark span { color: #8FA3B6; }
-  .site-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; font-size: 15px; }
-  .site-nav a { color: #C9D2DB; text-decoration: none; }
-  .site-nav a:hover { color: #FFFFFF; text-decoration: underline; text-underline-offset: 4px; }
-  .site-nav a[aria-current="page"] { color: #FFFFFF; }
-  .site-nav .cta { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; background: #FFFFFF; color: var(--ink); border-radius: 0; font-weight: 600; }
-  .site-nav .cta:hover { color: var(--ink); text-decoration: none; background: #E9EDF0; }
+  /* Header */
+  .site-header { background: var(--navy); color: #FFFFFF; }
+  .site-header-in { max-width: 1100px; margin: 0 auto; padding: 14px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 28px; }
+  .wordmark { color: #FFFFFF; text-decoration: none; font-size: 19px; font-weight: bold; letter-spacing: 0.04em; text-transform: uppercase; }
+  .site-nav { display: flex; flex-wrap: wrap; gap: 6px 24px; font-size: 17px; }
+  .site-nav a { color: #DDE3E8; text-decoration: none; }
+  .site-nav a:hover, .site-nav a[aria-current="page"] { color: #FFFFFF; text-decoration: underline; }
 
-  /* Banner: the Policy map card, blown up */
-  .banner { background: var(--navy); background-image: linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px); background-size: 200px 100%; color: #FFFFFF; }
-  .banner-in { max-width: 1200px; margin: 0 auto; padding: 48px 24px 150px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 32px 48px; }
-  .banner-text { flex: 1 1 480px; min-width: 0; }
-  .banner h1 { font-family: var(--head); font-weight: 500; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 16px; }
-  .banner .subtitle { color: #C9D2DB; font-size: 17px; max-width: 54ch; margin: 0 0 22px; }
-  .stamp { font-family: var(--mono); font-size: 13px; color: #8FA3B6; letter-spacing: 0.01em; }
-  .stamp b { color: #FFFFFF; font-weight: 500; }
-  .banner-art { flex: 0 1 280px; min-width: 0; }
-  .banner-art svg { display: block; width: 100%; height: auto; }
+  /* Document body */
+  .doc { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  .title-block { padding: 40px 0 8px; }
+  .crumbs { font-size: 15px; color: var(--muted); margin: 0 0 10px; }
+  .crumbs a { color: var(--muted); }
+  h1 { font-size: 38px; font-weight: bold; line-height: 1.15; margin: 0 0 8px; }
+  .meta { font-size: 15px; color: var(--muted); margin: 0 0 18px; }
+  .lead { max-width: 70ch; margin: 0; }
+  h2 { font-size: 24px; font-weight: bold; margin: 48px 0 10px; }
+  h2 .num { display: inline-block; min-width: 1.6em; }
+  .section-intro { max-width: 70ch; margin: 0 0 18px; }
 
-  /* Tags: same blocks as the homepage cards */
-  .tag { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; background: var(--accent); color: var(--ink); font-size: 16px; font-weight: 500; margin-bottom: 22px; }
-  .tag-copper { background: var(--copper); }
-  .tag-sky { background: var(--sky); }
-
-  .wrap { max-width: 1200px; margin: 0 auto; padding: 4.5rem 24px 0; }
-  .wrap-gutter { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-  .map-overlap { margin-top: -110px; position: relative; }
-  h1, h2 { font-family: var(--head); font-weight: 500; line-height: 1.15; }
-  h2 { font-size: clamp(1.7rem, 3vw, 2.3rem); letter-spacing: -0.01em; margin: 0 0 0.6rem; }
-  .subtitle { font-size: 17px; margin: 0 0 1.5rem; max-width: 60ch; color: #3A4A5A; }
-
-  /* Map */
-  .map-stage { position: relative; background: var(--water); border: 1px solid var(--line); overflow: hidden; color: var(--muted); }
-  .map-stage #worldMap { width: 100%; height: auto; display: block; max-height: 70vh; }
-  .country { stroke: var(--land-edge); stroke-width: 0.5; cursor: pointer; fill: var(--regime-none); transition: opacity .15s; }
+  /* Globe + route checker */
+  .map-layout { display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; }
+  .figure { flex: 1 1 520px; min-width: 0; margin: 0; }
+  .globe-wrap { position: relative; background: var(--water); }
+  #worldMap { display: block; width: 100%; max-width: 600px; height: auto; margin: 0 auto; cursor: grab; touch-action: none; }
+  #worldMap:active { cursor: grabbing; }
+  .sphere { fill: #DCE6EF; }
+  .sphere-outline { fill: none; stroke: #8A99A8; stroke-width: 1; }
+  .graticule { fill: none; stroke: #FFFFFF; stroke-width: 0.6; stroke-opacity: 0.8; }
+  .country { stroke: var(--land-edge); stroke-width: 0.5; cursor: pointer; fill: var(--regime-none); }
   .country:hover { stroke: var(--ink); stroke-width: 1; }
   .country.regime-eu-ets { fill: var(--regime-eu); }
   .country.regime-uk-ets { fill: var(--regime-uk); }
   .country.regime-ch-ets { fill: var(--regime-ch); }
   .country.regime-corsia-only { fill: var(--regime-corsia); }
   .country.regime-none { fill: var(--regime-none); }
-  .great-circle-line { stroke: var(--ink); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
-  .route-endpoint { fill: var(--accent); stroke: var(--ink); stroke-width: 2; }
-  .route-endpoint-label { font-family: var(--mono); font-weight: 600; font-size: 12px; fill: var(--ink); paint-order: stroke; stroke: #FFFFFF; stroke-width: 3.5px; }
-
-  #tooltip { position: absolute; display: none; pointer-events: none; z-index: 10; max-width: 240px; background: var(--panel); color: var(--ink); border: 1px solid var(--ink); padding: 8px 12px; font-size: 14px; }
-  #tooltip .t-name { font-weight: 600; }
+  .great-circle-line { stroke: #B3261E; stroke-width: 2.2; fill: none; }
+  .route-endpoint { fill: #FFFFFF; stroke: #B3261E; stroke-width: 2; }
+  .route-endpoint-label { font-family: var(--serif); font-weight: bold; font-size: 15px; fill: var(--ink); paint-order: stroke; stroke: #FFFFFF; stroke-width: 3.5px; }
+  #tooltip { position: absolute; display: none; pointer-events: none; z-index: 10; max-width: 240px; background: #FFFFFF; color: var(--ink); border: 1px solid var(--ink); padding: 6px 10px; font-size: 15px; }
+  #tooltip .t-name { font-weight: bold; }
   #tooltip .t-regime { color: var(--muted); }
+  .globe-controls { position: absolute; right: 10px; bottom: 10px; }
+  .plain-btn { font-size: 16px; background: #FFFFFF; color: var(--ink); border: 1px solid #888888; padding: 6px 14px; min-height: 40px; cursor: pointer; }
+  .plain-btn:hover { background: #EEEEEE; }
+  figcaption { font-size: 16px; margin-top: 10px; }
+  figcaption b { font-weight: bold; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 6px; font-size: 16px; }
+  .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 13px; height: 13px; display: inline-block; }
 
-  .map-legend-float { position: absolute; left: 0; bottom: 0; z-index: 25; background: var(--panel); border-top: 1px solid var(--line); border-right: 1px solid var(--line); padding: 8px 14px; display: flex; gap: 6px 16px; flex-wrap: wrap; font-size: 13px; color: var(--ink); max-width: 100%; }
-  .legend-item { display: flex; align-items: center; gap: 6px; }
-  .swatch { width: 12px; height: 12px; }
-
-  .route-toggle-btn { position: absolute; top: 0; right: 0; z-index: 30; display: inline-flex; align-items: center; gap: 10px; font: inherit; font-weight: 600; background: var(--accent); color: var(--ink); border: 0; border-radius: 0; padding: 12px 20px; min-height: 48px; cursor: pointer; transition: background .2s, padding .2s; }
-  .route-toggle-btn::after { content: "\2192"; transition: transform .2s; }
-  .route-toggle-btn:hover { background: var(--accent-deep); padding-right: 26px; }
-  .route-toggle-btn:hover::after { transform: translateX(4px); }
-  .route-float-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 390px; max-width: 100%; overflow-y: auto; background: var(--panel); border-left: 1px solid var(--ink); padding: 1.1rem 1.25rem 1.25rem; z-index: 31; display: none; color: var(--ink); }
-  .route-float-panel.open { display: block; }
-  .rfp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--line); }
-  .rfp-title { font-family: var(--head); font-weight: 600; font-size: 22px; }
-  .rfp-close { font: inherit; font-size: 18px; line-height: 1; background: none; border: 1px solid var(--line); color: var(--ink); width: 36px; height: 36px; cursor: pointer; }
-  .rfp-close:hover { border-color: var(--ink); }
-  .route-row { display: block; }
-  .route-field { margin-bottom: 0.9rem; min-width: 0; }
-  .route-field label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 4px; }
-  select, .airport-field input[type="text"], .portfolio-row input[type="number"] { width: 100%; font: inherit; font-size: 15px; color: var(--ink); background: var(--field); border: 1px solid #C3CBD2; border-radius: 0; padding: 8px 10px; min-height: 44px; transition: border-color .15s; }
-  select:hover, .airport-field input[type="text"]:hover, .portfolio-row input[type="number"]:hover { border-color: var(--muted); }
+  .route-box { flex: 1 1 360px; min-width: 0; background: var(--box); padding: 18px 20px 20px; }
+  .route-box h3 { font-size: 20px; font-weight: bold; margin: 0 0 12px; }
+  .route-field { margin-bottom: 12px; min-width: 0; }
+  .route-field label { display: block; font-weight: bold; font-size: 16px; margin-bottom: 3px; }
+  select, .airport-field input[type="text"], .portfolio-row input[type="number"] { width: 100%; font-size: 17px; color: var(--ink); background: #FFFFFF; border: 1px solid #999999; border-radius: 0; padding: 7px 9px; min-height: 42px; }
   select:focus, .airport-field input[type="text"]:focus, .portfolio-row input[type="number"]:focus { border-color: var(--ink); }
   .airport-field { position: relative; }
-  .airport-field input[type="text"]:disabled { color: var(--muted); background: var(--tint); }
-  .airport-suggestions { position: absolute; top: calc(100% + 2px); left: 0; right: 0; background: var(--field); border: 1px solid var(--ink); max-height: 240px; overflow-y: auto; z-index: 40; display: none; }
-  .airport-suggestion-item { padding: 8px 10px; font-size: 14px; cursor: pointer; border-bottom: 1px solid var(--line); }
-  .airport-suggestion-item:last-child { border-bottom: 0; }
-  .airport-suggestion-item:hover { background: var(--tint); }
-  .airport-suggestion-item .as-code { font-family: var(--mono); font-weight: 500; margin-right: 6px; }
+  .airport-field input[type="text"]:disabled { color: var(--muted); background: #F0F0F0; }
+  .airport-suggestions { position: absolute; top: calc(100% + 2px); left: 0; right: 0; background: #FFFFFF; border: 1px solid var(--ink); max-height: 240px; overflow-y: auto; z-index: 40; display: none; }
+  .airport-suggestion-item { padding: 6px 9px; font-size: 16px; cursor: pointer; }
+  .airport-suggestion-item:hover { background: #EEEEEE; }
+  .airport-suggestion-item .as-code { font-weight: bold; margin-right: 6px; }
 
-  .route-result { margin-top: 0.5rem; }
-  .reg-card { padding: 0.75rem 0; border-top: 1px solid var(--line); }
-  .reg-card .r-name { font-family: var(--head); font-weight: 600; font-size: 20px; }
-  .reg-card .r-desc { font-size: 14px; color: #3A4A5A; }
+  .route-result { margin-top: 6px; }
+  .reg-card { margin-top: 14px; }
+  .reg-card .r-name { font-weight: bold; font-size: 19px; }
+  .reg-card .r-desc { font-size: 16px; }
   .no-reg { color: var(--muted); }
 
-  .cost-panel { margin-top: 0.5rem; padding-top: 1rem; border-top: 1px solid var(--ink); }
-  .cost-header { font-weight: 600; margin-bottom: 0.5rem; }
-  .cost-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 0.75rem; }
-  .cs-label { font-size: 13px; color: var(--muted); }
-  .cs-value { font-family: var(--mono); font-weight: 500; font-size: 22px; line-height: 1.2; font-variant-numeric: tabular-nums; }
-  .cs-unit { font-family: var(--body); font-weight: 400; font-size: 13px; color: var(--muted); margin-left: 3px; }
-  .range-table { width: 100%; border-collapse: collapse; margin: 0 0 1rem; font-size: 14px; font-family: var(--mono); font-variant-numeric: tabular-nums; }
-  .range-table th, .range-table td { padding: 6px 0 6px 8px; text-align: right; border-bottom: 1px solid var(--line); }
-  .range-table th:first-child, .range-table td:first-child { text-align: left; padding-left: 0; font-family: var(--body); }
-  .range-table th { font-family: var(--body); font-weight: 600; font-size: 13px; color: var(--muted); }
-  .range-table tbody tr:last-child td { border-bottom: 0; font-weight: 600; color: var(--money); }
-  .range-table tbody tr:last-child td:first-child { color: var(--ink); }
-  .cost-big { display: flex; flex-direction: column; padding: 0.9rem 1rem; background: #FBF5E6; border-left: 4px solid var(--accent); margin-top: 0.5rem; }
-  .cb-label { font-weight: 600; font-size: 14px; }
-  .cb-value { font-family: var(--mono); font-weight: 600; font-size: 28px; line-height: 1.2; color: var(--money); font-variant-numeric: tabular-nums; }
-  .cb-note { font-size: 13px; color: var(--muted); }
-  .cost-disclaimer { font-size: 13px; color: var(--muted); margin-top: 0.75rem; }
+  .cost-panel { margin-top: 18px; }
+  .cost-header { font-weight: bold; font-size: 18px; margin-bottom: 6px; }
+  .cost-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .cs-label { font-size: 15px; color: var(--muted); }
+  .cs-value { font-size: 22px; font-weight: bold; font-variant-numeric: tabular-nums; }
+  .cs-unit { font-weight: normal; font-size: 15px; color: var(--muted); margin-left: 3px; }
+  .range-table { width: 100%; border-collapse: collapse; margin: 0 0 12px; font-size: 16px; font-variant-numeric: tabular-nums; background: #FFFFFF; }
+  .range-table th, .range-table td { padding: 5px 8px; text-align: right; }
+  .range-table th:first-child, .range-table td:first-child { text-align: left; }
+  .range-table thead th { font-weight: bold; background: #E6E6E2; }
+  .range-table tbody tr:last-child td { font-weight: bold; }
+  .cost-big { display: flex; flex-direction: column; margin-top: 10px; }
+  .cb-label { font-size: 15px; color: var(--muted); }
+  .cb-value { font-size: 28px; font-weight: bold; line-height: 1.2; font-variant-numeric: tabular-nums; }
+  .cb-note { font-size: 15px; color: var(--muted); }
+  .cost-disclaimer { font-size: 15px; color: var(--muted); margin-top: 10px; }
 
-  .scenario-compare { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--line); }
-  .sc-header { font-family: var(--head); font-weight: 600; font-size: 19px; margin-bottom: 0.4rem; }
-  .sc-tag { display: block; font-family: var(--body); font-weight: 400; font-size: 13px; color: var(--muted); }
+  .scenario-compare { margin-top: 20px; }
+  .sc-header { font-weight: bold; font-size: 18px; margin-bottom: 4px; }
+  .sc-tag { display: block; font-weight: normal; font-size: 15px; color: var(--muted); font-style: italic; }
   .sc-grid { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; gap: 8px; }
-  .sc-col { background: var(--tint); padding: 0.6rem 0.75rem; }
-  .sc-col-changed { background: #FBF5E6; box-shadow: inset 0 0 0 1.5px var(--accent-deep); }
-  .sc-col-label { font-size: 12px; color: var(--muted); }
-  .sc-col-regime { font-weight: 600; }
-  .sc-col-cost { font-family: var(--mono); color: var(--money); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .sc-col { background: #FFFFFF; padding: 8px 10px; }
+  .sc-col-changed { background: var(--highlight); }
+  .sc-col-label { font-size: 14px; color: var(--muted); }
+  .sc-col-regime { font-weight: bold; }
+  .sc-col-cost { font-variant-numeric: tabular-nums; }
   .sc-arrow { align-self: center; color: var(--muted); }
-  .sc-note { font-size: 13px; color: var(--muted); margin-top: 0.5rem; }
+  .sc-note { font-size: 15px; color: var(--muted); margin-top: 6px; }
 
   /* Fleet */
-  .portfolio-panel { background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--copper); padding: 0.5rem 1.5rem 1.5rem; }
-  .portfolio-row { display: grid; grid-template-columns: 1.6fr 0.7fr 1.4fr 1.4fr 0.9fr auto; gap: 10px; align-items: end; padding: 0.9rem 0; border-bottom: 1px solid var(--line); }
+  .portfolio-panel { background: var(--box); padding: 8px 20px 20px; }
+  .portfolio-row { display: grid; grid-template-columns: 1.6fr 0.7fr 1.4fr 1.4fr 0.9fr auto; gap: 10px; align-items: end; padding: 10px 0; }
   .portfolio-row .route-field { margin: 0; }
-  .portfolio-row-remove { font: inherit; font-size: 14px; background: none; border: 1px solid var(--line); color: var(--ink); height: 44px; padding: 0 12px; cursor: pointer; }
-  .portfolio-row-remove:hover { border-color: var(--ink); background: var(--tint); }
-  .portfolio-row-invalid { grid-column: 1 / -1; font-size: 14px; color: #B3261E; }
-  .portfolio-add-btn { font: inherit; font-weight: 600; background: none; color: var(--ink); border: 1px dashed var(--muted); padding: 10px 18px; min-height: 44px; margin: 1rem 0 1.5rem; cursor: pointer; }
-  .portfolio-add-btn:hover { border-color: var(--ink); background: var(--tint); }
-  .portfolio-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem 1.5rem; border-top: 1px solid var(--ink); padding-top: 1.25rem; }
-  .ps-label { font-weight: 600; font-size: 14px; margin-bottom: 2px; color: var(--muted); }
-  .ps-value { font-family: var(--mono); font-weight: 600; font-size: 26px; line-height: 1.2; color: var(--money); font-variant-numeric: tabular-nums; }
-  .ps-text { font-size: 14px; }
+  .portfolio-row-remove { font-size: 18px; background: #FFFFFF; border: 1px solid #999999; color: var(--ink); height: 42px; padding: 0 12px; cursor: pointer; }
+  .portfolio-row-remove:hover { background: #EEEEEE; }
+  .portfolio-row-invalid { grid-column: 1 / -1; font-size: 15px; color: #B3261E; }
+  .portfolio-add-btn { margin: 12px 0 20px; }
+  .portfolio-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px 24px; }
+  .ps-label { font-size: 15px; color: var(--muted); margin-bottom: 2px; }
+  .ps-value { font-size: 26px; font-weight: bold; line-height: 1.2; font-variant-numeric: tabular-nums; }
+  .ps-text { font-size: 16px; }
 
-  /* Notes */
-  .notes { background: var(--panel); border: 1px solid var(--line); padding: 1.25rem 1.5rem; }
-  .notes ul { margin: 0; padding: 0; list-style: none; columns: 2 320px; column-gap: 2.5rem; }
-  .notes li { break-inside: avoid; font-size: 14px; color: #3A4A5A; padding: 0.5rem 0 0.5rem 1rem; border-bottom: 1px solid var(--line); position: relative; }
-  .notes li::before { content: ""; position: absolute; left: 0; top: 1.05rem; width: 6px; height: 6px; background: var(--sky); }
+  /* Method */
+  .method { max-width: 75ch; margin: 0; padding-left: 1.4em; }
+  .method li { margin-bottom: 6px; }
 
-  .site-footer { margin-top: 4.5rem; background: var(--navy); color: #C9D2DB; }
-  .site-footer-in { max-width: 1200px; margin: 0 auto; padding: 40px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px 32px; font-size: 14px; }
+  .site-footer { margin-top: 64px; background: var(--navy); color: #DDE3E8; }
+  .site-footer-in { max-width: 1100px; margin: 0 auto; padding: 28px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 28px; font-size: 16px; }
   .site-footer a { color: #FFFFFF; }
 
   @media (max-width: 760px) {
-    .banner-in { padding-bottom: 120px; }
-    .map-overlap { margin-top: -90px; }
-    .route-float-panel { position: fixed; inset: 0; width: auto; max-width: none; border-left: 0; z-index: 100; }
-    .map-legend-float { position: static; border: 0; background: none; padding: 10px 0 0; }
-    .map-stage { overflow: visible; }
-    .portfolio-panel { padding: 0.5rem 1rem 1rem; }
-    .portfolio-row { grid-template-columns: 1fr 1fr; }
+    h1 { font-size: 30px; }
+    .portfolio-panel { padding: 8px 14px 14px; }
+    .portfolio-row { grid-template-columns: 1fr 1fr; padding: 14px 0; }
     .portfolio-row .route-field:nth-child(1), .portfolio-row .airport-field { grid-column: 1 / -1; }
-    .banner-art { display: none; }
   }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
 <header class="site-header">
   <div class="site-header-in">
-    <a class="wordmark" href="/aviation-emissions/"><b>AVIATION EMISSIONS</b><span>// explained</span></a>
+    <a class="wordmark" href="/aviation-emissions/">Aviation Emissions Explained</a>
     <nav class="site-nav" aria-label="Main">
       <a href="/aviation-emissions/#insights">Insights</a>
       <a href="/aviation-emissions/#tools" aria-current="page">Tools</a>
       <a href="/aviation-emissions/#services">Services</a>
       <a href="/aviation-emissions/#contact">Contact</a>
-      <a class="cta" href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">Book a briefing</a>
+      <a href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">Book a briefing</a>
     </nav>
   </div>
 </header>
 
-<section class="banner">
-  <div class="banner-in">
-    <div class="banner-text">
-      <span class="tag">Policy map</span>
-      <h1>Which carbon rules cover a flight?</h1>
-      <p class="subtitle">Tap a country to see its rules. Or check a route: pick two airports and a plane to see which scheme applies and roughly what the carbon costs.</p>
-      <div class="stamp">Prices checked 24 Jul 2026 &middot; EU <b>&euro;80</b> &middot; UK <b>&pound;72</b> &middot; CORSIA <b>$5</b> per tonne</div>
-    </div>
-    <div class="banner-art" aria-hidden="true">
-      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
-        <g fill="none" stroke="#5B7FA8" stroke-width="1">
-          <ellipse cx="150" cy="150" rx="130" ry="18"/>
-          <ellipse cx="150" cy="98" rx="118" ry="15"/>
-          <ellipse cx="150" cy="202" rx="118" ry="15"/>
-          <ellipse cx="150" cy="56" rx="86" ry="11"/>
-          <ellipse cx="150" cy="244" rx="86" ry="11"/>
-          <ellipse cx="150" cy="150" rx="34" ry="130"/>
-          <ellipse cx="150" cy="150" rx="70" ry="130"/>
-          <ellipse cx="150" cy="150" rx="104" ry="130"/>
-          <line x1="150" y1="20" x2="150" y2="280"/>
-          <circle cx="150" cy="150" r="130" stroke-width="1.6"/>
-        </g>
-        <path d="M138 74 c8-8 30-9 42-2 c8 5 4 14-6 17 c-13 4-28 1-34-5 c-3-3-4-7-2-10 z" fill="#E8C26A"/>
-        <circle cx="124" cy="72" r="5" fill="#E8C26A"/>
-        <path d="M178 82 Q 214 96 230 140" fill="none" stroke="#E8C26A" stroke-width="1.6" stroke-dasharray="3 4"/>
-        <circle cx="231" cy="146" r="4" fill="#E8C26A"/>
-        <circle cx="231" cy="146" r="9" fill="none" stroke="#E8C26A" stroke-width="1"/>
-      </svg>
-    </div>
+<main class="doc">
+  <div class="title-block">
+    <p class="crumbs"><a href="/aviation-emissions/">Home</a> / <a href="/aviation-emissions/#tools">Tools</a> / Policy map</p>
+    <h1>Policy Map: Carbon Rules for Flights</h1>
+    <p class="meta">Carbon prices checked 24 July 2026: EU &euro;80/t, UK &pound;72/t, CORSIA $5/t</p>
+    <p class="lead">This page shows which carbon scheme covers a flight and roughly what the carbon costs. It covers the EU, UK and Swiss schemes and CORSIA.</p>
   </div>
-</section>
 
-<div class="wrap-gutter map-overlap">
-<div class="map-stage">
-  <svg id="worldMap" viewBox="0 0 960 500" xmlns="http://www.w3.org/2000/svg">
-    <text x="480" y="250" text-anchor="middle" fill="currentColor" font-size="15" id="mapLoadingText">Loading map...</text>
-  </svg>
-  <div id="tooltip"></div>
-  <div class="map-legend-float">
-    <div class="legend-item"><span class="swatch" style="background:var(--regime-eu);"></span>EU ETS</div>
-    <div class="legend-item"><span class="swatch" style="background:var(--regime-uk);"></span>UK ETS</div>
-    <div class="legend-item"><span class="swatch" style="background:var(--regime-ch);"></span>Swiss ETS</div>
-    <div class="legend-item"><span class="swatch" style="background:var(--regime-corsia);"></span>CORSIA</div>
-    <div class="legend-item"><span class="swatch" style="background:var(--regime-none);"></span>Not in CORSIA yet</div>
-  </div>
-  <button class="route-toggle-btn" id="routeToggleBtn">Check a route</button>
-  <div class="route-float-panel" id="routeFloatPanel">
-    <div class="rfp-header">
-      <span class="rfp-title">Check a route</span>
-      <button class="rfp-close" id="routeCloseBtn" aria-label="Close">&times;</button>
-    </div>
-    <div class="route-row">
+  <h2><span class="num">1.</span>Schemes by country and route</h2>
+  <p class="section-intro">Drag the globe to turn it. Hover over a country to see its scheme. To check a flight, pick two airports and a plane on the right.</p>
+  <div class="map-layout">
+    <figure class="figure">
+      <div class="globe-wrap">
+        <svg id="worldMap" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rotating globe showing carbon schemes by country">
+          <text x="300" y="300" text-anchor="middle" fill="#555555" font-size="18" font-family="Times New Roman, serif" id="mapLoadingText">Loading globe...</text>
+        </svg>
+        <div id="tooltip"></div>
+        <div class="globe-controls"><button class="plain-btn" id="spinBtn" type="button">Stop rotation</button></div>
+      </div>
+      <figcaption>
+        <b>Figure 1.</b> Carbon scheme by country, 2026. The red line is the shortest path between the two airports picked.
+        <div class="legend">
+          <span class="legend-item"><span class="swatch" style="background:var(--regime-eu);"></span>EU ETS</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--regime-uk);"></span>UK ETS</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--regime-ch);"></span>Swiss ETS</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--regime-corsia);"></span>CORSIA</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--regime-none);"></span>Not in CORSIA yet</span>
+        </div>
+      </figcaption>
+    </figure>
+
+    <div class="route-box">
+      <h3>Check a route</h3>
       <div class="route-field airport-field">
-        <label>Flying from</label>
+        <label for="fromAirportInput">Flying from</label>
         <input type="text" id="fromAirportInput" placeholder="Loading airports..." disabled autocomplete="off">
         <div class="airport-suggestions" id="fromSuggestions"></div>
       </div>
       <div class="route-field airport-field">
-        <label>Flying to</label>
+        <label for="toAirportInput">Flying to</label>
         <input type="text" id="toAirportInput" placeholder="Loading airports..." disabled autocomplete="off">
         <div class="airport-suggestions" id="toSuggestions"></div>
       </div>
       <div class="route-field">
-        <label>Plane</label>
+        <label for="aircraftType">Plane</label>
         <select id="aircraftType">
           <optgroup label="Narrow-body">
             <option value="A319">Airbus A319</option>
@@ -289,44 +231,35 @@
           </optgroup>
         </select>
       </div>
+      <div class="route-result" id="routeResult"></div>
     </div>
-    <div class="route-result" id="routeResult"></div>
   </div>
-</div>
-</div>
 
-<div class="wrap">
-  <span class="tag tag-copper">Fleet total</span>
-  <h2>Add up a fleet</h2>
-  <p class="subtitle">One row per plane type. Give each a route and how many flights it does a year, and it adds up the yearly carbon cost.</p>
+  <h2><span class="num">2.</span>Fleet total</h2>
+  <p class="section-intro">One row per plane type. Give each a route and how many flights it does a year, and the page adds up the yearly carbon cost.</p>
   <div class="portfolio-panel">
     <div id="portfolioRows"></div>
-    <button class="portfolio-add-btn" id="portfolioAddBtn" type="button">+ Add a plane</button>
+    <button class="plain-btn portfolio-add-btn" id="portfolioAddBtn" type="button">+ Add a plane</button>
     <div class="portfolio-summary" id="portfolioSummary"></div>
   </div>
-</div>
 
-<div class="wrap">
-  <span class="tag tag-sky">Notes</span>
-  <h2>How the numbers work</h2>
-  <div class="notes">
-    <ul>
-      <li>Covers the EU, UK and Swiss schemes and CORSIA. Nothing else yet.</li>
-      <li>Country shapes are simplified, not exact borders.</li>
-      <li>Airports come from the OpenFlights list, about 6,000 with regular flights.</li>
-      <li>Distance is the straight line between two airports. Real flights fly further.</li>
-      <li>Fuel figures are rough, based on ICAO&apos;s BFFM2 method and maker data.</li>
-      <li>The UK price may move a lot while the UK and EU talk about linking their schemes. Check it before using it.</li>
-      <li>CORSIA countries follow ICAO&apos;s 2026 list. It changes every year.</li>
-      <li>This is not advice. For filings or fines, talk to a compliance advisor.</li>
-    </ul>
-  </div>
-</div>
+  <h2><span class="num">3.</span>Method and limits</h2>
+  <ol class="method">
+    <li>Covers the EU, UK and Swiss schemes and CORSIA. Nothing else yet.</li>
+    <li>CORSIA countries follow ICAO&apos;s 2026 list. It changes every year.</li>
+    <li>Airports come from the OpenFlights list, about 6,000 with regular flights.</li>
+    <li>Distance is the straight line between two airports. Real flights fly further.</li>
+    <li>Fuel figures are rough, based on ICAO&apos;s BFFM2 method and maker data.</li>
+    <li>The UK price may move a lot while the UK and EU talk about linking their schemes. Check it before using it.</li>
+    <li>Country shapes are simplified, not exact borders.</li>
+    <li>This is not advice. For filings or fines, talk to a compliance advisor.</li>
+  </ol>
+</main>
 
 <footer class="site-footer">
   <div class="site-footer-in">
-    <a class="wordmark" href="/aviation-emissions/" style="font-size:15px"><b>AVIATION EMISSIONS</b><span>// explained</span></a>
-    <div><a href="mailto:becharjaymal@gmail.com">becharjaymal@gmail.com</a></div>
+    <a href="/aviation-emissions/">Aviation Emissions Explained</a>
+    <a href="mailto:becharjaymal@gmail.com">becharjaymal@gmail.com</a>
   </div>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
@@ -385,19 +318,6 @@ const fromInput = document.getElementById('fromAirportInput');
 const toInput = document.getElementById('toAirportInput');
 const fromSuggestions = document.getElementById('fromSuggestions');
 const toSuggestions = document.getElementById('toSuggestions');
-const routeToggleBtn = document.getElementById('routeToggleBtn');
-const routeFloatPanel = document.getElementById('routeFloatPanel');
-const routeCloseBtn = document.getElementById('routeCloseBtn');
-
-routeToggleBtn.addEventListener('click', () => {
-  routeFloatPanel.classList.add('open');
-  routeToggleBtn.style.display = 'none';
-});
-routeCloseBtn.addEventListener('click', () => {
-  routeFloatPanel.classList.remove('open');
-  routeToggleBtn.style.display = 'inline-flex';
-});
-
 function setupAirportAutocomplete(input, listEl, onSelect) {
   input.addEventListener('input', () => {
     const q = input.value.trim().toLowerCase();
@@ -431,8 +351,8 @@ function setupAirportAutocomplete(input, listEl, onSelect) {
   input.addEventListener('focus', () => { if (input.value) input.dispatchEvent(new Event('input')); });
 }
 
-setupAirportAutocomplete(fromInput, fromSuggestions, a => { selectedFromAirport = a; });
-setupAirportAutocomplete(toInput, toSuggestions, a => { selectedToAirport = a; });
+setupAirportAutocomplete(fromInput, fromSuggestions, a => { selectedFromAirport = a; focusNextRoute = true; });
+setupAirportAutocomplete(toInput, toSuggestions, a => { selectedToAirport = a; focusNextRoute = true; });
 
 fetch('https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat')
   .then(res => res.text())
@@ -690,40 +610,118 @@ function buildCostPanel(fromAirport, toAirport, aircraftKey, regimes) {
     </div>`;
 }
 
+// ---- Rotating globe (orthographic projection) ----
 const svg = d3.select('#worldMap');
-const width = 960, height = 500;
-const projection = d3.geoNaturalEarth1().scale(155).translate([width / 2, height / 2 - 20]);
+const size = 600;
+const projection = d3.geoOrthographic().scale(285).translate([size / 2, size / 2]).clipAngle(90).rotate([-10, -35]);
 const path = d3.geoPath(projection);
 const tooltip = document.getElementById('tooltip');
+const spinBtn = document.getElementById('spinBtn');
+
+const spherePath = svg.append('path').datum({ type: 'Sphere' }).attr('class', 'sphere');
+const graticulePath = svg.append('path').datum(d3.geoGraticule10()).attr('class', 'graticule');
 const countriesLayer = svg.append('g').attr('class', 'countries-layer');
 const routeLayer = svg.append('g').attr('class', 'route-layer');
+const outlinePath = svg.append('path').datum({ type: 'Sphere' }).attr('class', 'sphere-outline');
 
-fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json')
+let countryPaths = null;
+let routeState = null;
+let autoRotate = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let dragging = false, hovering = false, rotateTarget = null, focusNextRoute = false;
+
+function setSpin(on) {
+  autoRotate = on;
+  spinBtn.textContent = on ? 'Stop rotation' : 'Start rotation';
+}
+setSpin(autoRotate);
+spinBtn.addEventListener('click', () => setSpin(!autoRotate));
+
+function isVisible(lon, lat) {
+  const r = projection.rotate();
+  return d3.geoDistance([lon, lat], [-r[0], -r[1]]) < Math.PI / 2;
+}
+
+function drawRoute() {
+  routeLayer.selectAll('*').remove();
+  if (!routeState) return;
+  const a = routeState.from, b = routeState.to;
+  routeLayer.append('path')
+    .datum({ type: 'LineString', coordinates: [[a.lon, a.lat], [b.lon, b.lat]] })
+    .attr('class', 'great-circle-line')
+    .attr('d', path);
+  [a, b].forEach(pt => {
+    if (!isVisible(pt.lon, pt.lat)) return;
+    const p = projection([pt.lon, pt.lat]);
+    routeLayer.append('circle').attr('class', 'route-endpoint').attr('cx', p[0]).attr('cy', p[1]).attr('r', 4.5);
+    routeLayer.append('text').attr('class', 'route-endpoint-label').attr('x', p[0] + 8).attr('y', p[1] - 7).text(pt.iata);
+  });
+}
+
+function redraw() {
+  spherePath.attr('d', path);
+  graticulePath.attr('d', path);
+  outlinePath.attr('d', path);
+  if (countryPaths) countryPaths.attr('d', path);
+  drawRoute();
+}
+redraw();
+
+d3.timer(() => {
+  if (dragging) return;
+  const r = projection.rotate();
+  if (rotateTarget) {
+    let dl = rotateTarget[0] - r[0];
+    dl = ((dl % 360) + 540) % 360 - 180;
+    const dp = rotateTarget[1] - r[1];
+    if (Math.abs(dl) < 0.15 && Math.abs(dp) < 0.15) {
+      projection.rotate(rotateTarget);
+      rotateTarget = null;
+    } else {
+      projection.rotate([r[0] + dl * 0.08, r[1] + dp * 0.08]);
+    }
+    redraw();
+  } else if (autoRotate && !hovering) {
+    projection.rotate([r[0] + 0.15, r[1]]);
+    redraw();
+  }
+});
+
+svg.call(d3.drag()
+  .on('start', () => { dragging = true; rotateTarget = null; tooltip.style.display = 'none'; })
+  .on('drag', (event) => {
+    const r = projection.rotate();
+    const k = 70 / projection.scale();
+    projection.rotate([r[0] + event.dx * k, Math.max(-90, Math.min(90, r[1] - event.dy * k))]);
+    redraw();
+  })
+  .on('end', () => { dragging = false; }));
+
+fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
   .then(res => res.json())
   .then(topology => {
     const countries = topojson.feature(topology, topology.objects.countries);
     document.getElementById('mapLoadingText').remove();
-    countriesLayer.selectAll('path.country')
+    countryPaths = countriesLayer.selectAll('path.country')
       .data(countries.features)
       .enter()
       .append('path')
       .attr('class', d => 'country regime-' + regimeForCountry(d.properties.name))
       .attr('data-country', d => d.properties.name)
-      .attr('d', path)
-      .attr('shape-rendering', 'geometricPrecision')
+      .on('mouseenter', () => { hovering = true; })
       .on('mousemove', (event, d) => {
+        if (dragging) return;
         const name = d.properties.name;
-        const regime = regimeForCountry(name);
-        const panelRect = svg.node().parentElement.getBoundingClientRect();
+        const wrapRect = svg.node().parentElement.getBoundingClientRect();
         tooltip.style.display = 'block';
-        tooltip.style.left = (event.clientX - panelRect.left + 16) + 'px';
-        tooltip.style.top = (event.clientY - panelRect.top + 10) + 'px';
-        tooltip.innerHTML = '<div class="t-name">' + name + '</div><div class="t-regime">' + regimeLabel[regime] + '</div>';
+        tooltip.style.left = (event.clientX - wrapRect.left + 14) + 'px';
+        tooltip.style.top = (event.clientY - wrapRect.top + 10) + 'px';
+        tooltip.innerHTML = '<div class="t-name">' + name + '</div><div class="t-regime">' + regimeLabel[regimeForCountry(name)] + '</div>';
       })
-      .on('mouseleave', () => { tooltip.style.display = 'none'; });
+      .on('mouseleave', () => { hovering = false; tooltip.style.display = 'none'; });
+    redraw();
   })
   .catch(() => {
-    document.getElementById('mapLoadingText').textContent = 'The map did not load. Try refreshing.';
+    document.getElementById('mapLoadingText').textContent = 'The globe did not load. Try refreshing.';
   });
 
 const isEEA = eeaCountries;
@@ -779,30 +777,19 @@ function evaluateRouteProposed(from, to, gcdKm, currentRegs) {
 }
 
 function clearRouteLine() {
-  routeLayer.selectAll('*').remove();
+  routeState = null;
+  drawRoute();
 }
 
 function drawGreatCircle(fromAirport, toAirport) {
-  routeLayer.selectAll('*').remove();
-  const interpolate = d3.geoInterpolate([fromAirport.lon, fromAirport.lat], [toAirport.lon, toAirport.lat]);
-  const steps = 100;
-  const coords = d3.range(steps + 1).map(i => interpolate(i / steps));
-  const lineFeature = { type: 'LineString', coordinates: coords };
-  routeLayer.append('path')
-    .datum(lineFeature)
-    .attr('class', 'great-circle-line')
-    .attr('d', path);
-  [fromAirport, toAirport].forEach(a => {
-    const p = projection([a.lon, a.lat]);
-    if (!p) return;
-    routeLayer.append('circle')
-      .attr('class', 'route-endpoint')
-      .attr('cx', p[0]).attr('cy', p[1]).attr('r', 4);
-    routeLayer.append('text')
-      .attr('class', 'route-endpoint-label')
-      .attr('x', p[0] + 7).attr('y', p[1] - 6)
-      .text(a.iata);
-  });
+  routeState = { from: fromAirport, to: toAirport };
+  if (focusNextRoute) {
+    focusNextRoute = false;
+    const mid = d3.geoInterpolate([fromAirport.lon, fromAirport.lat], [toAirport.lon, toAirport.lat])(0.5);
+    rotateTarget = [-mid[0], -mid[1]];
+    setSpin(false);
+  }
+  drawRoute();
 }
 
 function renderRoute() {
