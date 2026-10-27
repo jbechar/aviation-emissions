@@ -9,19 +9,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --paper: #F5F6F3; --ink: #0E1A24; --muted: #51606E; --line: #D8DDE2;
-    --navy: #0E2A40; --accent: #E8C26A; --accent-deep: #D4AC4E;
+    --paper: #F7F8F5; --ink: #0E1A24; --muted: #51606E; --line: #D8DDE2; --grid: rgba(14,42,64,0.045);
+    --navy: #0E2A40; --navy-line: #5B7FA8; --accent: #E8C26A; --accent-deep: #D4AC4E;
+    --copper: #C98340; --sky: #9DBDE6;
     --money: #8A5A0A; --link: #1F3A5F; --tint: #EEF1F3; --field: #FFFFFF; --panel: #FFFFFF;
     --water: #E4ECF3; --land-edge: #FFFFFF;
     --regime-eu: #2A5C8F; --regime-uk: #3F8A78; --regime-ch: #C79A3E; --regime-corsia: #9B86B5; --regime-none: #D3D8DC;
-    --text-muted: var(--muted); --text: var(--ink);
     --body: 'Public Sans', system-ui, sans-serif;
     --head: 'Source Serif 4', Georgia, serif;
     --mono: 'IBM Plex Mono', monospace;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
-  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; }
+  body {
+    background-color: var(--paper);
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 40px 40px;
+    color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6;
+  }
   a { color: var(--link); text-underline-offset: 3px; }
   a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
 
@@ -35,29 +40,34 @@
   .site-nav a { color: #C9D2DB; text-decoration: none; }
   .site-nav a:hover { color: #FFFFFF; text-decoration: underline; text-underline-offset: 4px; }
   .site-nav a[aria-current="page"] { color: #FFFFFF; }
-  .site-nav .cta { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; background: #FFFFFF; color: var(--ink); border-radius: 4px; font-weight: 600; }
+  .site-nav .cta { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; background: #FFFFFF; color: var(--ink); border-radius: 0; font-weight: 600; }
   .site-nav .cta:hover { color: var(--ink); text-decoration: none; background: #E9EDF0; }
 
-  /* Banner (matches the Policy map card) */
-  .banner { background: var(--navy); background-image: linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px); background-size: 200px 100%; color: #FFFFFF; }
+  /* Banner: the Policy map card, blown up */
+  .banner { background: var(--navy); background-image: linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px); background-size: 200px 100%; color: #FFFFFF; }
   .banner-in { max-width: 1200px; margin: 0 auto; padding: 48px 24px 150px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 32px 48px; }
   .banner-text { flex: 1 1 480px; min-width: 0; }
-  .tag { display: inline-flex; align-items: center; padding: 10px 18px; background: var(--accent); color: var(--ink); font-size: 16px; font-weight: 500; margin-bottom: 22px; }
   .banner h1 { font-family: var(--head); font-weight: 500; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 16px; }
-  .banner .subtitle { color: #C9D2DB; font-size: 17px; max-width: 60ch; margin: 0; }
-  .banner-art { flex: 0 1 300px; min-width: 0; }
+  .banner .subtitle { color: #C9D2DB; font-size: 17px; max-width: 54ch; margin: 0 0 22px; }
+  .stamp { font-family: var(--mono); font-size: 13px; color: #8FA3B6; letter-spacing: 0.01em; }
+  .stamp b { color: #FFFFFF; font-weight: 500; }
+  .banner-art { flex: 0 1 280px; min-width: 0; }
   .banner-art svg { display: block; width: 100%; height: auto; }
 
-  .wrap { max-width: 1200px; margin: 0 auto; padding: 4rem 24px 0; }
+  /* Tags: same blocks as the homepage cards */
+  .tag { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; background: var(--accent); color: var(--ink); font-size: 16px; font-weight: 500; margin-bottom: 22px; }
+  .tag-copper { background: var(--copper); }
+  .tag-sky { background: var(--sky); }
+
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 4.5rem 24px 0; }
   .wrap-gutter { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-  .wrap.intro { padding-top: 3.5rem; padding-bottom: 1.75rem; }
-  .wrap.intro h1 { font-family: var(--head); font-weight: 500; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 1rem; }
+  .map-overlap { margin-top: -110px; position: relative; }
   h1, h2 { font-family: var(--head); font-weight: 500; line-height: 1.15; }
-  h2 { font-size: clamp(1.7rem, 3vw, 2.3rem); letter-spacing: -0.01em; margin: 0 0 0.75rem; }
-  .subtitle { font-size: 17px; margin: 0 0 1.5rem; max-width: 62ch; color: #3A4A5A; }
+  h2 { font-size: clamp(1.7rem, 3vw, 2.3rem); letter-spacing: -0.01em; margin: 0 0 0.6rem; }
+  .subtitle { font-size: 17px; margin: 0 0 1.5rem; max-width: 60ch; color: #3A4A5A; }
 
   /* Map */
-  .map-stage { position: relative; background: var(--water); border-radius: 4px; overflow: hidden; color: var(--muted);  }
+  .map-stage { position: relative; background: var(--water); border: 1px solid var(--line); overflow: hidden; color: var(--muted); }
   .map-stage #worldMap { width: 100%; height: auto; display: block; max-height: 70vh; }
   .country { stroke: var(--land-edge); stroke-width: 0.5; cursor: pointer; fill: var(--regime-none); transition: opacity .15s; }
   .country:hover { stroke: var(--ink); stroke-width: 1; }
@@ -68,36 +78,35 @@
   .country.regime-none { fill: var(--regime-none); }
   .great-circle-line { stroke: var(--ink); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
   .route-endpoint { fill: var(--accent); stroke: var(--ink); stroke-width: 2; }
-  .route-endpoint-label { font-family: var(--body); font-weight: 600; font-size: 12px; fill: var(--ink); paint-order: stroke; stroke: #FFFFFF; stroke-width: 3.5px; }
+  .route-endpoint-label { font-family: var(--mono); font-weight: 600; font-size: 12px; fill: var(--ink); paint-order: stroke; stroke: #FFFFFF; stroke-width: 3.5px; }
 
-  #tooltip { position: absolute; display: none; pointer-events: none; z-index: 10; max-width: 240px; background: var(--panel); color: var(--ink); border: 1px solid var(--line); box-shadow: 0 8px 24px -12px rgba(14,26,36,0.4); border-radius: 4px; padding: 8px 12px; font-size: 14px; }
+  #tooltip { position: absolute; display: none; pointer-events: none; z-index: 10; max-width: 240px; background: var(--panel); color: var(--ink); border: 1px solid var(--ink); padding: 8px 12px; font-size: 14px; }
   #tooltip .t-name { font-weight: 600; }
   #tooltip .t-regime { color: var(--muted); }
 
-  .map-legend-float { position: absolute; left: 12px; bottom: 12px; z-index: 25; background: var(--panel); border-radius: 4px; padding: 8px 14px; display: flex; gap: 6px 16px; flex-wrap: wrap; font-size: 13px; color: var(--ink); max-width: calc(100% - 24px); box-shadow: 0 4px 16px -8px rgba(14,26,36,0.35); }
+  .map-legend-float { position: absolute; left: 0; bottom: 0; z-index: 25; background: var(--panel); border-top: 1px solid var(--line); border-right: 1px solid var(--line); padding: 8px 14px; display: flex; gap: 6px 16px; flex-wrap: wrap; font-size: 13px; color: var(--ink); max-width: 100%; }
   .legend-item { display: flex; align-items: center; gap: 6px; }
-  .swatch { width: 12px; height: 12px; border-radius: 2px; }
+  .swatch { width: 12px; height: 12px; }
 
-  .route-toggle-btn { position: absolute; top: 12px; right: 12px; z-index: 30; display: inline-flex; align-items: center; gap: 10px; font: inherit; font-weight: 600; background: var(--accent); color: var(--ink); border: 0; border-radius: 0; padding: 12px 20px; min-height: 44px; cursor: pointer; transition: background .2s, padding .2s; }
+  .route-toggle-btn { position: absolute; top: 0; right: 0; z-index: 30; display: inline-flex; align-items: center; gap: 10px; font: inherit; font-weight: 600; background: var(--accent); color: var(--ink); border: 0; border-radius: 0; padding: 12px 20px; min-height: 48px; cursor: pointer; transition: background .2s, padding .2s; }
   .route-toggle-btn::after { content: "\2192"; transition: transform .2s; }
   .route-toggle-btn:hover { background: var(--accent-deep); padding-right: 26px; }
   .route-toggle-btn:hover::after { transform: translateX(4px); }
-  .route-float-panel, .map-legend-float { color: var(--ink); }
-  .route-float-panel { position: absolute; top: 12px; right: 12px; bottom: 12px; width: 390px; max-width: calc(100% - 24px); overflow-y: auto; background: var(--panel); border-radius: 4px; box-shadow: 0 16px 40px -16px rgba(14,26,36,0.5); padding: 1.1rem 1.25rem 1.25rem; z-index: 31; display: none; }
+  .route-float-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 390px; max-width: 100%; overflow-y: auto; background: var(--panel); border-left: 1px solid var(--ink); padding: 1.1rem 1.25rem 1.25rem; z-index: 31; display: none; color: var(--ink); }
   .route-float-panel.open { display: block; }
   .rfp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--line); }
   .rfp-title { font-family: var(--head); font-weight: 600; font-size: 22px; }
-  .rfp-close { font: inherit; font-size: 18px; line-height: 1; background: none; border: 1px solid var(--line); color: var(--ink); border-radius: 4px; width: 36px; height: 36px; cursor: pointer; }
+  .rfp-close { font: inherit; font-size: 18px; line-height: 1; background: none; border: 1px solid var(--line); color: var(--ink); width: 36px; height: 36px; cursor: pointer; }
   .rfp-close:hover { border-color: var(--ink); }
   .route-row { display: block; }
   .route-field { margin-bottom: 0.9rem; min-width: 0; }
   .route-field label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 4px; }
-  select, .airport-field input[type="text"], .portfolio-row input[type="number"] { width: 100%; font: inherit; font-size: 15px; color: var(--ink); background: var(--field); border: 1px solid #C3CBD2; border-radius: 4px; padding: 8px 10px; min-height: 44px; transition: border-color .15s; }
+  select, .airport-field input[type="text"], .portfolio-row input[type="number"] { width: 100%; font: inherit; font-size: 15px; color: var(--ink); background: var(--field); border: 1px solid #C3CBD2; border-radius: 0; padding: 8px 10px; min-height: 44px; transition: border-color .15s; }
   select:hover, .airport-field input[type="text"]:hover, .portfolio-row input[type="number"]:hover { border-color: var(--muted); }
   select:focus, .airport-field input[type="text"]:focus, .portfolio-row input[type="number"]:focus { border-color: var(--ink); }
   .airport-field { position: relative; }
   .airport-field input[type="text"]:disabled { color: var(--muted); background: var(--tint); }
-  .airport-suggestions { position: absolute; top: calc(100% + 2px); left: 0; right: 0; background: var(--field); border: 1px solid var(--line); box-shadow: 0 12px 28px -12px rgba(14,26,36,0.4); border-radius: 4px; max-height: 240px; overflow-y: auto; z-index: 40; display: none; }
+  .airport-suggestions { position: absolute; top: calc(100% + 2px); left: 0; right: 0; background: var(--field); border: 1px solid var(--ink); max-height: 240px; overflow-y: auto; z-index: 40; display: none; }
   .airport-suggestion-item { padding: 8px 10px; font-size: 14px; cursor: pointer; border-bottom: 1px solid var(--line); }
   .airport-suggestion-item:last-child { border-bottom: 0; }
   .airport-suggestion-item:hover { background: var(--tint); }
@@ -113,17 +122,17 @@
   .cost-header { font-weight: 600; margin-bottom: 0.5rem; }
   .cost-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 0.75rem; }
   .cs-label { font-size: 13px; color: var(--muted); }
-  .cs-value { font-family: var(--head); font-weight: 600; font-size: 24px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .cs-value { font-family: var(--mono); font-weight: 500; font-size: 22px; line-height: 1.2; font-variant-numeric: tabular-nums; }
   .cs-unit { font-family: var(--body); font-weight: 400; font-size: 13px; color: var(--muted); margin-left: 3px; }
-  .range-table { width: 100%; border-collapse: collapse; margin: 0 0 1rem; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .range-table { width: 100%; border-collapse: collapse; margin: 0 0 1rem; font-size: 14px; font-family: var(--mono); font-variant-numeric: tabular-nums; }
   .range-table th, .range-table td { padding: 6px 0 6px 8px; text-align: right; border-bottom: 1px solid var(--line); }
-  .range-table th:first-child, .range-table td:first-child { text-align: left; padding-left: 0; }
-  .range-table th { font-weight: 600; font-size: 13px; color: var(--muted); }
+  .range-table th:first-child, .range-table td:first-child { text-align: left; padding-left: 0; font-family: var(--body); }
+  .range-table th { font-family: var(--body); font-weight: 600; font-size: 13px; color: var(--muted); }
   .range-table tbody tr:last-child td { border-bottom: 0; font-weight: 600; color: var(--money); }
   .range-table tbody tr:last-child td:first-child { color: var(--ink); }
   .cost-big { display: flex; flex-direction: column; padding: 0.9rem 1rem; background: #FBF5E6; border-left: 4px solid var(--accent); margin-top: 0.5rem; }
   .cb-label { font-weight: 600; font-size: 14px; }
-  .cb-value { font-family: var(--head); font-weight: 600; font-size: 32px; line-height: 1.1; color: var(--money); font-variant-numeric: tabular-nums; }
+  .cb-value { font-family: var(--mono); font-weight: 600; font-size: 28px; line-height: 1.2; color: var(--money); font-variant-numeric: tabular-nums; }
   .cb-note { font-size: 13px; color: var(--muted); }
   .cost-disclaimer { font-size: 13px; color: var(--muted); margin-top: 0.75rem; }
 
@@ -131,37 +140,43 @@
   .sc-header { font-family: var(--head); font-weight: 600; font-size: 19px; margin-bottom: 0.4rem; }
   .sc-tag { display: block; font-family: var(--body); font-weight: 400; font-size: 13px; color: var(--muted); }
   .sc-grid { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; gap: 8px; }
-  .sc-col { background: var(--tint); border-radius: 4px; padding: 0.6rem 0.75rem; }
+  .sc-col { background: var(--tint); padding: 0.6rem 0.75rem; }
   .sc-col-changed { background: #FBF5E6; box-shadow: inset 0 0 0 1.5px var(--accent-deep); }
   .sc-col-label { font-size: 12px; color: var(--muted); }
   .sc-col-regime { font-weight: 600; }
-  .sc-col-cost { color: var(--money); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .sc-col-cost { font-family: var(--mono); color: var(--money); font-weight: 600; font-variant-numeric: tabular-nums; }
   .sc-arrow { align-self: center; color: var(--muted); }
   .sc-note { font-size: 13px; color: var(--muted); margin-top: 0.5rem; }
 
-  /* Portfolio */
-  .portfolio-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 0.5rem 1.5rem 1.5rem; }
+  /* Fleet */
+  .portfolio-panel { background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--copper); padding: 0.5rem 1.5rem 1.5rem; }
   .portfolio-row { display: grid; grid-template-columns: 1.6fr 0.7fr 1.4fr 1.4fr 0.9fr auto; gap: 10px; align-items: end; padding: 0.9rem 0; border-bottom: 1px solid var(--line); }
   .portfolio-row .route-field { margin: 0; }
-  .portfolio-row-remove { font: inherit; font-size: 14px; background: none; border: 1px solid var(--line); color: var(--ink); border-radius: 4px; height: 44px; padding: 0 12px; cursor: pointer; }
+  .portfolio-row-remove { font: inherit; font-size: 14px; background: none; border: 1px solid var(--line); color: var(--ink); height: 44px; padding: 0 12px; cursor: pointer; }
   .portfolio-row-remove:hover { border-color: var(--ink); background: var(--tint); }
   .portfolio-row-invalid { grid-column: 1 / -1; font-size: 14px; color: #B3261E; }
-  .portfolio-add-btn { font: inherit; font-weight: 600; background: none; color: var(--ink); border: 1px dashed var(--muted); border-radius: 4px; padding: 10px 18px; min-height: 44px; margin: 1rem 0 1.5rem; cursor: pointer; }
+  .portfolio-add-btn { font: inherit; font-weight: 600; background: none; color: var(--ink); border: 1px dashed var(--muted); padding: 10px 18px; min-height: 44px; margin: 1rem 0 1.5rem; cursor: pointer; }
   .portfolio-add-btn:hover { border-color: var(--ink); background: var(--tint); }
   .portfolio-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem 1.5rem; border-top: 1px solid var(--ink); padding-top: 1.25rem; }
   .ps-label { font-weight: 600; font-size: 14px; margin-bottom: 2px; color: var(--muted); }
-  .ps-value { font-family: var(--head); font-weight: 600; font-size: 30px; line-height: 1.15; color: var(--money); font-variant-numeric: tabular-nums; }
+  .ps-value { font-family: var(--mono); font-weight: 600; font-size: 26px; line-height: 1.2; color: var(--money); font-variant-numeric: tabular-nums; }
   .ps-text { font-size: 14px; }
 
-  .footer-note { font-size: 14px; color: var(--muted); margin: 3rem 0 0; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+  /* Notes */
+  .notes { background: var(--panel); border: 1px solid var(--line); padding: 1.25rem 1.5rem; }
+  .notes ul { margin: 0; padding: 0; list-style: none; columns: 2 320px; column-gap: 2.5rem; }
+  .notes li { break-inside: avoid; font-size: 14px; color: #3A4A5A; padding: 0.5rem 0 0.5rem 1rem; border-bottom: 1px solid var(--line); position: relative; }
+  .notes li::before { content: ""; position: absolute; left: 0; top: 1.05rem; width: 6px; height: 6px; background: var(--sky); }
 
-  .site-footer { margin-top: 4rem; background: var(--navy); color: #C9D2DB; }
+  .site-footer { margin-top: 4.5rem; background: var(--navy); color: #C9D2DB; }
   .site-footer-in { max-width: 1200px; margin: 0 auto; padding: 40px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px 32px; font-size: 14px; }
   .site-footer a { color: #FFFFFF; }
 
   @media (max-width: 760px) {
-    .route-float-panel { position: fixed; inset: 0; width: auto; max-width: none; border-radius: 0; z-index: 100; }
-    .map-legend-float { position: static; background: none; box-shadow: none; padding: 10px 0 0; }
+    .banner-in { padding-bottom: 120px; }
+    .map-overlap { margin-top: -90px; }
+    .route-float-panel { position: fixed; inset: 0; width: auto; max-width: none; border-left: 0; z-index: 100; }
+    .map-legend-float { position: static; border: 0; background: none; padding: 10px 0 0; }
     .map-stage { overflow: visible; }
     .portfolio-panel { padding: 0.5rem 1rem 1rem; }
     .portfolio-row { grid-template-columns: 1fr 1fr; }
@@ -184,11 +199,40 @@
     </nav>
   </div>
 </header>
-<div class="wrap intro">
-  <h1>Which carbon rules cover a flight?</h1>
-  <p class="subtitle">Point at a country to see which carbon rules it has. Or open the route checker. Pick two airports anywhere in the world and a plane, and it shows you which rules apply, draws the route, and guesses the carbon cost. For now it only covers the EU, UK and Swiss schemes and CORSIA. It is an early version, so don&apos;t treat it as the final word on the rules.</p>
-</div>
-<div class="wrap-gutter">
+
+<section class="banner">
+  <div class="banner-in">
+    <div class="banner-text">
+      <span class="tag">Policy map</span>
+      <h1>Which carbon rules cover a flight?</h1>
+      <p class="subtitle">Tap a country to see its rules. Or check a route: pick two airports and a plane to see which scheme applies and roughly what the carbon costs.</p>
+      <div class="stamp">Prices checked 24 Jul 2026 &middot; EU <b>&euro;80</b> &middot; UK <b>&pound;72</b> &middot; CORSIA <b>$5</b> per tonne</div>
+    </div>
+    <div class="banner-art" aria-hidden="true">
+      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+        <g fill="none" stroke="#5B7FA8" stroke-width="1">
+          <ellipse cx="150" cy="150" rx="130" ry="18"/>
+          <ellipse cx="150" cy="98" rx="118" ry="15"/>
+          <ellipse cx="150" cy="202" rx="118" ry="15"/>
+          <ellipse cx="150" cy="56" rx="86" ry="11"/>
+          <ellipse cx="150" cy="244" rx="86" ry="11"/>
+          <ellipse cx="150" cy="150" rx="34" ry="130"/>
+          <ellipse cx="150" cy="150" rx="70" ry="130"/>
+          <ellipse cx="150" cy="150" rx="104" ry="130"/>
+          <line x1="150" y1="20" x2="150" y2="280"/>
+          <circle cx="150" cy="150" r="130" stroke-width="1.6"/>
+        </g>
+        <path d="M138 74 c8-8 30-9 42-2 c8 5 4 14-6 17 c-13 4-28 1-34-5 c-3-3-4-7-2-10 z" fill="#E8C26A"/>
+        <circle cx="124" cy="72" r="5" fill="#E8C26A"/>
+        <path d="M178 82 Q 214 96 230 140" fill="none" stroke="#E8C26A" stroke-width="1.6" stroke-dasharray="3 4"/>
+        <circle cx="231" cy="146" r="4" fill="#E8C26A"/>
+        <circle cx="231" cy="146" r="9" fill="none" stroke="#E8C26A" stroke-width="1"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<div class="wrap-gutter map-overlap">
 <div class="map-stage">
   <svg id="worldMap" viewBox="0 0 960 500" xmlns="http://www.w3.org/2000/svg">
     <text x="480" y="250" text-anchor="middle" fill="currentColor" font-size="15" id="mapLoadingText">Loading map...</text>
@@ -198,8 +242,8 @@
     <div class="legend-item"><span class="swatch" style="background:var(--regime-eu);"></span>EU ETS</div>
     <div class="legend-item"><span class="swatch" style="background:var(--regime-uk);"></span>UK ETS</div>
     <div class="legend-item"><span class="swatch" style="background:var(--regime-ch);"></span>Swiss ETS</div>
-    <div class="legend-item"><span class="swatch" style="background:var(--regime-corsia);"></span>CORSIA only</div>
-    <div class="legend-item"><span class="swatch" style="background:var(--regime-none);"></span>Nothing added yet</div>
+    <div class="legend-item"><span class="swatch" style="background:var(--regime-corsia);"></span>CORSIA</div>
+    <div class="legend-item"><span class="swatch" style="background:var(--regime-none);"></span>Not in CORSIA yet</div>
   </div>
   <button class="route-toggle-btn" id="routeToggleBtn">Check a route</button>
   <div class="route-float-panel" id="routeFloatPanel">
@@ -250,20 +294,35 @@
   </div>
 </div>
 </div>
+
 <div class="wrap">
-  <h2>Add up a whole fleet</h2>
-  <p class="subtitle">Add a row for each type of plane. Give it a rough route and how many flights it does a year. It adds up the carbon cost for the whole fleet, so you don&apos;t have to check one route at a time.</p>
+  <span class="tag tag-copper">Fleet total</span>
+  <h2>Add up a fleet</h2>
+  <p class="subtitle">One row per plane type. Give each a route and how many flights it does a year, and it adds up the yearly carbon cost.</p>
   <div class="portfolio-panel">
     <div id="portfolioRows"></div>
     <button class="portfolio-add-btn" id="portfolioAddBtn" type="button">+ Add a plane</button>
     <div class="portfolio-summary" id="portfolioSummary"></div>
   </div>
 </div>
+
 <div class="wrap">
-  <p class="footer-note">
-    What this covers: the EU, UK and Swiss schemes, and CORSIA. The country shapes are rough, not exact borders. The rules text comes from the same places as the Climate rules page. Airports come from the OpenFlights list (about 6,000 airports with normal flights). The distance is the shortest line between the two airports. Real flights go further, because of air traffic control, busy skies and weather. I last checked carbon prices on 24 July 2026 (EU about &euro;80 a tonne, UK about &pound;72, CORSIA about $5). The UK price could move a lot while the UK and EU talk about joining their schemes, so check it before you use it. Fuel numbers are rough, based on the ICAO BFFM2 method and data from plane makers. Real costs change with how full the plane is, how high it flies, and the route. This is not advice. For what to file, or fines, ask a compliance advisor.
-  </p>
+  <span class="tag tag-sky">Notes</span>
+  <h2>How the numbers work</h2>
+  <div class="notes">
+    <ul>
+      <li>Covers the EU, UK and Swiss schemes and CORSIA. Nothing else yet.</li>
+      <li>Country shapes are simplified, not exact borders.</li>
+      <li>Airports come from the OpenFlights list, about 6,000 with regular flights.</li>
+      <li>Distance is the straight line between two airports. Real flights fly further.</li>
+      <li>Fuel figures are rough, based on ICAO&apos;s BFFM2 method and maker data.</li>
+      <li>The UK price may move a lot while the UK and EU talk about linking their schemes. Check it before using it.</li>
+      <li>CORSIA countries follow ICAO&apos;s 2026 list. It changes every year.</li>
+      <li>This is not advice. For filings or fines, talk to a compliance advisor.</li>
+    </ul>
+  </div>
 </div>
+
 <footer class="site-footer">
   <div class="site-footer-in">
     <a class="wordmark" href="/aviation-emissions/" style="font-size:15px"><b>AVIATION EMISSIONS</b><span>// explained</span></a>
@@ -285,20 +344,15 @@ const countryRegime = {};
 eeaCountries.forEach(c => countryRegime[c] = 'eu-ets');
 ukCountries.forEach(c => countryRegime[c] = 'uk-ets');
 chCountries.forEach(c => countryRegime[c] = 'ch-ets');
-[
-  'United States of America', 'Brazil', 'China', 'Japan', 'India', 'Turkey',
-  'United Arab Emirates', 'Canada', 'Australia', 'South Korea', 'Mexico',
-  'Saudi Arabia', 'Qatar', 'Singapore', 'South Africa', 'Indonesia',
-  'Argentina', 'Egypt', 'Nigeria', 'Thailand', 'Vietnam', 'Malaysia',
-  'Philippines', 'Israel', 'Russia', 'New Zealand'
-].forEach(c => countryRegime[c] = 'corsia-only');
+// Map colouring for everything outside EU/UK/CH now comes from the ICAO 2026 CORSIA list
+// (see regimeForCountry below), so the map and the route checker always agree.
 
 const regimeLabel = {
-  'eu-ets': 'EU ETS (EEA member)',
+  'eu-ets': 'EU ETS',
   'uk-ets': 'UK ETS',
   'ch-ets': 'Swiss ETS',
-  'corsia-only': 'CORSIA only (outside the EU, UK and Switzerland)',
-  'none': 'Nothing added yet'
+  'corsia-only': 'CORSIA (joined for 2026)',
+  'none': 'Not in CORSIA yet. Most countries must join from 2027.'
 };
 
 // OpenFlights country names that differ from the world-atlas / regime keys used above
@@ -325,7 +379,7 @@ function parseCsvLine(line) {
   return out;
 }
 
-function fmtAirport(a) { return a.name + ' (' + a.iata + ') \u2014 ' + a.city + ', ' + a.country; }
+function fmtAirport(a) { return a.name + ' (' + a.iata + '), ' + a.city + ', ' + a.country; }
 
 const fromInput = document.getElementById('fromAirportInput');
 const toInput = document.getElementById('toAirportInput');
@@ -341,7 +395,7 @@ routeToggleBtn.addEventListener('click', () => {
 });
 routeCloseBtn.addEventListener('click', () => {
   routeFloatPanel.classList.remove('open');
-  routeToggleBtn.style.display = 'block';
+  routeToggleBtn.style.display = 'inline-flex';
 });
 
 function setupAirportAutocomplete(input, listEl, onSelect) {
@@ -361,7 +415,7 @@ function setupAirportAutocomplete(input, listEl, onSelect) {
     matches.forEach(a => {
       const item = document.createElement('div');
       item.className = 'airport-suggestion-item';
-      item.innerHTML = '<span class="as-code">' + a.iata + '</span>' + a.name + ' \u2014 ' + a.city + ', ' + a.country;
+      item.innerHTML = '<span class="as-code">' + a.iata + '</span>' + a.name + ', ' + a.city + ', ' + a.country;
       item.addEventListener('mousedown', (e) => {
         e.preventDefault();
         onSelect(a);
@@ -394,8 +448,8 @@ fetch('https://raw.githubusercontent.com/jpatokal/openflights/master/data/airpor
       }))
       .filter(a => !isNaN(a.lat) && !isNaN(a.lon));
     fromInput.disabled = false; toInput.disabled = false;
-    fromInput.placeholder = 'Search city, airport or IATA code...';
-    toInput.placeholder = 'Search city, airport or IATA code...';
+    fromInput.placeholder = 'City, airport or code';
+    toInput.placeholder = 'City, airport or code';
     selectedFromAirport = airports.find(a => a.iata === 'CDG') || airports[0];
     selectedToAirport = airports.find(a => a.iata === 'JFK') || airports[1];
     if (selectedFromAirport) fromInput.value = fmtAirport(selectedFromAirport);
@@ -403,8 +457,8 @@ fetch('https://raw.githubusercontent.com/jpatokal/openflights/master/data/airpor
     renderRoute();
   })
   .catch(() => {
-    fromInput.placeholder = 'Airports did not load. Check your internet and try again.';
-    toInput.placeholder = 'Airports did not load. Check your internet and try again.';
+    fromInput.placeholder = 'Airports did not load. Try refreshing.';
+    toInput.placeholder = 'Airports did not load. Try refreshing.';
   });
 
 const aircraft = {
@@ -489,7 +543,11 @@ const corsiaParticipatingStates2026Raw = [
   'Solomon Islands','South Sudan','Spain','Suriname','Sweden','Switzerland','Thailand','Timor-Leste',
   'Tonga','Trinidad and Tobago','Turkey','Türkiye','Tuvalu','Uganda','Ukraine','United Arab Emirates',
   'United Kingdom','Tanzania','United Republic of Tanzania','United States of America','United States',
-  'Uruguay','Vanuatu','Uruguay','Vietnam','Viet Nam','Zambia','Zimbabwe'
+  'Uruguay','Vanuatu','Uruguay','Vietnam','Viet Nam','Zambia','Zimbabwe',
+  // world-atlas short forms of names above
+  'Dem. Rep. Congo','Bosnia and Herz.','Dominican Rep.','Eq. Guinea','S. Sudan','Solomon Is.',
+  'Marshall Is.','Macedonia','Côte d\'Ivoire','Trinidad and Tobago','Antigua and Barb.','St. Kitts and Nevis',
+  'St. Vin. and Gren.'
 ];
 const corsiaParticipatingStates2026 = new Set(corsiaParticipatingStates2026Raw);
 
@@ -497,11 +555,13 @@ function isCorsiaParticipating(countryName) {
   return corsiaParticipatingStates2026.has(countryName);
 }
 
-// Fuel burn / emissions uncertainty band, per Daniel Rotherham (PhD researcher, University
-// of Manchester, aviation emissions modelling) - a personal/institutional source, not a
-// published citation, so labelled as such in the tool rather than presented as literature
-// consensus. Applied to the high-scenario estimate (routing-corrected distance + LTO cycle)
-// as the central estimate, since that's the fullest point estimate this tool produces.
+function regimeForCountry(name) {
+  return countryRegime[name] || (isCorsiaParticipating(name) ? 'corsia-only' : 'none');
+}
+
+// Fuel burn / emissions uncertainty band, per Daniel Rotherham (aviation emissions
+// modelling) - a personal source, not a published citation, so labelled as such in the tool.
+// Applied to the high-scenario estimate (routing-corrected distance + LTO cycle).
 const ROTHERHAM_UNCERTAINTY_LOW_PCT = -0.13;
 const ROTHERHAM_UNCERTAINTY_HIGH_PCT = 0.15;
 
@@ -552,8 +612,7 @@ function buildCostPanel(fromAirport, toAirport, aircraftKey, regimes) {
   const uncCostHigh = scenarios.high.cost * (1 + ROTHERHAM_UNCERTAINTY_HIGH_PCT);
 
   // CORSIA's mandatory second phase (2027-2035) only matters for routes where CORSIA is the
-  // relevant scheme today - it doesn't affect routes already inside EU ETS/UK ETS/Swiss ETS,
-  // since those national schemes take precedence over CORSIA.
+  // relevant scheme today - it doesn't affect routes already inside EU ETS/UK ETS/Swiss ETS.
   const corsiaRelevant = regimes[0].name === 'CORSIA' || regimes[0].name === 'No scheme (yet)';
   const corsiaWillCover2027 = corsiaRelevant && corsiaCovered2027(fromAirport.country, toAirport.country);
   const corsia2027Changed = corsiaRelevant && regimes[0].name === 'No scheme (yet)' && corsiaWillCover2027;
@@ -562,8 +621,8 @@ function buildCostPanel(fromAirport, toAirport, aircraftKey, regimes) {
   const corsia2027High = scenarios.high.co2Tonnes * corsia2027PriceData.price;
   const corsia2027Block = corsiaRelevant ? `
       <div class="scenario-compare">
-        <div class="sc-header">What changes next <span class="sc-tag">CORSIA becomes a must in 2027. Not yet.</span></div>
-        <div class="sc-note" style="margin-top:0;margin-bottom:0.6rem;">From 2027, CORSIA is a must for any country with more than 0.5% of the world&apos;s 2018 international flying. The poorest countries, small islands and countries with no coast can stay out, or join if they want. To keep it simple, this tool treats every flight between countries as covered from 2027. For small countries that might be wrong, so use it as a rough guide.</div>
+        <div class="sc-header">Coming in 2027 <span class="sc-tag">CORSIA stops being optional</span></div>
+        <div class="sc-note" style="margin-top:0;margin-bottom:0.6rem;">From 2027 most countries must be in CORSIA. The poorest countries, small islands and landlocked countries can still stay out. Here, every flight between two countries counts as covered from 2027, so small countries may show wrong.</div>
         <div class="sc-grid">
           <div class="sc-col">
             <div class="sc-col-label">Today</div>
@@ -578,8 +637,8 @@ function buildCostPanel(fromAirport, toAirport, aircraftKey, regimes) {
           </div>
         </div>
         <div class="sc-note">${corsia2027Changed
-          ? 'At least one of these countries has not joined CORSIA yet, so nothing is owed today. From 2027 this flight will most likely be covered, at the CORSIA price, which is much lower than the EU or UK price.'
-          : 'No change here in 2027. Both countries are already in CORSIA.'}</div>
+          ? 'One of these countries is not in CORSIA yet, so nothing is owed today. From 2027 this flight will most likely be covered, at the CORSIA price.'
+          : 'No change in 2027. Both countries are already in CORSIA.'}</div>
       </div>` : '';
 
   return `
@@ -587,30 +646,30 @@ function buildCostPanel(fromAirport, toAirport, aircraftKey, regimes) {
       <div class="cost-header">Rough carbon cost: ${ac.label}</div>
       <div class="cost-grid">
         <div class="cost-stat"><div class="cs-label">Straight-line distance</div><div class="cs-value">${gcdKm.toLocaleString()}<span class="cs-unit">km</span></div></div>
-        <div class="cost-stat"><div class="cs-label">Carbon price</div><div class="cs-value">${priceData.symbol}${priceData.price}<span class="cs-unit">/${priceData.currency}</span></div></div>
+        <div class="cost-stat"><div class="cs-label">Carbon price</div><div class="cs-value">${priceData.symbol}${priceData.price}<span class="cs-unit">/t</span></div></div>
       </div>
       <table class="range-table">
-        <thead><tr><th></th><th>Low guess</th><th>Middle</th><th>High guess</th></tr></thead>
+        <thead><tr><th></th><th>Low</th><th>Middle</th><th>High</th></tr></thead>
         <tbody>
           <tr><td>Fuel burn</td><td>${(scenarios.low.fuelKg/1000).toFixed(1)}t</td><td>${(scenarios.mid.fuelKg/1000).toFixed(1)}t</td><td>${(scenarios.high.fuelKg/1000).toFixed(1)}t</td></tr>
-          <tr><td>CO&#8322; made</td><td>${scenarios.low.co2Tonnes.toFixed(1)}t</td><td>${scenarios.mid.co2Tonnes.toFixed(1)}t</td><td>${scenarios.high.co2Tonnes.toFixed(1)}t</td></tr>
+          <tr><td>CO&#8322;</td><td>${scenarios.low.co2Tonnes.toFixed(1)}t</td><td>${scenarios.mid.co2Tonnes.toFixed(1)}t</td><td>${scenarios.high.co2Tonnes.toFixed(1)}t</td></tr>
           <tr><td>Cost</td><td>${fmtCurrency(scenarios.low.cost, priceData.symbol)}</td><td>${fmtCurrency(scenarios.mid.cost, priceData.symbol)}</td><td>${fmtCurrency(scenarios.high.cost, priceData.symbol)}</td></tr>
         </tbody>
       </table>
       <div class="cost-big">
-        <span class="cb-label">What this flight could owe</span>
+        <span class="cb-label">One flight could owe</span>
         <span class="cb-value">${fmtCurrency(scenarios.low.cost, priceData.symbol)} \u2013 ${fmtCurrency(scenarios.high.cost, priceData.symbol)}</span>
-        <span class="cb-note">Under ${regimes[0].name}, for the whole plane, one flight</span>
+        <span class="cb-note">Under ${regimes[0].name}, whole plane</span>
       </div>
       <div class="cost-big" style="border-top:none;padding-top:4px;">
-        <span class="cb-label">Room for error (13% lower to 15% higher)</span>
+        <span class="cb-label">With room for error (13% under to 15% over)</span>
         <span class="cb-value" style="font-size:20px;">${fmtCurrency(uncCostLow, priceData.symbol)} \u2013 ${fmtCurrency(uncCostHigh, priceData.symbol)}</span>
-        <span class="cb-note">${uncCo2Low.toFixed(1)}t \u2013 ${uncCo2High.toFixed(1)}t CO&#8322;, based on the high guess</span>
+        <span class="cb-note">${uncCo2Low.toFixed(1)}t to ${uncCo2High.toFixed(1)}t CO&#8322;, around the high figure</span>
       </div>
-      <div class="cost-disclaimer">Low guess: only the fuel used at cruising height, flying the straight line. Middle: adds ${(corr*100).toFixed(0)}% for a flight this long, because planes get sent around by air traffic control, wait in the air, and go round bad weather. ICAO&apos;s own carbon calculator does something like this. High guess: also adds the fuel for taxiing, take-off and landing. These are all rough numbers, not what a real flight plan would say. Real fuel use changes with how full the plane is, how high it flies, the wind and the exact route. This leaves out free allowances and the warming from clouds and NOx. The room for error (13% lower to 15% higher) comes from Daniel Rotherham, a PhD researcher in aircraft emissions at the University of Manchester. He told me this himself. It is not from a published paper.</div>
+      <div class="cost-disclaimer">Low is cruise fuel on the straight line. Middle adds ${(corr*100).toFixed(0)}% for detours, holding and weather, like ICAO&apos;s own calculator. High also adds taxi, take-off and landing. Free allowances and non-CO&#8322; warming are left out. Load, height, wind and the real route all change the answer. The error range is a working estimate from Daniel Rotherham, who models aircraft emissions. It is not from a published paper.</div>
       <div class="scenario-compare">
-        <div class="sc-header">What changes next <span class="sc-tag">The EU 5,000km plan. Only a plan for now.</span></div>
-        <div class="sc-note" style="margin-top:0;margin-bottom:0.6rem;">The 5,000km is measured from Frankfurt airport. It would start in January 2029. New airports it would pull in include Istanbul, Doha (Hamad), Dubai, and Lagos (Murtala Muhammed).</div>
+        <div class="sc-header">If the EU 5,000km plan goes ahead <span class="sc-tag">Proposal only, not law</span></div>
+        <div class="sc-note" style="margin-top:0;margin-bottom:0.6rem;">Measured from Frankfurt, starting January 2029. It would bring in flights to Istanbul, Doha, Dubai and Lagos.</div>
         <div class="sc-grid">
           <div class="sc-col">
             <div class="sc-col-label">Today</div>
@@ -619,14 +678,14 @@ function buildCostPanel(fromAirport, toAirport, aircraftKey, regimes) {
           </div>
           <div class="sc-arrow">&rarr;</div>
           <div class="sc-col${changed ? ' sc-col-changed' : ''}">
-            <div class="sc-col-label">If the plan goes ahead</div>
+            <div class="sc-col-label">Under the plan</div>
             <div class="sc-col-regime">${proposedRegimes[0].name}</div>
             <div class="sc-col-cost">${fmtCurrency(proposedLow, proposedPriceData.symbol)} \u2013 ${fmtCurrency(proposedHigh, proposedPriceData.symbol)}</div>
           </div>
         </div>
         <div class="sc-note">${changed
-          ? 'This flight would move from ' + regimes[0].name + ' to ' + proposedRegimes[0].name + ', because it goes from Europe to a place less than 5,000km away.'
-          : 'No change for this flight. Either the EU, UK or Swiss scheme already covers it, or it goes further than 5,000km.'}</div>
+          ? 'This flight would move from ' + regimes[0].name + ' to ' + proposedRegimes[0].name + '. It leaves Europe and lands less than 5,000km away.'
+          : 'No change for this flight. A European scheme already covers it, or it goes past 5,000km.'}</div>
       </div>${corsia2027Block}
     </div>`;
 }
@@ -644,20 +703,17 @@ fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json')
   .then(topology => {
     const countries = topojson.feature(topology, topology.objects.countries);
     document.getElementById('mapLoadingText').remove();
-    const drawn = countriesLayer.selectAll('path.country')
+    countriesLayer.selectAll('path.country')
       .data(countries.features)
       .enter()
       .append('path')
-      .attr('class', d => {
-        const regime = countryRegime[d.properties.name] || 'none';
-        return 'country regime-' + regime;
-      })
+      .attr('class', d => 'country regime-' + regimeForCountry(d.properties.name))
       .attr('data-country', d => d.properties.name)
       .attr('d', path)
       .attr('shape-rendering', 'geometricPrecision')
       .on('mousemove', (event, d) => {
         const name = d.properties.name;
-        const regime = countryRegime[name] || 'none';
+        const regime = regimeForCountry(name);
         const panelRect = svg.node().parentElement.getBoundingClientRect();
         tooltip.style.display = 'block';
         tooltip.style.left = (event.clientX - panelRect.left + 16) + 'px';
@@ -667,7 +723,7 @@ fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json')
       .on('mouseleave', () => { tooltip.style.display = 'none'; });
   })
   .catch(() => {
-    document.getElementById('mapLoadingText').textContent = 'The map did not load. Check your internet and try again.';
+    document.getElementById('mapLoadingText').textContent = 'The map did not load. Try refreshing.';
   });
 
 const isEEA = eeaCountries;
@@ -679,42 +735,35 @@ function evaluateRoute(from, to) {
   const fromCH = from === 'Switzerland', toCH = to === 'Switzerland';
   // CORSIA is route-based: it only applies today if BOTH the departure and arrival states
   // are on the current voluntary participation list (see corsiaParticipatingStates2026 above).
-  // A route with a non-participating endpoint (e.g. China) has no CORSIA obligation yet,
-  // even though it's international - that only changes in the 2027 mandatory phase.
   const corsiaCovered = isCorsiaParticipating(from) && isCorsiaParticipating(to);
   if (fromCH || toCH) {
-    regs.push({ name: 'Swiss ETS', desc: 'This flight goes to or from Switzerland. The Swiss scheme is joined to the EU one and has the same price. It is used for this flight instead of the EU scheme or CORSIA.' });
+    regs.push({ name: 'Swiss ETS', desc: 'This flight touches Switzerland. The Swiss scheme is linked to the EU one and uses the same price. It applies here instead of the EU scheme or CORSIA.' });
   } else if (fromEEA && toEEA) {
-    regs.push({ name: 'EU ETS', desc: 'A flight inside Europe. The airline hands in one EU allowance for every tonne of CO2. From 2026 there are no free ones.' });
+    regs.push({ name: 'EU ETS', desc: 'A flight inside Europe. The airline gives up one EU allowance per tonne of CO2. Free allowances end in 2026.' });
   } else if ((fromEEA && !toEEA) || (!fromEEA && toEEA)) {
     regs.push(corsiaCovered
-      ? { name: 'CORSIA', desc: 'A flight from Europe to a country outside it. CORSIA covers it, not the EU scheme, because both countries have chosen to join CORSIA.' }
-      : { name: 'No scheme (yet)', desc: 'A flight from Europe to a country outside it. But at least one of the two countries has not joined CORSIA yet, so nothing is owed today. That changes in 2027, when CORSIA becomes a must.' });
+      ? { name: 'CORSIA', desc: 'A flight between Europe and somewhere else. Both countries are in CORSIA, so CORSIA covers it, not the EU scheme.' }
+      : { name: 'No scheme (yet)', desc: 'A flight between Europe and somewhere else. One of the two countries is not in CORSIA yet, so nothing is owed today. That changes in 2027.' });
   }
   if (fromUK && toUK) {
-    regs.push({ name: 'UK ETS', desc: 'A flight inside the UK. The airline hands in one UK allowance for every tonne of CO2. It works like the EU scheme, but with its own market.' });
+    regs.push({ name: 'UK ETS', desc: 'A flight inside the UK. The airline gives up one UK allowance per tonne of CO2. Same idea as the EU scheme, separate market.' });
   } else if ((fromUK && !toUK) || (!fromUK && toUK)) {
     regs.push(corsiaCovered
-      ? { name: 'CORSIA', desc: 'A flight from the UK to another country. CORSIA covers it, not the UK scheme, because both countries have chosen to join CORSIA.' }
-      : { name: 'No scheme (yet)', desc: 'A flight from the UK to another country. But at least one of the two countries has not joined CORSIA yet, so nothing is owed today. That changes in 2027, when CORSIA becomes a must.' });
+      ? { name: 'CORSIA', desc: 'A flight between the UK and another country. Both are in CORSIA, so CORSIA covers it, not the UK scheme.' }
+      : { name: 'No scheme (yet)', desc: 'A flight between the UK and another country. One of them is not in CORSIA yet, so nothing is owed today. That changes in 2027.' });
   }
   if (regs.length === 0) {
     regs.push(corsiaCovered
-      ? { name: 'CORSIA', desc: 'Neither airport is in the EU, UK or Swiss schemes. But both countries have chosen to join CORSIA, so CORSIA covers this flight today.' }
-      : { name: 'No scheme (yet)', desc: 'Neither airport is in the EU, UK or Swiss schemes, and at least one of the countries has not joined CORSIA yet. So no carbon rule covers this flight today. From 2027 almost every country has to join CORSIA, so this flight will most likely be covered then.' });
+      ? { name: 'CORSIA', desc: 'Neither airport is in Europe. Both countries are in CORSIA, so CORSIA covers this flight today.' }
+      : { name: 'No scheme (yet)', desc: 'Neither airport is in Europe, and one of the countries is not in CORSIA yet. No carbon rule covers this flight today. It most likely will from 2027.' });
   }
   const seen = new Set();
   return regs.filter(r => { if (seen.has(r.name)) return false; seen.add(r.name); return true; });
 }
 
 // Whether a route would be CORSIA-covered once the scheme's mandatory second phase begins
-// (2027-2035). From 2027, participation is required for all ICAO states above a 0.5% share
-// of 2018 international RTKs, with narrow exemptions for Least Developed Countries, Small
-// Island Developing States and Landlocked Developing Countries (who may still opt in
-// voluntarily). This tool can't evaluate the RTK threshold or exemption list precisely, so
-// it approximates 2027 as "CORSIA applies to any international route" - a reasonable
-// approximation for major commercial routes, but it will overstate coverage for small/exempt
-// states. Treat the 2027 comparison as directional, not a compliance-grade determination.
+// (2027-2035). Approximated as "CORSIA applies to any international route" - it will
+// overstate coverage for small/exempt states. Directional, not compliance-grade.
 function corsiaCovered2027(from, to) {
   return from !== to;
 }
@@ -724,7 +773,7 @@ function evaluateRouteProposed(from, to, gcdKm, currentRegs) {
   const eeaLeg = (fromEEA && !toEEA) || (!fromEEA && toEEA);
   const currentlyCORSIA = currentRegs.length === 1 && currentRegs[0].name === 'CORSIA';
   if (eeaLeg && currentlyCORSIA && gcdKm <= 5000) {
-    return [{ name: 'EU ETS', desc: 'Under the new EU plan, flights from Europe to places within 5,000km would move from CORSIA to the EU scheme.' }];
+    return [{ name: 'EU ETS', desc: 'Under the EU plan, flights from Europe to places within 5,000km would move from CORSIA to the EU scheme.' }];
   }
   return currentRegs;
 }
@@ -759,7 +808,7 @@ function drawGreatCircle(fromAirport, toAirport) {
 function renderRoute() {
   const aircraftKey = document.getElementById('aircraftType').value;
   if (!selectedFromAirport || !selectedToAirport) {
-    document.getElementById('routeResult').innerHTML = '<p class="no-reg">Pick where you are flying from and to.</p>';
+    document.getElementById('routeResult').innerHTML = '<p class="no-reg">Pick where the flight leaves from and lands.</p>';
     clearRouteLine();
     return;
   }
@@ -773,7 +822,7 @@ function renderRoute() {
 document.getElementById('aircraftType').addEventListener('change', renderRoute);
 renderRoute();
 
-// ---- Portfolio exposure builder ----
+// ---- Fleet total builder ----
 const aircraftOptionsHtml = `
   <optgroup label="Narrow-body">
     <option value="A319">Airbus A319</option>
@@ -809,8 +858,8 @@ function addPortfolioRow(defaults) {
   row.innerHTML = `
     <div class="route-field"><label>Plane</label><select class="pf-aircraft">${aircraftOptionsHtml}</select></div>
     <div class="route-field"><label>How many</label><input type="number" class="pf-count" min="1" value="${(defaults && defaults.count) || 1}"></div>
-    <div class="route-field airport-field"><label>From</label><input type="text" class="pf-from" placeholder="City or IATA code" autocomplete="off"><div class="airport-suggestions pf-from-suggestions"></div></div>
-    <div class="route-field airport-field"><label>To</label><input type="text" class="pf-to" placeholder="City or IATA code" autocomplete="off"><div class="airport-suggestions pf-to-suggestions"></div></div>
+    <div class="route-field airport-field"><label>From</label><input type="text" class="pf-from" placeholder="City or code" autocomplete="off"><div class="airport-suggestions pf-from-suggestions"></div></div>
+    <div class="route-field airport-field"><label>To</label><input type="text" class="pf-to" placeholder="City or code" autocomplete="off"><div class="airport-suggestions pf-to-suggestions"></div></div>
     <div class="route-field"><label>Flights a year</label><input type="number" class="pf-sectors" min="1" value="${(defaults && defaults.sectors) || 500}"></div>
     <button type="button" class="portfolio-row-remove" aria-label="Remove row">&times;</button>`;
   portfolioRowsEl.appendChild(row);
@@ -890,9 +939,7 @@ function calculatePortfolio() {
     totals.high += annual.high;
     regimeTotals[regs[0].name] = (regimeTotals[regs[0].name] || 0) + annual.mid;
 
-    // Contrail allowance mechanism (EU ETS revision proposal) applies to verified EU ETS
-    // emissions specifically, not UK ETS, Swiss ETS or CORSIA - so only EU ETS-scope rows
-    // feed the allowance calculation below.
+    // Contrail allowance mechanism applies to verified EU ETS emissions only.
     if (regs[0].name === 'EU ETS') {
       euEtsCo2Mid += annualCo2.mid;
     }
@@ -921,23 +968,23 @@ function calculatePortfolio() {
 
   const contrailCard = euEtsCo2Mid > 0
     ? `<div class="ps-card">
-        <div class="ps-label">Free allowances you could earn for contrail work</div>
+        <div class="ps-label">Contrail allowances (EU plan)</div>
         <div class="ps-value">${fmtCurrency(contrailTotalValue, '€')}/yr</div>
-        <div class="ps-text" style="font-size:12.5px;margin-top:2px;">0.1% for planning around contrails, plus 0.02% for better reporting, on ${Math.round(euEtsCo2Mid).toLocaleString()}t EU ETS CO&#8322;/yr</div>
+        <div class="ps-text" style="font-size:12.5px;margin-top:2px;">0.1% for contrail planning plus 0.02% for better reporting, on ${Math.round(euEtsCo2Mid).toLocaleString()}t of EU ETS CO&#8322; a year</div>
       </div>`
     : `<div class="ps-card">
-        <div class="ps-label">Free allowances you could earn for contrail work</div>
+        <div class="ps-label">Contrail allowances (EU plan)</div>
         <div class="ps-value" style="font-size:17px;color:var(--muted);">No EU routes yet</div>
-        <div class="ps-text" style="font-size:12.5px;margin-top:2px;">This only counts flights in the EU scheme. Add a flight inside Europe to see it.</div>
+        <div class="ps-text" style="font-size:12.5px;margin-top:2px;">Only flights in the EU scheme count. Add a flight inside Europe to see it.</div>
       </div>`;
 
   summaryEl.innerHTML = `
-    <div class="ps-card"><div class="ps-label">Total carbon cost a year</div><div class="ps-value">${fmtCurrency(totals.low, '')} \u2013 ${fmtCurrency(totals.high, '')}/yr</div></div>
-    <div class="ps-card"><div class="ps-label">Split by rule (middle guess)</div><div class="ps-text">${regimeBreakdown}</div></div>
-    <div class="ps-card"><div class="ps-label">Costs the most</div><div class="ps-text">${topRow ? topRow.label : '\u2014'}</div></div>
+    <div class="ps-card"><div class="ps-label">Carbon cost a year</div><div class="ps-value">${fmtCurrency(totals.low, '')} \u2013 ${fmtCurrency(totals.high, '')}</div></div>
+    <div class="ps-card"><div class="ps-label">Split by scheme (middle)</div><div class="ps-text">${regimeBreakdown}</div></div>
+    <div class="ps-card"><div class="ps-label">Biggest cost</div><div class="ps-text">${topRow ? topRow.label : '-'}</div></div>
     ${contrailCard}
-    <div class="cost-disclaimer" style="grid-column:1/-1;">Early version: it adds euros, pounds and dollars together without changing them into one currency. It uses the same method as the route checker above (straight-line distance plus a rough extra for detours, no free allowances, and it assumes the plane is always the same amount full). Use it to get a feel for the size of the cost, not as an exact figure.</div>
-    <div class="cost-disclaimer" style="grid-column:1/-1;">The contrail number comes from the EU&apos;s 17 July 2026 plan. It sets aside up to ${(CONTRAIL_POOL_TOTAL/1000000).toFixed(0)} million free allowances up to 2033. No more than ${CONTRAIL_POOL_CAP_ANNUAL.toLocaleString()} can be given out each year, and every EU airline shares them (about ${fmtCurrency(contrailPoolCapValue,'€')} a year in total at today&apos;s price). Airlines get them for planning flights around contrails and for better reporting. They get them for doing the work, even if they can&apos;t prove the contrails were avoided. It is only a plan for now. Because everyone shares the same pot, a big airline might get less than this shows once other airlines claim too. Also, early trials (more than 200 flights) found that avoiding contrails used about 30% more extra fuel than computer models said it would. Think about that before counting on this money. This is not advice.</div>`;
+    <div class="cost-disclaimer" style="grid-column:1/-1;">A rough total. It adds euros, pounds and dollars without converting them, and uses the same method as the route checker.</div>
+    <div class="cost-disclaimer" style="grid-column:1/-1;">The contrail figure comes from the EU&apos;s 17 July 2026 proposal. It sets aside up to ${(CONTRAIL_POOL_TOTAL/1000000).toFixed(0)} million allowances to 2033, with at most ${CONTRAIL_POOL_CAP_ANNUAL.toLocaleString()} a year shared by every EU airline (about ${fmtCurrency(contrailPoolCapValue,'€')} a year at today&apos;s price). Airlines earn them for doing the work, even if no contrail is proven avoided. Since the pot is shared, a big airline may get less than shown. Early trials of over 200 flights also found avoiding contrails used about 30% more extra fuel than models predicted.</div>`;
 }
 
 document.getElementById('portfolioAddBtn').addEventListener('click', () => addPortfolioRow());
