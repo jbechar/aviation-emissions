@@ -4,21 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ETS vs CORSIA | Aviation Emissions Explained</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
     --paper: #F5F6F3; --ink: #0E1A24; --muted: #51606E; --line: #D8DDE2;
     --navy: #0E2A40; --accent: #E39A55; --accent-deep: #CF8441; --accent-soft: #FBEFE3;
     --money: #A04A10; --link: #1F3A5F; --tint: #EEF1F3; --field: #FFFFFF;
-    --body: 'Public Sans', system-ui, sans-serif;
-    --head: 'Source Serif 4', Georgia, serif;
-    --mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+    --body: 'STIX Two Text', system-ui, sans-serif;
+    --head: 'STIX Two Text', Georgia, serif;
+    --mono: 'STIX Two Text', ui-monospace, Menlo, Consolas, monospace;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
-  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6; }
   a { color: var(--link); text-underline-offset: 3px; }
   a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
 
@@ -48,11 +45,14 @@
   .tl-point, .tl-range { position: absolute; top: 34px; cursor: pointer; text-align: center; }
   .tl-point { transform: translate(-50%, -8px); }
   .tl-range { transform: translateY(-8px); }
-  .tl-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--paper); border: 2px solid var(--ink); margin: 0 auto; transition: background .2s, border-color .2s, transform .2s; }
-  .tl-range-bar { height: 16px; border-radius: 8px; background: var(--paper); border: 2px solid var(--ink); transition: background .2s, border-color .2s; }
+  .tl-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--paper); border: 2px solid var(--ink); margin: 0 auto; transition: background-color 150ms ease, border-color 150ms ease, transform 200ms var(--ease-out); }
+  .tl-range-bar { height: 16px; border-radius: 8px; background: var(--paper); border: 2px solid var(--ink); transition: background-color 150ms ease, border-color 150ms ease; }
   .tl-year { font-family: var(--mono); font-weight: 500; font-size: 14px; color: var(--muted); margin-top: 8px; white-space: nowrap; }
-  .tl-point:hover .tl-year, .tl-range:hover .tl-year { color: var(--ink); }
-  .tl-point:hover .tl-dot { transform: scale(1.15); }
+  @media (hover: hover) and (pointer: fine) {
+    .tl-point:hover .tl-year, .tl-range:hover .tl-year { color: var(--ink); }
+    .tl-point:hover .tl-dot { transform: scale(1.15); }
+  }
+  .tl-point:focus-visible, .tl-range:focus-visible { outline: 2px solid var(--link); outline-offset: 4px; border-radius: 4px; }
   .tl-point.active .tl-dot, .tl-range.active .tl-range-bar { background: var(--accent); border-color: var(--accent-deep); }
   .tl-point.active .tl-year, .tl-range.active .tl-year { color: var(--ink); font-weight: 600; }
   .tl-detail { padding: 1rem 1.25rem; background: #FFFFFF; border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 4px; min-height: 6.5em; }
@@ -75,7 +75,7 @@
   .field { margin-bottom: 1.25rem; }
   .field label { display: block; font-weight: 600; font-size: 15px; margin-bottom: 6px; }
   .field input, .field select { width: 100%; max-width: 26rem; font: inherit; color: var(--ink); background: var(--field); border: 1px solid #C3CBD2; border-radius: 4px; padding: 9px 12px; min-height: 44px; transition: border-color .15s; }
-  .field input:hover, .field select:hover { border-color: var(--muted); }
+  @media (hover: hover) and (pointer: fine) { .field input:hover, .field select:hover { border-color: var(--muted); } }
   .field input:focus, .field select:focus { border-color: var(--ink); }
   .field .hint { font-size: 14px; color: var(--muted); margin-top: 6px; max-width: 60ch; }
   .result-panel { margin-top: 1.75rem; padding-top: 0.5rem; border-top: 1px solid var(--ink); }
@@ -115,6 +115,23 @@
     .rf-val { font-size: 34px; }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+  /* Polish: shared details */
+  :root { --ease-out: cubic-bezier(0.23, 1, 0.32, 1); }
+  ::selection { background: #CFE0F0; color: var(--ink); }
+  h1, h2, h3 { text-wrap: balance; }
+  p, .tl-detail-body, .hint, li { text-wrap: pretty; }
+  .result-row .rval, .rf-val, .sgf-table td:nth-child(2), .worked { font-variant-numeric: lining-nums tabular-nums; }
+  .site-nav .cta { transition: background-color 150ms ease, transform 160ms var(--ease-out); }
+  .site-nav .cta:active { transform: scale(0.97); }
+  @media (prefers-reduced-motion: reduce) { .site-nav .cta:active { transform: none; } }
+</style>
+<link rel="preload" href="/aviation-emissions/assets/fonts/stix-two-text-400.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:"STIX Two Text";src:url("/aviation-emissions/assets/fonts/stix-two-text-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"STIX Two Text";src:url("/aviation-emissions/assets/fonts/stix-two-text-400-italic.woff2") format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"STIX Two Text";src:url("/aviation-emissions/assets/fonts/stix-two-text-600.woff2") format("woff2");font-weight:500 700;font-style:normal;font-display:swap}
+body{font-variant-numeric:lining-nums}
 </style>
 </head>
 <body>
@@ -138,28 +155,28 @@
   <h2>How it got like this</h2>
   <div class="timeline-wrap" id="timelineWrap">
     <div class="timeline-line"></div>
-    <div class="tl-point" style="left:6%" data-id="2012" tabindex="0">
+    <div class="tl-point" style="left:6%" data-id="2012" tabindex="0" role="button" aria-controls="tlDetail" aria-pressed="false">
       <div class="tl-dot"></div>
       <div class="tl-year">2012</div>
     </div>
-    <div class="tl-point" style="left:22%" data-id="2013" tabindex="0">
+    <div class="tl-point" style="left:22%" data-id="2013" tabindex="0" role="button" aria-controls="tlDetail" aria-pressed="false">
       <div class="tl-dot"></div>
       <div class="tl-year">2013</div>
     </div>
-    <div class="tl-point" style="left:44%" data-id="2016" tabindex="0">
+    <div class="tl-point" style="left:44%" data-id="2016" tabindex="0" role="button" aria-controls="tlDetail" aria-pressed="false">
       <div class="tl-dot"></div>
       <div class="tl-year">2016</div>
     </div>
-    <div class="tl-point" style="left:66%" data-id="2021" tabindex="0">
+    <div class="tl-point" style="left:66%" data-id="2021" tabindex="0" role="button" aria-controls="tlDetail" aria-pressed="false">
       <div class="tl-dot"></div>
       <div class="tl-year">2021</div>
     </div>
-    <div class="tl-range" style="left:83%; width:15%" data-id="2024-2027" tabindex="0">
+    <div class="tl-range" style="left:83%; width:15%" data-id="2024-2027" tabindex="0" role="button" aria-controls="tlDetail" aria-pressed="false">
       <div class="tl-range-bar"></div>
       <div class="tl-year">2024-2027</div>
     </div>
   </div>
-  <div class="tl-detail" id="tlDetail">
+  <div class="tl-detail" id="tlDetail" aria-live="polite">
     <div class="tl-detail-title" id="tlDetailTitle">Tap a year above</div>
     <div class="tl-detail-body" id="tlDetailBody">Five things happened that explain why flying ended up with two rules that overlap, instead of one.</div>
   </div>
@@ -168,7 +185,7 @@
   <table class="compare-table">
     <tr><th></th><th>EU / UK ETS</th><th>CORSIA</th></tr>
     <tr><td>How it works</td><td>There is a limit on total carbon. Airlines buy and sell permits under it.</td><td>Airlines pay for carbon above a starting line by buying offset credits.</td></tr>
-    <tr><td>What you pay for</td><td>Every tonne of CO2 on the flights it covers</td><td>Only the tonnes above 85% of 2019 (the starting line)</td></tr>
+    <tr><td>What you pay for</td><td>Every tonne of CO&#8322; on the flights it covers</td><td>Only the tonnes above 85% of 2019 (the starting line)</td></tr>
     <tr><td>What you buy</td><td>Allowances. There is only one kind, there are only so many, and they are sold on an exchange.</td><td>Offset credits from approved groups (Gold Standard, Verra, ACR). Some are better than others, and prices vary.</td></tr>
     <tr><td>Price</td><td>Changes every day. About &euro;80 a tonne (EU) and &pound;72 a tonne (UK)</td><td>No one price. Roughly $5 to $20 a tonne, depending on the credit</td></tr>
     <tr><td>Which flights</td><td>Flights inside the area (EU scheme: inside Europe. UK scheme: inside the UK)</td><td>Flights between two countries, but only if both countries are in CORSIA</td></tr>
@@ -186,16 +203,16 @@
   <h2>Work out what an airline owes</h2>
   <div class="calc-panel">
     <div class="field">
-      <label>Airline&apos;s CO2 on CORSIA flights this year (tonnes)</label>
-      <input type="number" id="operatorEmissions" value="50000" min="0">
+      <label for="operatorEmissions">Airline&apos;s CO&#8322; on CORSIA flights this year (tonnes)</label>
+      <input type="number" id="operatorEmissions" value="50000" min="0" inputmode="numeric">
       <div class="hint">Only count flights between two countries that are both in CORSIA. Not all of the airline&apos;s flights.</div>
     </div>
     <div class="field">
-      <label>Year</label>
+      <label for="complianceYear">Year</label>
       <select id="complianceYear"></select>
       <div class="hint">2021 to 2029 all use the whole-industry growth factor. 2024 uses ICAO&apos;s real number. Later years are guesses for now, because ICAO only puts out each year&apos;s number the year after.</div>
     </div>
-    <div class="result-panel">
+    <div class="result-panel" aria-live="polite">
       <div class="result-row"><span class="rlabel">Growth factor for this year</span><span class="rval" id="outSgf">-</span></div>
       <div class="result-row"><span class="rlabel">Formula</span><span class="rval">Owed = airline&apos;s tonnes &times; growth factor</span></div>
       <div class="result-final">
@@ -210,12 +227,12 @@
   <div class="policy-card">
     <h3>The formula</h3>
     <div class="formula-box">SGF_y&nbsp;=&nbsp;(SE_y&nbsp;&minus;&nbsp;SE_B,y)&nbsp;/&nbsp;SE_y</div>
-    <p>SE_y is all the CO2 from every airline, on flights between CORSIA countries, in that year. SE_B,y is the starting line: 85% of the CO2 on those same flights in 2019. ICAO works this out once a year for the whole industry. It is the same number for every airline.</p>
+    <p>SE_y is all the CO&#8322; from every airline, on flights between CORSIA countries, in that year. SE_B,y is the starting line: 85% of the CO&#8322; on those same flights in 2019. ICAO works this out once a year for the whole industry. It is the same number for every airline.</p>
   </div>
   <div class="policy-card">
     <h3>Example, using ICAO&apos;s real 2024 numbers</h3>
-    <p>Starting line (85% of 2019): <strong>305,522,071 t CO2</strong>. Real CO2 in 2024 on the same flights: <strong>361,159,641 t CO2</strong>.</p>
-    <p style="margin-top:8px;">SGF_2024 = (361,159,641 &minus; 305,522,071) / 361,159,641 = <strong>0.15405257</strong>. That is the same number ICAO put out. So an airline with 50,000 tonnes on CORSIA flights in 2024 has to offset 50,000 &times; 0.15405257, which is about <strong>7,703 t CO2</strong>.</p>
+    <p>Starting line (85% of 2019): <strong>305,522,071 t CO&#8322;</strong>. Real CO&#8322; in 2024 on the same flights: <strong>361,159,641 t CO&#8322;</strong>.</p>
+    <p style="margin-top:8px;">SGF_2024 = (361,159,641 &minus; 305,522,071) / 361,159,641 = <strong>0.15405257</strong>. That is the same number ICAO put out. So an airline with 50,000 tonnes on CORSIA flights in 2024 has to offset 50,000 &times; 0.15405257, which is about <strong>7,703 t CO&#8322;</strong>.</p>
   </div>
   <div class="policy-card">
     <h3>What changes in 2030</h3>
@@ -223,7 +240,7 @@
   </div>
   <div class="policy-card">
     <h3>Discount for clean fuel (not built yet)</h3>
-    <p>If an airline uses clean fuel (SAF) that meets CORSIA&apos;s rules, it can take that off what it owes. For normal jet fuel, 1 kg burned makes 3.16 kg of CO2. This calculator does not take off the discount yet. So the answer is the most an airline could owe, not the final amount.</p>
+    <p>If an airline uses clean fuel (SAF) that meets CORSIA&apos;s rules, it can take that off what it owes. For normal jet fuel, 1 kg burned makes 3.16 kg of CO&#8322;. This calculator does not take off the discount yet. So the answer is the most an airline could owe, not the final amount.</p>
   </div>
 
   <h2>Growth factor for each year</h2>
@@ -278,13 +295,14 @@ function showTimelinePoint(id) {
   if (!d) return;
   tlDetailTitle.textContent = d.title;
   tlDetailBody.textContent = d.body;
-  tlNodes.forEach(n => n.classList.toggle('active', n.dataset.id === id));
+  tlNodes.forEach(n => { const on = n.dataset.id === id; n.classList.toggle('active', on); n.setAttribute('aria-pressed', on ? 'true' : 'false'); });
 }
 
 tlNodes.forEach(node => {
-  node.addEventListener('mouseenter', () => showTimelinePoint(node.dataset.id));
+  node.addEventListener('mouseenter', () => { if (window.matchMedia('(hover: hover)').matches) showTimelinePoint(node.dataset.id); });
   node.addEventListener('focus', () => showTimelinePoint(node.dataset.id));
   node.addEventListener('click', () => showTimelinePoint(node.dataset.id));
+  node.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showTimelinePoint(node.dataset.id); } });
 });
 </script>
 <script>
@@ -308,10 +326,10 @@ function calculate() {
   const offsetting = emissions * sgf;
 
   document.getElementById('outSgf').textContent = sgf.toFixed(8);
-  document.getElementById('outResult').textContent = Math.round(offsetting).toLocaleString() + ' t CO2';
+  document.getElementById('outResult').textContent = Math.round(offsetting).toLocaleString() + ' t CO\u2082';
   document.getElementById('outWorked').innerHTML =
     'The sum: <code>' + emissions.toLocaleString() + ' &times; ' + sgf.toFixed(8) + ' = ' +
-    Math.round(offsetting).toLocaleString() + ' t CO2</code> to offset for ' + year + '.' +
+    Math.round(offsetting).toLocaleString() + ' t CO\u2082</code> to offset for ' + year + '.' +
     (sgfByYear[year] === undefined ? ' Note: the real number for ' + year + ' is not out yet, so this uses the 2024 number as a rough guess.' : '');
 }
 
