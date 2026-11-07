@@ -3,16 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GTF calculator | Aviation Emissions Explained</title>
+<title>Carbon cost calculator | Aviation Emissions Explained</title>
+<meta name="description" content="What EU ETS, UK ETS, CORSIA and SAF mandates cost an airline in 2026, set against its profit. Worked example on Wizz Air, easyJet and Norwegian.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
     --paper: #F5F6F3; --ink: #0E1A24; --muted: #51606E; --line: #D8DDE2;
-    --navy: #0E2A40; --accent: #1F3A5F; --accent-soft: #EAF0F6;
-    --money: #1F3A5F; --link: #1F3A5F; --tint: #EEF1F3; --field: #FFFFFF;
-    --bar-a: #1F3A5F; --bar-b: #7FA6C9;
+    --navy: #0E2A40; --accent: #1F3A5F; --accent-soft: #EAF0F6; --link: #1F3A5F; --field: #FFFFFF;
+    --eu: #1F3A5F; --uk: #7FA6C9; --corsia: #B8C4CE; --saf: #D9822B;
+    --ok: #2E6B45; --ok-bg: #E3F0E7; --warn: #8A5300; --warn-bg: #FAEDD6; --crit: #A4281F; --crit-bg: #F8E1DE;
     --body: 'Public Sans', system-ui, sans-serif;
     --head: 'Source Serif 4', Georgia, serif;
     --mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
@@ -35,71 +36,72 @@
   .site-nav a[aria-current="page"] { color: #FFFFFF; }
   .site-nav .cta { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; background: #FFFFFF; color: var(--ink); border-radius: 4px; font-weight: 600; }
   .site-nav .cta:hover { color: var(--ink); text-decoration: none; background: #E9EDF0; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 3.5rem 24px 2rem; }
+  h1, h2, h3 { font-family: var(--head); font-weight: 500; line-height: 1.15; text-wrap: balance; }
+  h1 { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.015em; margin: 0 0 1rem; max-width: 22ch; }
+  .eyebrow { font-size: 13px; font-weight: 600; color: #B0601F; margin: 0 0 0.75rem; }
+  .sub { font-size: 17px; margin: 0; max-width: 64ch; color: #3A4A5A; }
+  section { margin-top: 3rem; }
+  .slabel { font-size: clamp(1.5rem, 2.4vw, 1.9rem); letter-spacing: -0.01em; padding-bottom: 0.6rem; border-bottom: 1px solid var(--ink); margin: 0 0 1.25rem; }
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 
-  .wrap { max-width: 800px; margin: 0 auto; padding: 3.5rem 24px 2rem; }
-  h1, h3, .slabel { font-family: var(--head); font-weight: 500; line-height: 1.15; }
-  h1 { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.015em; margin: 0 0 1rem; max-width: 20ch; }
-  .sub { font-size: 17px; margin: 0; max-width: 62ch; color: #3A4A5A; }
-  p { margin: 0 0 1rem; }
+  .box { background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; padding: 1.5rem; }
+  .scen { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.25rem 1.75rem; align-items: end; }
+  .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .field label { font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; gap: 8px; }
+  .field label output { font-family: var(--mono); font-weight: 500; color: var(--accent); }
+  .field input[type=number] { font: 500 15px var(--mono); color: var(--ink); background: var(--field); border: 1px solid #C3CBD2; border-radius: 4px; padding: 9px 12px; min-height: 44px; width: 100%; }
+  .field input[readonly] { background: #EEF1F3; color: var(--muted); }
+  input[type=range] { width: 100%; accent-color: var(--accent); min-height: 28px; }
+  .check { display: flex; align-items: center; gap: 10px; font-size: 15px; min-height: 44px; }
+  .check input { width: 20px; height: 20px; accent-color: var(--accent); }
+  .btn { font: 600 15px var(--body); min-height: 44px; padding: 0 18px; border-radius: 4px; border: 1px solid #C3CBD2; background: #FFFFFF; color: var(--ink); cursor: pointer; }
+  .btn:hover { background: #EEF1F3; }
 
-  section { margin-top: 3.5rem; }
-  .slabel { font-size: clamp(1.6rem, 2.6vw, 2.1rem); letter-spacing: -0.01em; padding-bottom: 0.6rem; border-bottom: 1px solid var(--ink); margin-bottom: 1rem; }
-  .stitle { font-family: var(--body); font-weight: 400; font-size: 16px; line-height: 1.6; margin-bottom: 1.25rem; color: #3A4A5A; }
+  .tabs { display: inline-flex; flex-wrap: wrap; border: 1px solid #C3CBD2; border-radius: 4px; overflow: hidden; margin-top: 2rem; }
+  .tabs button { font: 500 15px var(--body); background: #FFFFFF; color: var(--ink); border: 0; border-right: 1px solid #C3CBD2; padding: 10px 20px; min-height: 44px; cursor: pointer; }
+  .tabs button:last-child { border-right: 0; }
+  .tabs button[aria-pressed="true"] { background: var(--accent); color: #FFFFFF; }
 
-  .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
-  .method-card { background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; padding: 1.25rem; }
-  .method-card h3 { font-size: 20px; font-weight: 600; margin: 0 0 0.5rem; }
-  .method-card p { margin: 0; color: #3A4A5A; font-size: 15px; }
-  .method-note { background: var(--accent-soft); border-left: 4px solid var(--accent); border-radius: 4px; padding: 1rem 1.25rem; }
-  .method-note p:last-child { margin-bottom: 0; }
+  .main { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: flex-start; margin-top: 1rem; }
+  .inputs { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 1rem; }
+  .verdict { flex: 2 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 1.25rem; }
+  .inputs h2, .verdict h2 { font-size: 22px; margin: 0; }
+  .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem; }
+  .hint { font-size: 14px; color: var(--muted); margin: 0; }
+  .flag { color: #B0601F; font-weight: 600; }
 
-  .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 1.5rem; background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; padding: 1.5rem; }
-  .field { display: flex; flex-direction: column; gap: 6px; }
-  .field label { font-weight: 600; font-size: 15px; }
-  .field input { font: inherit; color: var(--ink); background: var(--field); border: 1px solid #C3CBD2; border-radius: 4px; padding: 9px 12px; min-height: 44px; transition: border-color .15s; }
-  .field input:hover { border-color: var(--muted); }
-  .field input:focus { border-color: var(--ink); }
-  .scenario-toggle { display: inline-flex; flex-wrap: wrap; border: 1px solid #C3CBD2; border-radius: 4px; overflow: hidden; align-self: flex-start; }
-  .scenario-btn { font: inherit; font-size: 15px; background: #FFFFFF; color: var(--ink); border: 0; border-right: 1px solid #C3CBD2; padding: 10px 18px; min-height: 44px; cursor: pointer; transition: background .15s, color .15s; }
-  .scenario-btn:last-child { border-right: 0; }
-  .scenario-btn:hover { background: var(--tint); }
-  .scenario-btn.active { background: var(--accent); color: #FFFFFF; }
+  .badge { display: inline-flex; align-items: center; font-size: 13px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+  .badge.ok { background: var(--ok-bg); color: var(--ok); } .badge.warn { background: var(--warn-bg); color: var(--warn); } .badge.crit { background: var(--crit-bg); color: var(--crit); }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
+  .stat p { margin: 0; }
+  .stat .k { font-size: 14px; color: var(--muted); }
+  .stat .v { font-family: var(--head); font-weight: 600; font-size: 30px; line-height: 1.15; font-variant-numeric: tabular-nums; }
+  .stat .s { font-size: 13px; color: var(--muted); }
+  .bar { display: flex; height: 22px; border-radius: 3px; overflow: hidden; background: var(--line); }
+  .bar span { display: block; height: 100%; transition: width .25s ease; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; color: var(--muted); margin: 10px 0 0; padding: 0; list-style: none; }
+  .legend li { display: flex; align-items: center; gap: 6px; }
+  .legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
 
-  .out-block { margin-bottom: 1.5rem; }
-  .out-label { font-weight: 600; font-size: 15px; margin-bottom: 0.5rem; }
-  .range-row, .co2e-row { display: grid; grid-template-columns: repeat(3, 1fr); background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
-  .range-seg, .co2e-card { padding: 1rem 1.1rem; }
-  .range-seg + .range-seg, .co2e-card + .co2e-card { border-left: 1px solid var(--line); }
-  .seg-mid { background: var(--accent-soft); box-shadow: inset 0 3px 0 var(--accent); }
-  .val { font-family: var(--head); font-weight: 600; font-size: 30px; line-height: 1.1; font-variant-numeric: tabular-nums; }
-  .seg-mid .val { color: var(--money); }
-  .seg-low .val, .seg-high .val { color: var(--muted); font-size: 24px; }
-  .lbl { font-size: 13px; color: var(--muted); margin-top: 4px; }
-  .pending-tag { font-size: 14px; color: var(--muted); padding-left: 0.9rem; border-left: 3px solid var(--line); margin: 0; }
+  .tablebox { overflow-x: auto; background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 660px; }
+  th, td { text-align: right; padding: 11px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: 0; }
+  th:first-child, td:first-child { text-align: left; }
+  th { font-size: 13px; font-weight: 600; color: var(--muted); }
+  tbody tr.on { background: var(--accent-soft); }
 
-  .chart-note { font-size: 14px; color: var(--muted); }
-  #chartWrap { position: relative; width: 100%; height: 320px; background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; padding: 12px 16px; }
-
-  #footnote { font-size: 14px; color: #3A4A5A; }
-  .fn-title { display: block; font-weight: 600; color: var(--ink); margin-bottom: 0.5rem; }
-  #footnote ul { margin: 0; padding-left: 1.2rem; }
-  #footnote li { margin-bottom: 0.4rem; }
-
+  #notes { font-size: 14px; color: #3A4A5A; }
+  #notes p { margin: 0 0 0.75rem; max-width: 90ch; }
   .page-footer { font-size: 14px; color: var(--muted); margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
-
   .site-footer { margin-top: 3rem; background: var(--navy); color: #C9D2DB; }
   .site-footer-in { max-width: 1200px; margin: 0 auto; padding: 40px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px 32px; font-size: 14px; }
   .site-footer a { color: #FFFFFF; }
-
   @media (max-width: 620px) {
-    .method-grid, .input-grid { grid-template-columns: 1fr; }
-    .input-grid { padding: 1.1rem; }
-    .scenario-toggle { flex-direction: column; width: 100%; }
-    .scenario-btn { border-right: 0; border-bottom: 1px solid #C3CBD2; text-align: left; }
-    .scenario-btn:last-child { border-bottom: 0; }
-    .range-row, .co2e-row { grid-template-columns: 1fr; }
-    .range-seg + .range-seg, .co2e-card + .co2e-card { border-left: 0; border-top: 1px solid var(--line); }
-    #chartWrap { height: 360px; }
+    .box { padding: 1.1rem; }
+    .tabs { display: flex; width: 100%; }
+    .tabs button { flex: 1 1 auto; }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -118,278 +120,168 @@
   </div>
 </header>
 
-<div class="wrap">
- 
-  <header class="hero">
-    <h1>What the GTF engine problem costs a fleet</h1>
-    <p class="sub">Many planes with Pratt &amp; Whitney GTF engines are stuck on the ground while the engines get fixed. Type in a fleet size and pick which older engine fills the gap. You get the same sums I used in the SMBC/JSA and Spirit briefs: CO2, CO2 plus other warming, and the change in other pollution. Each number says how sure we can be about it.</p>
-  </header>
- 
-  <section id="methodology">
-    <div class="slabel">How it works</div>
-    <div class="stitle">There are two parts, and I keep them apart on purpose.</div>
-    <div class="method-grid">
-      <div class="method-card">
-        <h3>Part 1: CO2, and CO2 plus other warming</h3>
-        <p>For the whole fleet, over the months you pick. Older planes burn 16% to 20% more fuel (the range the engine makers and industry have published). I add that to each plane&apos;s normal yearly fuel. Then I turn fuel into CO2: every 1 kg of fuel makes 3.16 kg of CO2 (IATA&apos;s number). &quot;CO2e&quot; then multiplies that up to include warming from clouds and NOx. It is a rough idea of the total warming, not a number any rule uses.</p>
-      </div>
-      <div class="method-card layer2">
-        <h3>Part 2: Pollution from official engine tests</h3>
-        <p>For one plane, for one take-off and landing. The numbers come straight from ICAO&apos;s official engine test list (version 32). I compare the grounded new engine (neo) with two older engines (ceo) that could fill in. Then I multiply by roughly how many take-offs and landings a plane does in a year. That is the only guess. The rest is what the official tests say.</p>
-      </div>
-    </div>
-    <div class="method-note"><p><strong>Why I keep them apart:</strong> Part 1 is about climate cost, the kind of number a lessor or insurer uses to price risk. Part 2 is about dirty air around the airport (NOx, HC, CO and soot). That is a different problem, with different rules, so I show it in kilograms and don&apos;t mix it into CO2e. I never mix official numbers with guesses into one number without saying so.</p></div>
-  </section>
- 
-  <section id="fieldNote">
-    <div class="slabel">What really happened</div>
-    <div class="stitle">The main guess in this tool is not always right.</div>
-    <div class="method-note"><p><strong>What this tool guesses:</strong> that older planes (ceo) fly in place of the grounded ones, and burn more fuel and make more pollution.
-      </p><p>
-      <strong>What someone who manages lending risk told me really happened:</strong> in one group of planes hit by Spirit going bust, no older planes filled in. Instead, the airline, Pratt &amp; Whitney and Spirit&apos;s administrators made a deal. Engines were used for the hours they had left. Repairs were booked in early for 2026 and 2027. The planes were leased to other airlines (if the engine did not have the metal fault) or taken apart. Other airlines took up the flying, so no older, thirstier planes were needed. The money hit came a different way: some planes came back worth less than their book value. That is a straight loss on paper, and it has nothing to do with the fuel and pollution this tool works out.
-      </p><p>
-      Some planes have also been taken apart earlier than normal. Spare GTF engines are in such demand that the engines alone can be worth more than the whole plane. So some planes were stripped for parts or sold, and the engines were leased out on their own. This does not happen most of the time, and every case is different. But it does happen, along with re-leasing and repairs.
-      </p><p>
-      Older planes filling in can still happen across a fleet this big. It just means this tool&apos;s guess is one possible outcome, not the only one. Which one wins (older planes, re-leasing, or taking planes apart) probably depends on the engine, how easy it is to get parts, and how strong each lessor&apos;s hand is in talks. There is no one pattern for everyone.</p></div>
-  </section>
- 
-  <section id="inputs">
-    <div class="slabel">Your numbers</div>
-    <div class="stitle">Tell it about the fleet.</div>
-    <div class="input-grid">
-      <div class="field">
-        <label for="fleetSize">How many planes</label>
-        <input type="number" id="fleetSize" value="44" min="1" step="1">
-      </div>
-      <div class="field">
-        <label for="duration">How many months</label>
-        <input type="number" id="duration" value="18" min="1" step="1">
-      </div>
-      <div class="field" style="grid-column: 1 / -1;">
-        <label>Which older engine fills in</label>
-        <div class="scenario-toggle" id="scenarioToggle">
-          <button type="button" class="scenario-btn active" data-scenario="both">Show both</button>
-          <button type="button" class="scenario-btn" data-scenario="A">A: CFM56-5B</button>
-          <button type="button" class="scenario-btn" data-scenario="B">B: V2500</button>
-        </div>
-      </div>
-      <div class="field" style="grid-column: 1 / -1;">
-        <label for="portfolioLabel">Name this fleet (you can skip this)</label>
-        <input type="text" id="portfolioLabel" placeholder="For example: SMBC Aviation Capital, 25 planes">
-      </div>
+<main class="wrap">
+  <p class="eyebrow">Tool · 2026 rules</p>
+  <h1>Can this airline carry its carbon bill?</h1>
+  <p class="sub">What EU ETS, UK ETS, CORSIA and the SAF mandates cost an airline in 2026, set against its last reported profit. The worked example uses three European airlines that lease much of their fleet. Move the prices and the scope to see whose margin breaks first. Every input can be changed.</p>
+
+  <section aria-labelledby="scen-h">
+    <h2 class="slabel" id="scen-h">Scenario</h2>
+    <div class="box scen">
+      <div class="field"><label for="eua">EU carbon price <output id="euaOut"></output></label><input id="eua" type="range" min="40" max="200" step="0.05" value="86.55"></div>
+      <div class="field"><label for="uka">UK carbon price <output id="ukaOut"></output></label><input id="uka" type="range" min="30" max="200" step="1" value="72"></div>
+      <div class="field"><label for="corsia">CORSIA credit price <output id="corsiaOut"></output></label><input id="corsia" type="range" min="5" max="60" step="1" value="20"></div>
+      <div class="field"><label for="saf">Extra cost of SAF over jet fuel <output id="safOut"></output></label><input id="saf" type="range" min="500" max="3500" step="50" value="1400"></div>
+      <label class="check" for="ext"><input id="ext" type="checkbox"> EU ETS also covers flights leaving Europe</label>
+      <div class="field"><button id="reset" class="btn" type="button">Reset to today's prices</button></div>
     </div>
   </section>
- 
-  <section id="layer1">
-    <div class="slabel">Part 1: CO2</div>
-    <div class="stitle">Extra CO2 this fleet makes over the months you picked.</div>
- 
-    <div class="out-block">
-      <div class="out-label">Extra CO2, in tonnes</div>
-      <div class="range-row">
-        <div class="range-seg seg-low"><div class="val" id="co2Low">-</div><div class="lbl">Low guess: 16%</div></div>
-        <div class="range-seg seg-mid"><div class="val" id="co2Mid">-</div><div class="lbl">Middle: 17.5%</div></div>
-        <div class="range-seg seg-high"><div class="val" id="co2High">-</div><div class="lbl">High guess: 20%</div></div>
+
+  <div class="tabs" role="group" aria-label="Airline" id="tabs"></div>
+
+  <div class="main">
+    <section class="box inputs" aria-labelledby="in-h" style="margin-top:0">
+      <h2 id="in-h">Inputs</h2>
+      <p class="hint" id="period"></p>
+      <div class="grid2">
+        <div class="field"><label for="co2">CO₂ (Mt a year)</label><input id="co2" type="number" step="0.01" min="0"></div>
+        <div class="field"><label for="fuel">Fuel (Mt a year)</label><input id="fuel" type="number" readonly></div>
+        <div class="field"><label for="rev">Revenue (€m)</label><input id="rev" type="number" step="1" min="0"></div>
+        <div class="field"><label for="op" id="opLabel">Operating profit (€m)</label><input id="op" type="number" step="1"></div>
       </div>
-    </div>
- 
-    <div class="out-block">
-      <div class="out-label">CO2 plus other warming, in tonnes (the middle CO2 number, times what three studies say)</div>
-      <div class="co2e-row">
-        <div class="co2e-card"><div class="val" id="co2eJohansson">-</div><div class="lbl">&times;1.23, Johansson et al. 2025</div></div>
-        <div class="co2e-card"><div class="val" id="co2eLee">-</div><div class="lbl">&times;1.63, Lee et al. 2020/21</div></div>
-        <div class="co2e-card"><div class="val" id="co2eEasa">-</div><div class="lbl">&times;1.7, EASA</div></div>
+      <p class="hint">Fuel is CO₂ divided by 3.16.</p>
+      <h3 style="font-size:18px;margin:0.25rem 0 0">Where the CO₂ falls <span class="flag">· rough guess</span></h3>
+      <div class="grid2">
+        <div class="field"><label for="shEU">EU ETS (%)</label><input id="shEU" type="number" step="1" min="0" max="100"></div>
+        <div class="field"><label for="shUK">UK ETS (%)</label><input id="shUK" type="number" step="1" min="0" max="100"></div>
+        <div class="field"><label for="shOther">Other international (%)</label><input id="shOther" type="number" readonly></div>
+        <div class="field"><label for="offset">Share CORSIA must offset (%)</label><input id="offset" type="number" step="1" min="0" max="100"></div>
       </div>
+      <p class="hint">These splits are placeholders. A full study works them out flight by flight from schedules and modelled fuel burn.</p>
+    </section>
+
+    <section class="box verdict" aria-labelledby="v-h" aria-live="polite" style="margin-top:0">
+      <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px">
+        <h2 id="v-h">2026 carbon bill</h2>
+        <span id="badge" class="badge"></span>
+      </div>
+      <div class="stats">
+        <div class="stat"><p class="k">Total carbon cost</p><p class="v" id="sTotal"></p><p class="s" id="sTotalSub"></p></div>
+        <div class="stat"><p class="k">Share of revenue</p><p class="v" id="sRev"></p><p class="s">of last reported revenue</p></div>
+        <div class="stat"><p class="k">Compared with profit</p><p class="v" id="sMult"></p><p class="s" id="sMultSub"></p></div>
+        <div class="stat"><p class="k">Profit after scenario</p><p class="v" id="sAfter"></p><p class="s" id="sAfterSub"></p></div>
+      </div>
+      <div>
+        <div class="bar" id="bar" role="img" aria-label="Carbon cost by scheme"></div>
+        <ul class="legend" id="legend"></ul>
+      </div>
+      <p class="hint" id="calib"></p>
+    </section>
+  </div>
+
+  <section aria-labelledby="p-h">
+    <h2 class="slabel" id="p-h">All three, same scenario</h2>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th>Airline</th><th>Carbon cost €m</th><th>% revenue</th><th>× profit</th><th>Extra cost vs today €m</th><th>Profit after €m</th><th>Status</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
     </div>
-    <p class="pending-tag">Normal fuel use per plane is my estimate. Nobody else has checked it yet.</p>
+    <p class="hint" style="margin-top:0.75rem">Watch: the extra cost eats more than half of profit. Critical: it eats all of it.</p>
   </section>
- 
-  <section id="layer2">
-    <div class="slabel">Part 2: Other pollution</div>
-    <div class="stitle">Change in NOx, HC, CO and soot for the whole fleet, over the months you picked.</div>
-    <p class="chart-note">Bars to the right mean more pollution than the new engine. Bars to the left mean less.</p>
-    <div id="chartWrap">
-      <canvas id="pollutantChart"></canvas>
-    </div>
+
+  <section id="notes" aria-labelledby="n-h">
+    <h2 class="slabel" id="n-h">How it works and where the numbers come from</h2>
+    <p>Carbon cost = CO₂ under the EU scheme × EU price + CO₂ under the UK scheme × UK price + CO₂ under CORSIA × share to offset × credit price + required SAF × extra cost of SAF. Free allowances end in 2026 in both the EU and UK schemes. SAF: the EU requires 2% of fuel; the UK figure of 3.6% for 2026 sits on the straight line from 2% in 2025 to 10% in 2030. "Extra cost vs today" compares the scenario with today's prices and today's scope.</p>
+    <p>Prices: EU €86.55 a tonne (6 Nov 2026). UK £60.17, the government's September 2026 average, about €72. CORSIA credits have no public price; US$20–25 is an estimate, about €20. The SAF figure of about €1,400 a tonne comes from Wizz Air paying €56.5m for roughly 27,000 tonnes, minus the price of normal jet fuel. Currency rates: European Central Bank, 6 Nov 2026.</p>
+    <p>Wizz Air: results for the year to 31 March 2026. Wizz does not publish total CO₂, so it is <span class="flag">estimated</span> from 2.2 tonnes of fuel per block hour × 861,653 block hours × 3.16. easyJet: year to 30 September 2025; profit is headline profit before tax; CO₂ from its 2025 environmental factsheet. easyJet says 92% of its 2026 carbon is already bought at €64, which this page leaves out. Norwegian: 2025 results; CO₂ is its 2025 direct emissions.</p>
+    <p>Profit is from the last reported year, which already paid carbon at lower prices with some free allowances. So the 2026 bill is a forward estimate, not a restatement of past results. Built from public data for illustration; not investment advice.</p>
   </section>
- 
-  <section id="footnoteSection">
-    <div class="slabel">What went into this</div>
-    <div id="footnote">
-      <span class="fn-title">This sum used</span>
-      <ul id="footnoteList"></ul>
-    </div>
-  </section>
- 
+
   <footer class="page-footer">
-    Built from ICAO&apos;s engine test list (version 32), published studies on non-CO2 warming, and what the industry says about how much planes fly. It is still a work in progress, and nobody else has checked the numbers yet.
+    Still a work in progress, and nobody else has checked the numbers yet. Want this for your own portfolio of airlines? <a href="/aviation-emissions/#contact">Get in touch</a>.
   </footer>
- 
-</div>
- 
+</main>
+
 <footer class="site-footer">
   <div class="site-footer-in">
     <a class="wordmark" href="/aviation-emissions/" style="font-size:15px"><b>AVIATION EMISSIONS</b><span>// explained</span></a>
     <div><a href="mailto:becharjaymal@gmail.com">becharjaymal@gmail.com</a></div>
   </div>
 </footer>
- 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
 <script>
-// ---- Certified per-aircraft, per-LTO-cycle figures (ICAO EEDB v32, validated) ----
-const NEO = { fuel: 605.0, nox: 6875.8, hc: 137.4, co: 6747.9, nvpm: 6465.1 };
-const SCEN_A = { fuel: 814.0, nox: 9022.0, hc: 628.0, co: 10772.0, nvpm: 16608.0 }; // CFM56-5B
-const SCEN_B = { fuel: 874.0, nox: 10764.0, hc: 64.0, co: 5528.0, nvpm: null };     // V2500, no nvPM cert
- 
-const CYCLES_PER_YEAR = 1460; // ~4 cycles/day, industry commentary estimate (AviationFile/Ascend via SimpleFlying), not certified
- 
-// Baseline annual CO2 per aircraft (tonnes), back-derived from the SMBC/JSA brief's
-// published mid-case figures (213,000t CO2 / 44 aircraft / 17.5% penalty), held constant
-// as a per-aircraft baseline pending a directly-sourced fleet fuel-burn figure.
-const BASELINE_CO2_PER_AIRCRAFT_YEAR = 27662;
-const FUEL_PENALTY = { low: 0.16, mid: 0.175, high: 0.20 };
-const IATA_CO2_FACTOR = 3.16;
-const MULTIPLIERS = { johansson: 1.23, lee: 1.63, easa: 1.70 };
- 
-let currentScenario = 'both';
- 
-function fmt(n, decimals=0) {
-  return Number(n).toLocaleString(undefined, { maximumFractionDigits: decimals, minimumFractionDigits: decimals });
-}
- 
-function scenarioDelta(scenKey) {
-  const scen = scenKey === 'A' ? SCEN_A : SCEN_B;
-  return {
-    fuel: scen.fuel - NEO.fuel,
-    nox: scen.nox - NEO.nox,
-    hc: scen.hc - NEO.hc,
-    co: scen.co - NEO.co,
-    nvpm: scen.nvpm === null ? null : scen.nvpm - NEO.nvpm
-  };
-}
- 
-function recalc() {
-  const N = Math.max(1, parseInt(document.getElementById('fleetSize').value) || 0);
-  const months = Math.max(1, parseInt(document.getElementById('duration').value) || 0);
-  const durationFactor = months / 12;
- 
-  // Layer 1: CO2 / CO2e
-  const co2Low = N * BASELINE_CO2_PER_AIRCRAFT_YEAR * FUEL_PENALTY.low * durationFactor;
-  const co2Mid = N * BASELINE_CO2_PER_AIRCRAFT_YEAR * FUEL_PENALTY.mid * durationFactor;
-  const co2High = N * BASELINE_CO2_PER_AIRCRAFT_YEAR * FUEL_PENALTY.high * durationFactor;
- 
-  document.getElementById('co2Low').textContent = '~' + fmt(co2Low) + ' t';
-  document.getElementById('co2Mid').textContent = '~' + fmt(co2Mid) + ' t';
-  document.getElementById('co2High').textContent = '~' + fmt(co2High) + ' t';
- 
-  document.getElementById('co2eJohansson').textContent = '~' + fmt(co2Mid * MULTIPLIERS.johansson) + ' t';
-  document.getElementById('co2eLee').textContent = '~' + fmt(co2Mid * MULTIPLIERS.lee) + ' t';
-  document.getElementById('co2eEasa').textContent = '~' + fmt(co2Mid * MULTIPLIERS.easa) + ' t';
- 
-  // Layer 2: certified pollutant deltas, scaled
-  const scenarios = currentScenario === 'both' ? ['A', 'B'] : [currentScenario];
-  const labels = ['NOx (kg)', 'HC (kg)', 'CO (kg)', 'nvPM (kg)'];
- 
-  const datasets = scenarios.map(function(s) {
-    const d = scenarioDelta(s);
-    const scale = N * CYCLES_PER_YEAR * durationFactor;
-    const vals = [
-      (d.nox * scale) / 1000,
-      (d.hc * scale) / 1000,
-      (d.co * scale) / 1000,
-      d.nvpm === null ? null : (d.nvpm * scale) / 1000 / 1000 // mg -> g -> kg
-    ];
-    return {
-      label: s === 'A' ? 'A: CFM56-5B' : 'B: V2500',
-      data: vals,
-      backgroundColor: s === 'A' ? css('--bar-a') : css('--bar-b'),
-      borderRadius: 4,
-      barPercentage: 0.7
-    };
-  });
- 
-  updateChart(labels, datasets);
-  updateFootnote(N, months, scenarios);
-}
- 
-function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-let chartInstance = null;
-function updateChart(labels, datasets) {
-  const ctx = document.getElementById('pollutantChart');
-  if (chartInstance) { chartInstance.destroy(); }
-  chartInstance = new Chart(ctx, {
-    type: 'bar',
-    data: { labels: labels, datasets: datasets },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'top', align: 'start',
-          labels: { color: css('--ink'), font: { size: 14, family: "'Public Sans', system-ui, sans-serif" }, boxWidth: 14, usePointStyle: true, pointStyle: 'rect' }
-        },
-        tooltip: {
-          callbacks: {
-            label: function(c) {
-              if (c.parsed.x === null) return c.dataset.label + ': no official soot number (the V2527-A5 is older than the soot test)';
-              const sign = c.parsed.x >= 0 ? '+' : '';
-              return c.dataset.label + ': ' + sign + c.parsed.x.toLocaleString(undefined, {maximumFractionDigits:1}) + ' kg';
-            }
-          }
-        }
-      },
-      scales: {
-        x: {
-          grid: { color: function(ctx2) { return ctx2.tick.value === 0 ? css('--ink') : css('--line'); }, lineWidth: function(ctx2) { return ctx2.tick.value === 0 ? 2 : 1; } },
-          ticks: { color: css('--muted'), font: { size: 13, family: "'Public Sans', system-ui, sans-serif" } }
-        },
-        y: { grid: { display: false }, ticks: { color: css('--ink'), font: { size: 14, family: "'Public Sans', system-ui, sans-serif", weight: '600' } } }
-      }
-    }
-  });
-}
- 
-function updateFootnote(N, months, scenarios) {
-  const label = document.getElementById('portfolioLabel').value.trim();
-  const list = document.getElementById('footnoteList');
-  list.innerHTML = '';
-  const items = [];
-  if (label) items.push('Fleet: <strong>' + label + '</strong>');
-  items.push(N + ' planes, over ' + months + ' months');
-  items.push('Older engine: ' + scenarios.map(function(s){ return s === 'A' ? 'CFM56-5B (A)' : 'V2500 (B)'; }).join(' and '));
-  items.push('Extra fuel: 16%, 17.5% or 20% (the range engine makers and the industry have published)');
-  items.push('Normal CO2 per plane per year: about 27,662 t. I worked this back from the middle number in the SMBC/JSA brief (44 planes). It has not been checked against another source yet.');
-  items.push('1 kg of fuel makes 3.16 kg of CO2 (IATA)');
-  items.push('Other warming, applied to the middle CO2 number only: Johansson et al. 2025 (1.23&times;), Lee et al. 2020/21 (1.63&times;), EASA (1.7&times;)');
-  items.push('Take-offs and landings a year: about 1,460 (about 4 a day). This is what people in the industry say, not an official number.');
-  items.push('Pollution per take-off and landing: ICAO engine test list, version 32');
-  items.push('Older planes filling in is a guess. In one real case, that did not happen. Planes were re-leased, fixed or taken apart instead. Treat it as one possible outcome.');
-  items.forEach(function(t) {
-    const li = document.createElement('li');
-    li.innerHTML = t;
-    list.appendChild(li);
-  });
-}
- 
-document.querySelectorAll('.scenario-btn').forEach(function(btn) {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.scenario-btn').forEach(function(b){ b.classList.remove('active'); });
-    btn.classList.add('active');
-    currentScenario = btn.getAttribute('data-scenario');
-    recalc();
-  });
-});
- 
-['fleetSize', 'duration', 'portfolioLabel'].forEach(function(id) {
-  document.getElementById(id).addEventListener('input', recalc);
-});
- 
-recalc();
-</script>
- 
-<script>
-  if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(){ recalc(); });
+(function(){
+  var BASE={eua:86.55,uka:72,corsia:20,saf:1400};
+  var REFUEL=0.02, UKSAF=0.036, CF=3.16;
+  var airlines=[
+    {id:"wizz",name:"Wizz Air",period:"Year to 31 Mar 2026. Wizz reported €273.3m spent on EU ETS, UK ETS and CORSIA.",reported:273.3,opLabel:"Operating profit (€m)",co2:5.99,rev:5691,op:140,eu:75,uk:10,offset:15},
+    {id:"ezj",name:"easyJet",period:"Year to 30 Sep 2025. Pounds converted at the ECB rate.",reported:null,opLabel:"Profit before tax (€m)",co2:8.62,rev:12115,op:797,eu:55,uk:35,offset:15},
+    {id:"nas",name:"Norwegian",period:"Year to 31 Dec 2025. Kroner converted at the ECB rate.",reported:null,opLabel:"Operating profit (€m)",co2:2.51,rev:3576,op:355,eu:92,uk:5,offset:15}
+  ];
+  var cur=0;
+  function $(id){return document.getElementById(id)}
+  function scen(){return {eua:+$("eua").value,uka:+$("uka").value,corsia:+$("corsia").value,saf:+$("saf").value,ext:$("ext").checked}}
+  function calc(a,s){
+    var eu=a.eu/100, uk=a.uk/100, oth=Math.max(0,1-eu-uk);
+    var euCO2=a.co2*eu+(s.ext?a.co2*oth*0.5:0);
+    var corsiaCO2=a.co2*oth*(s.ext?0.5:1);
+    var safT=(a.co2/CF)*(eu*REFUEL+uk*UKSAF);
+    var r={eu:euCO2*s.eua,uk:a.co2*uk*s.uka,corsia:corsiaCO2*(a.offset/100)*s.corsia,saf:safT*s.saf};
+    r.total=r.eu+r.uk+r.corsia+r.saf;
+    return r;
+  }
+  function fmt(n,d){return n.toLocaleString("en-GB",{minimumFractionDigits:d||0,maximumFractionDigits:d||0})}
+  function status(up,op){
+    if(op<=0||up>op) return {c:"crit",t:"Critical"};
+    if(up>op*0.5) return {c:"warn",t:"Watch"};
+    return {c:"ok",t:"Holds"};
+  }
+  function load(){
+    var a=airlines[cur];
+    $("co2").value=a.co2;$("rev").value=a.rev;$("op").value=a.op;$("shEU").value=a.eu;$("shUK").value=a.uk;$("offset").value=a.offset;
+    $("period").textContent=a.period;$("opLabel").textContent=a.opLabel;
+    document.querySelectorAll("#tabs button").forEach(function(b,i){b.setAttribute("aria-pressed",i===cur?"true":"false")});
+    render();
+  }
+  function readInputs(){
+    var a=airlines[cur];
+    a.co2=+$("co2").value||0;a.rev=+$("rev").value||0;a.op=+$("op").value||0;
+    a.eu=Math.min(100,Math.max(0,+$("shEU").value||0));a.uk=Math.min(100-a.eu,Math.max(0,+$("shUK").value||0));a.offset=+$("offset").value||0;
+  }
+  function render(){
+    var s=scen();
+    $("euaOut").textContent="€"+fmt(s.eua,0)+"/t";$("ukaOut").textContent="€"+fmt(s.uka,0)+"/t";
+    $("corsiaOut").textContent="€"+fmt(s.corsia,0)+"/t";$("safOut").textContent="€"+fmt(s.saf,0)+"/t";
+    var a=airlines[cur];
+    $("fuel").value=(a.co2/CF).toFixed(2);$("shOther").value=Math.max(0,100-a.eu-a.uk);
+    var r=calc(a,s), b=calc(a,{eua:BASE.eua,uka:BASE.uka,corsia:BASE.corsia,saf:BASE.saf,ext:false});
+    var up=r.total-b.total, after=a.op-up, st=status(up,a.op);
+    $("sTotal").textContent="€"+fmt(r.total)+"m";
+    $("sTotalSub").textContent=a.co2?"€"+fmt(r.total/a.co2)+" per tonne of CO₂":"";
+    $("sRev").textContent=a.rev?fmt(r.total/a.rev*100,1)+"%":"–";
+    $("sMult").textContent=a.op>0?fmt(r.total/a.op,1)+"×":"n/a";
+    $("sMultSub").textContent="carbon bill ÷ "+a.opLabel.replace(" (€m)","").toLowerCase();
+    $("sAfter").textContent=(after<0?"−€":"€")+fmt(Math.abs(after))+"m";
+    $("sAfter").style.color=after<0?"var(--crit)":"";
+    $("sAfterSub").textContent=(up>=0?"+":"−")+"€"+fmt(Math.abs(up))+"m vs today's prices";
+    var bd=$("badge");bd.className="badge "+st.c;bd.textContent=st.t;
+    var parts=[["eu","EU ETS","--eu"],["uk","UK ETS","--uk"],["corsia","CORSIA","--corsia"],["saf","SAF mandate","--saf"]];
+    $("bar").innerHTML=parts.map(function(p){return '<span style="width:'+(r.total?r[p[0]]/r.total*100:0)+'%;background:var('+p[2]+')"></span>'}).join("");
+    $("legend").innerHTML=parts.map(function(p){return '<li><i style="background:var('+p[2]+')"></i>'+p[1]+' <span class="num">€'+fmt(r[p[0]])+'m</span></li>'}).join("");
+    $("calib").textContent=a.reported?"Check: at today's prices the model puts EU ETS, UK ETS and CORSIA at €"+fmt(b.eu+b.uk+b.corsia)+"m. Wizz reported €"+fmt(a.reported,1)+"m for its last year, when free allowances still covered part of its EU emissions and prices were lower.":"";
+    $("tbody").innerHTML=airlines.map(function(x,i){
+      var rr=calc(x,s), bb=calc(x,{eua:BASE.eua,uka:BASE.uka,corsia:BASE.corsia,saf:BASE.saf,ext:false}), u=rr.total-bb.total, t=status(u,x.op);
+      return '<tr class="'+(i===cur?"on":"")+'"><td>'+x.name+'</td><td class="num">'+fmt(rr.total)+'</td><td class="num">'+fmt(rr.total/x.rev*100,1)+'%</td><td class="num">'+(x.op>0?fmt(rr.total/x.op,1)+"×":"n/a")+'</td><td class="num">'+fmt(u)+'</td><td class="num">'+fmt(x.op-u)+'</td><td><span class="badge '+t.c+'">'+t.t+'</span></td></tr>';
+    }).join("");
+  }
+  $("tabs").innerHTML=airlines.map(function(a){return '<button type="button" aria-pressed="false">'+a.name+'</button>'}).join("");
+  document.querySelectorAll("#tabs button").forEach(function(b,i){b.addEventListener("click",function(){cur=i;load()})});
+  ["eua","uka","corsia","saf","ext"].forEach(function(id){$(id).addEventListener("input",render)});
+  ["co2","rev","op","shEU","shUK","offset"].forEach(function(id){$(id).addEventListener("input",function(){readInputs();render()})});
+  $("reset").addEventListener("click",function(){$("eua").value=BASE.eua;$("uka").value=BASE.uka;$("corsia").value=BASE.corsia;$("saf").value=BASE.saf;$("ext").checked=false;render()});
+  load();
+})();
 </script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "99311d4c453e49c091ebf8972f3c2200"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
