@@ -238,7 +238,7 @@ footer a:hover{color:#fff;text-decoration:underline;text-decoration-color:var(--
       <div class="wide" id="tbTitle">Fan blade, parametric loft</div>
       <div><span>Sections</span><b class="num">11</b></div>
       <div><span>Tip radius</span><b class="num">1 500 mm</b></div>
-      <div><span>Stagger, root to tip</span><b class="num">28° to 64°</b></div>
+      <div><span>Stagger, root to tip</span><b class="num">10° to 64°</b></div>
       <div><span>View</span><b class="num" id="view">az 110°, el 30°</b></div>
       <div><span>Drawn</span><b>J. Bechar</b></div>
       <div><span>Status</span><b>Illustrative</b></div>
@@ -263,7 +263,7 @@ footer a:hover{color:#fff;text-decoration:underline;text-decoration-color:var(--
       <div class="axis" aria-hidden="true"><div></div><div class="scale" id="scale"></div></div>
     </div>
     <div class="detail" id="detail" aria-live="polite"></div>
-    <p class="caption">Source: Lee et al. (2021), Atmospheric Environment 244, 117834, Table 2. Net values come from the paper's uncertainty analysis, so they differ slightly from a simple sum of the terms. Effects of soot and sulfate on cloud formation have no best estimate yet and are not shown.</p>
+    <p class="caption">Source: Lee et al. (2021), Atmospheric Environment 244, 117834, Table 2. Net values come from the paper's uncertainty analysis, so they differ slightly from a simple sum of the terms. Effects of soot and sulfate on cloud formation have no best estimate yet and are not shown. Lifetimes in the Lasts field are typical values from general atmospheric science, not from Lee et al.</p>
   </div>
 </section>
 
@@ -487,8 +487,8 @@ var ERF={
      desc:'Carbon dioxide from burning fuel. It stays in the air for centuries, so each flight keeps warming long after it lands.'},
     {id:'o3s',c:'#E8603C',name:'Ozone increase',tag:'NOx',short:'Ozone increase',v:49.3,lo:32,hi:76,lasts:'Weeks to months',priced:'Not yet',
      desc:'Nitrogen oxides from the engine form ozone in the upper troposphere within weeks. This is the warming half of the NOx effect.'},
-    {id:'h2o',c:'#5E9BD6',name:'Water vapour',short:'Water vapour',v:2.0,lo:0.8,hi:3.2,lasts:'Days to months',priced:'Not yet',
-     desc:'Water vapour emitted directly by engines. It warms slightly, mostly where aircraft fly into the lower stratosphere.'},
+    {id:'h2o',c:'#5E9BD6',name:'Water vapour, stratospheric',short:'Stratospheric water vapour',v:2.0,lo:0.8,hi:3.2,lasts:'Days to months',priced:'Not yet',
+     desc:'Water vapour emitted where aircraft fly into the lower stratosphere, where it lingers and warms slightly. In the lower atmosphere it rains out within days.'},
     {id:'soot',c:'#B8A6DC',name:'Soot',short:'Soot',v:0.94,lo:0.1,hi:4.0,lasts:'Days to weeks',priced:'Not yet',
      desc:'Black carbon particles absorb sunlight and warm slightly. Their effect on clouds is not yet estimated.'}
   ],
@@ -561,9 +561,9 @@ var ERF={
   var endcap=document.getElementById('endcap'), tbTitle=document.getElementById('tbTitle');
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var AMBER='#F0A443', MIST='rgba(139,151,165,', FONT='"STIX Two Text", Georgia, serif';
-  var TIP_MM=1500, NS=11, NSP=48, NC=34, NB=20, LET='ABCDEFGHJKL';
+  var TIP_MM=1500, NS=11, NSP=48, NC=34, NB=22, LET='ABCDEFGHJKL';
 
-  function geom(s){return {r:0.30+0.70*s,c:0.25+0.12*Math.sin(Math.PI*(0.15+0.75*s)),th:(28+36*s)*Math.PI/180,m:0.065*(1-s)+0.018,t:0.10*(1-s)+0.032};}
+  function geom(s){return {r:0.30+0.70*s,c:0.25+0.12*Math.sin(Math.PI*(0.15+0.75*s)),th:(10+54*s)*Math.PI/180,m:0.065*(1-s)+0.018,t:0.10*(1-s)+0.032};}
   function pt(s,x,side){
     var g=geom(s),p=0.42,t=g.t,m=g.m;
     var yt=5*t*(0.2969*Math.sqrt(x)-0.1260*x-0.3516*x*x+0.2843*x*x*x-0.1036*x*x*x*x);
@@ -694,7 +694,7 @@ var ERF={
       label(mid('contrail'),Rl,['Contrail cirrus','+57.4  (17 to 98)'],1,0,'#A9CBEA');
       label(mid('co2'),Rl,['CO₂','+34.3  (28 to 40)'],1,-18,'#B0B3BB');
       label(mid('so4'),Rc+bw/2,['Sulfate aerosol','−7.4  (−19 to −2.6)'],-1,24,'#D8CC8C');
-      label(0.5*(segs[3].a0+segs[4].a1)+0.005,Rl,['Water vapour +2.0, soot +0.94'],1,-28,'#5E9BD6');
+      label(0.5*(segs[3].a0+segs[4].a1)+0.005,Rl,['Stratospheric water vapour +2.0','Soot +0.94'],1,-36,'#5E9BD6');
       // NOx bracket over ozone increase + its cooling partners
       var b0=segs[2].a0, b1=2*Math.PI+segs[7].a1; // ozone increase start to SWV end (as positive angle)
       var Rb=Rl+12;
@@ -713,7 +713,7 @@ var ERF={
     }else{
       // compact legend under the ring
       var ly=cy+S*1.30+28, lx=20, colW=(W-40)/2;
-      var items=[['Contrail cirrus','+57.4','#A9CBEA'],['Ozone increase, NOx','+49.3','#E8603C'],['CO₂','+34.3','#B0B3BB'],['Water vapour, soot','+2.0, +0.94','#5E9BD6'],['Methane decrease, NOx','−21.2','#E8603C'],['Ozone decrease, NOx','−10.6','#E8603C'],['Sulfate aerosol','−7.4','#D8CC8C'],['Water vapour decr., NOx','−3.2','#E8603C']];
+      var items=[['Contrail cirrus','+57.4','#A9CBEA'],['Ozone increase, NOx','+49.3','#E8603C'],['CO₂','+34.3','#B0B3BB'],['Strat. water vapour, soot','+2.0, +0.94','#5E9BD6'],['Methane decrease, NOx','−21.2','#E8603C'],['Ozone decrease, NOx','−10.6','#E8603C'],['Sulfate aerosol','−7.4','#D8CC8C'],['Water vapour decr., NOx','−3.2','#E8603C']];
       items.forEach(function(it,j){var x=lx+(j%2)*colW, y=ly+Math.floor(j/2)*20;ctx.fillStyle=it[2];ctx.fillRect(x,y-8,8,8);ctx.font='12.5px '+FONT;ctx.fillStyle=j<4?'#fff':MIST+'1)';ctx.fillText(it[0]+'  '+it[1],x+14,y);});
     }
     ctx.globalAlpha=1;
@@ -816,7 +816,7 @@ var ERF={
     hint.style.opacity=(1-sm(T/0.08)).toFixed(3);
     endcap.style.opacity=sm((T-0.84)/0.12).toFixed(3);
     document.getElementById('tblock').style.opacity=(1-sm((T-0.62)/0.14)).toFixed(3);
-    tbTitle.textContent=E1>0.5?'Fan stage, 20 blades':'Fan blade, parametric loft';
+    tbTitle.textContent=E1>0.5?'Fan stage, 22 blades':'Fan blade, parametric loft';
     cv.classList.toggle('grab',E1<0.02);
   }
 
