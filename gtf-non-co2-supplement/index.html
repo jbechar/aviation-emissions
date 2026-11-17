@@ -3,188 +3,114 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#060C16">
 <title>Contrails and non-CO₂ | Aviation Emissions Explained</title>
 <meta name="description" content="Contrails and NOx add a lot of warming to flying, but no one pays for it yet. What it is, why it is a range, and what the EU is doing.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" href="/aviation-emissions/assets/fonts/stix-two-text-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/aviation-emissions/assets/site.css">
 <style>
-  :root {
-    --paper: #F5F6F3; --ink: #0E1A24; --muted: #51606E; --line: #D8DDE2; --body-text: #3A4A5A;
-    --navy: #0E2A40; --accent: #8EC0E8; --accent-deep: #2A6FB0; --accent-soft: #EAF3FB;
-    --link: #1F3A5F; --tint: #EEF1F3; --field: #FFFFFF;
-    --body: 'Public Sans', system-ui, sans-serif;
-    --head: 'Source Serif 4', Georgia, serif;
-    --mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; }
-  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; }
-  a { color: var(--link); text-underline-offset: 3px; }
-  a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+/* Short version: three plain statements, no boxes, no numbering */
+.short{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px 48px;margin-top:8px}
+.short h3{font-size:24px;line-height:1.2;margin-bottom:10px}
+.short p{margin:0;font-size:17px}
+@media (max-width:860px){.short{grid-template-columns:1fr;gap:28px}}
 
-  /* Site header (matches homepage) */
-  .site-header { background: var(--navy); border-bottom: 1px solid rgba(255,255,255,0.1); }
-  .site-header-in { max-width: 1200px; margin: 0 auto; padding: 18px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; }
-  .wordmark { display: flex; align-items: baseline; gap: 10px; text-decoration: none; color: #FFFFFF; font-family: var(--mono); font-size: 17px; }
-  .wordmark b { font-weight: 600; letter-spacing: 0.02em; }
-  .wordmark span { color: #8FA3B6; }
-  .site-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; font-size: 15px; }
-  .site-nav a { color: #C9D2DB; text-decoration: none; }
-  .site-nav a:hover { color: #FFFFFF; text-decoration: underline; text-underline-offset: 4px; }
-  .site-nav a[aria-current="page"] { color: #FFFFFF; }
-  .site-nav .cta { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; background: #FFFFFF; color: var(--ink); border-radius: 4px; font-weight: 600; }
-  .site-nav .cta:hover { color: var(--ink); text-decoration: none; background: #E9EDF0; }
+/* Contrail explorer: the drawing, its controls and the verdict, unframed */
+.explorer{margin:28px 0 0}
+.sky{display:block;width:100%;height:auto}
+.sky *{transition:opacity .5s ease,fill .5s ease,stroke-dasharray .6s ease}
+.controls{display:flex;flex-wrap:wrap;gap:20px 56px;margin-top:22px}
+.controls .label{font-size:15px;color:var(--stone);margin-bottom:2px}
+.verdict{margin-top:22px;max-width:var(--measure)}
+.verdict-title{font-size:24px;line-height:1.25;color:var(--ink)!important;margin:0 0 4px!important}
+.verdict p{margin:0}
 
-  .wrap { max-width: 800px; margin: 0 auto; padding: 3.5rem 24px 2rem; }
-  h1, h2, h3 { font-family: var(--head); font-weight: 500; line-height: 1.15; }
-  h1 { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.015em; margin: 0 0 1rem; max-width: 18ch; }
-  h2 { font-size: clamp(1.6rem, 2.6vw, 2.1rem); letter-spacing: -0.01em; margin: 3.5rem 0 0.75rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--ink); }
-  h3 { font-size: 20px; font-weight: 600; margin: 0 0 0.4rem; }
-  p { margin: 0 0 1rem; }
-  .subtitle { font-size: 17px; max-width: 62ch; color: var(--body-text); margin: 0; }
-  .lead { color: var(--body-text); max-width: 62ch; }
-  .src { font-size: 13px; color: var(--muted); }
+/* Pull figure */
+.pull{margin:56px 0 0!important;font-size:20px;line-height:1.5;color:var(--ink)!important}
+.pull .big{display:block;font-size:clamp(3rem,6vw,4.6rem);line-height:1;letter-spacing:-.02em;color:var(--prussian);margin-bottom:10px}
 
-  /* Short version */
-  .short { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 1rem; }
-  .short-card { background: #FFFFFF; border: 1px solid var(--line); border-top: 4px solid var(--accent); border-radius: 4px; padding: 1.1rem 1.1rem 1.2rem; }
-  .short-num { font-family: var(--mono); font-size: 13px; color: var(--muted); }
-  .short-card h3 { margin-top: 6px; font-size: 19px; }
-  .short-card p { margin: 0; font-size: 15px; color: var(--body-text); }
+/* Multiplier bars: CO2 in its chart slate, the non-CO2 extra hatched in NOx red */
+.mult{margin-top:12px}
+.mrow{display:grid;grid-template-columns:11rem 1fr 3.5rem;align-items:center;gap:16px;padding:12px 0}
+.mname{font-size:17px}
+.mname small{display:block;color:var(--stone);font-size:14px}
+.mtrack{position:relative;height:12px;border-bottom:1px solid var(--rule-p)}
+.mco2{position:absolute;left:0;top:0;bottom:0;background:var(--c-co2)}
+.mnon{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(45deg,var(--c-nox) 0 1.6px,transparent 1.6px 4.5px);box-shadow:inset 0 0 0 1px var(--c-nox)}
+.mval{font-size:18px;text-align:right;font-variant-numeric:lining-nums tabular-nums}
+.mkey{display:flex;flex-wrap:wrap;gap:6px 24px;font-size:14.5px;color:var(--stone);margin-top:8px}
+.mkey span::before{content:"";display:inline-block;width:12px;height:12px;margin-right:8px;vertical-align:-1px}
+.mkey .k1::before{background:var(--c-co2)}
+.mkey .k2::before{background:repeating-linear-gradient(45deg,var(--c-nox) 0 1.6px,transparent 1.6px 4.5px);box-shadow:inset 0 0 0 1px var(--c-nox)}
 
-  /* Contrail explorer */
-  .explorer { background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
-  .sky { display: block; width: 100%; height: auto; }
-  .sky * { transition: opacity .5s ease, fill .5s ease, stroke-dasharray .6s ease; }
-  .controls { display: flex; flex-wrap: wrap; gap: 16px 32px; padding: 1.1rem 1.25rem 0; }
-  .ctrl-label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
-  .toggle { display: inline-flex; border: 1px solid #C3CBD2; border-radius: 4px; overflow: hidden; }
-  .toggle button { font: inherit; font-size: 15px; background: #FFFFFF; color: var(--ink); border: 0; border-right: 1px solid #C3CBD2; padding: 10px 16px; min-height: 44px; cursor: pointer; transition: background .15s, color .15s; }
-  .toggle button:last-child { border-right: 0; }
-  .toggle button:hover { background: var(--tint); }
-  .toggle button[aria-pressed="true"] { background: var(--accent-deep); color: #FFFFFF; }
-  .verdict { margin: 1rem 1.25rem 1.25rem; padding: 0.9rem 1.1rem; background: var(--accent-soft); border-left: 4px solid var(--accent-deep); border-radius: 4px; }
-  .verdict-title { font-family: var(--head); font-weight: 600; font-size: 19px; margin-bottom: 2px; }
-  .verdict p { margin: 0; color: var(--body-text); font-size: 15px; }
-  .callout { margin-top: 1rem; padding: 1rem 1.25rem; background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; display: flex; gap: 18px; align-items: center; }
-  .callout-big { font-family: var(--head); font-weight: 600; font-size: 34px; line-height: 1; color: var(--accent-deep); white-space: nowrap; }
-  .callout p { margin: 0; color: var(--body-text); font-size: 15px; }
+/* Calculator */
+.calc{margin-top:20px}
+.calc-inputs{display:grid;grid-template-columns:1fr 1fr;gap:20px 40px}
+.today{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin:36px 0 0!important;font-size:17px}
+.today strong{font-weight:400;font-size:clamp(1.6rem,2.4vw,2.1rem);color:var(--ink)}
+.extra-label{margin:28px 0 4px!important;color:var(--stone)!important;font-size:15px}
+.extra .v{color:var(--stone)}
+.extra .mid .v{color:var(--prussian);font-size:clamp(2rem,3vw,2.6rem)}
+@media (max-width:640px){.calc-inputs{grid-template-columns:1fr}.mrow{grid-template-columns:1fr 3.5rem}.mtrack{grid-column:1/-1;grid-row:2}}
 
-  /* Multiplier bars */
-  .mult { background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; padding: 1.25rem; }
-  .mrow { display: grid; grid-template-columns: 11rem 1fr 3.5rem; align-items: center; gap: 12px; padding: 8px 0; }
-  .mrow + .mrow { border-top: 1px solid var(--line); }
-  .mname { font-weight: 600; font-size: 15px; }
-  .mname small { display: block; font-weight: 400; color: var(--muted); font-size: 13px; }
-  .mtrack { position: relative; height: 14px; background: var(--tint); border-radius: 7px; }
-  .mco2 { position: absolute; left: 0; top: 0; bottom: 0; background: #9AA6B2; border-radius: 7px 0 0 7px; }
-  .mnon { position: absolute; top: 0; bottom: 0; background: var(--accent-deep); border-radius: 0 7px 7px 0; }
-  .mval { font-family: var(--mono); font-size: 15px; text-align: right; }
-  .mkey { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--muted); margin-top: 10px; }
-  .mkey span::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
-  .mkey .k1::before { background: #9AA6B2; }
-  .mkey .k2::before { background: var(--accent-deep); }
-  .note { background: var(--accent-soft); border-left: 4px solid var(--accent); border-radius: 4px; padding: 1rem 1.25rem; margin-top: 1rem; font-size: 15px; color: var(--body-text); }
-  .note strong { color: var(--ink); }
+/* EU timeline: a real sequence, so it keeps its line */
+.timeline{list-style:none;margin:20px 0 0;padding:0 0 0 28px;border-left:1px solid var(--ink)}
+.timeline li{position:relative;padding:0 0 32px}
+.timeline li:last-child{padding-bottom:0}
+.timeline li::before{content:"";position:absolute;left:-34.5px;top:7px;width:11px;height:11px;border-radius:50%;background:var(--paper);border:1.5px solid var(--ink)}
+.timeline li.now::before{background:var(--prussian);border-color:var(--prussian)}
+.timeline .when{font-style:italic;color:var(--stone)!important;font-size:15px;margin:0 0 2px!important}
+.timeline h3{font-size:22px}
+.timeline p{margin:0}
 
-  /* Calculator */
-  .calc { background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; padding: 1.5rem; }
-  .calc-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 1.5rem; }
-  .field label { display: block; font-weight: 600; font-size: 15px; margin-bottom: 6px; }
-  .field input { width: 100%; font: inherit; color: var(--ink); background: var(--field); border: 1px solid #C3CBD2; border-radius: 4px; padding: 9px 12px; min-height: 44px; transition: border-color .15s; }
-  .field input:hover { border-color: var(--muted); }
-  .field input:focus { border-color: var(--ink); }
-  .hint { font-size: 13px; color: var(--muted); margin-top: 6px; }
-  .today { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem; padding: 12px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line); }
-  .today span:first-child { color: var(--muted); }
-  .today strong { font-family: var(--head); font-size: 24px; font-variant-numeric: tabular-nums; }
-  .extra-label { font-weight: 600; margin: 1.25rem 0 0.5rem; }
-  .extra { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
-  .ex { padding: 1rem 1.1rem; }
-  .ex + .ex { border-left: 1px solid var(--line); }
-  .ex.mid { background: var(--accent-soft); box-shadow: inset 0 3px 0 var(--accent-deep); }
-  .ex-val { font-family: var(--head); font-weight: 600; font-size: 26px; line-height: 1.1; font-variant-numeric: tabular-nums; color: var(--accent-deep); }
-  .ex:not(.mid) .ex-val { color: var(--muted); font-size: 22px; }
-  .ex-lbl { font-size: 13px; color: var(--muted); margin-top: 4px; }
-  .calc-note { font-size: 13px; color: var(--muted); margin: 1rem 0 0; }
+.pointer{margin-top:64px!important;font-style:italic}
 
-  /* EU timeline */
-  .steps { list-style: none; margin: 1rem 0 0; padding: 0; border-left: 1px solid var(--ink); }
-  .steps li { position: relative; padding: 0 0 1.5rem 1.5rem; }
-  .steps li:last-child { padding-bottom: 0; }
-  .steps li::before { content: ""; position: absolute; left: -8px; top: 5px; width: 13px; height: 13px; border-radius: 50%; background: var(--paper); border: 2px solid var(--ink); }
-  .steps li.now::before { background: var(--accent); border-color: var(--accent-deep); }
-  .step-date { font-family: var(--mono); font-size: 13px; color: var(--muted); }
-  .step-title { font-family: var(--head); font-weight: 600; font-size: 19px; margin: 2px 0 4px; }
-  .steps p { margin: 0; color: var(--body-text); font-size: 15px; }
-
-  .pointer { margin-top: 3rem; padding: 1rem 1.25rem; border: 1px dashed var(--muted); border-radius: 4px; background: #FFFFFF; color: var(--body-text); font-size: 15px; }
-  .footer-note { font-size: 14px; color: var(--muted); margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
-
-  .site-footer { margin-top: 3rem; background: var(--navy); color: #C9D2DB; }
-  .site-footer-in { max-width: 1200px; margin: 0 auto; padding: 40px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px 32px; font-size: 14px; }
-  .site-footer a { color: #FFFFFF; }
-
-  @media (max-width: 680px) {
-    .short, .extra { grid-template-columns: 1fr; }
-    .ex + .ex { border-left: 0; border-top: 1px solid var(--line); }
-    .calc-inputs { grid-template-columns: 1fr; }
-    .calc { padding: 1.1rem; }
-    .mrow { grid-template-columns: 1fr 3.5rem; }
-    .mtrack { grid-column: 1 / -1; grid-row: 2; }
-    .callout { flex-direction: column; align-items: flex-start; }
-  }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
-<header class="site-header">
-  <div class="site-header-in">
-    <a class="wordmark" href="/aviation-emissions/"><b>AVIATION EMISSIONS</b><span>// explained</span></a>
-    <nav class="site-nav" aria-label="Main">
-      <a href="/aviation-emissions/#insights">Insights</a>
-      <a href="/aviation-emissions/#tools" aria-current="page">Tools</a>
-      <a href="/aviation-emissions/#services">Services</a>
-      <a href="/aviation-emissions/#contact">Contact</a>
-      <a class="cta" href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">Book a briefing</a>
+<header class="masthead">
+  <div class="mast-bar">
+    <a class="mark" href="/aviation-emissions/">Aviation Emissions <i>explained</i></a>
+    <nav class="topnav" aria-label="Main">
+      <a href="/aviation-emissions/#forcing">Climate effect</a>
+      <a href="/aviation-emissions/#tools">Tools</a>
+      <a href="/aviation-emissions/#method">Method</a>
+      <a href="/aviation-emissions/#work">Work with me</a>
     </nav>
+  </div>
+  <div class="intro">
+    <h1>Contrails and non-CO₂: what's coming</h1>
+    <p class="lede">Flying warms the planet in more ways than CO₂. Contrails and NOx add a lot of warming, but no one pays for it yet. This page shows what that warming is, why it comes as a range, and what the EU is doing about it.</p>
   </div>
 </header>
 
-<div class="wrap">
-  <h1>Contrails and non-CO₂: what's coming</h1>
-  <p class="subtitle">Flying warms the planet in more ways than CO₂. Contrails and NOx add a lot of warming, but no one pays for it yet. This page shows what that warming is, why it comes as a range, and what the EU is doing about it.</p>
-
+<main class="doc">
   <h2>The short version</h2>
-  <div class="short">
-    <div class="short-card">
-      <div class="short-num">01</div>
+  <div class="short wide">
+    <div>
       <h3>It is a big part of the warming</h3>
       <p>Today, contrails and NOx cause about two thirds of the warming from flying. CO₂ causes about a third.</p>
     </div>
-    <div class="short-card">
-      <div class="short-num">02</div>
+    <div>
       <h3>No one pays for it yet</h3>
       <p>EU ETS, UK ETS and CORSIA only price CO₂. The rest of the warming is free, for now.</p>
     </div>
-    <div class="short-card">
-      <div class="short-num">03</div>
+    <div>
       <h3>The EU has started measuring</h3>
       <p>Since 1 January 2025, flights in the EU scheme have their non-CO₂ effects tracked. A decision on what comes next is due by the end of 2027.</p>
     </div>
   </div>
-  <p class="src" style="margin-top:10px">Share of warming: Lee et al. (2021), effective radiative forcing for 2018.</p>
+  <p class="src">Share of warming: Lee et al. (2021), effective radiative forcing for 2018.</p>
 
   <h2>Not every contrail warms</h2>
   <p class="lead">A contrail is a line of ice behind a plane. Most fade in seconds. The ones that matter form in very cold, humid air, spread into thin cloud and last for hours. Try it below.</p>
 
-  <div class="explorer">
+  <figure class="explorer wide">
     <svg class="sky" viewBox="0 0 640 260" role="img" aria-labelledby="skyDesc">
       <desc id="skyDesc">Illustration of a plane and its contrail, which changes with the air and time of day you pick.</desc>
       <defs>
         <linearGradient id="dayGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5E93C6"></stop><stop offset="1" stop-color="#D6E6F4"></stop></linearGradient>
-        <linearGradient id="nightGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B1724"></stop><stop offset="1" stop-color="#1D3550"></stop></linearGradient>
+        <linearGradient id="nightGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#060C16"></stop><stop offset="1" stop-color="#1B2D45"></stop></linearGradient>
       </defs>
       <rect width="640" height="260" fill="url(#dayGrad)"></rect>
       <rect id="nightSky" width="640" height="260" fill="url(#nightGrad)" opacity="0"></rect>
@@ -200,41 +126,37 @@
     </svg>
     <div class="controls">
       <div>
-        <span class="ctrl-label" id="airLabel">The air at cruise height</span>
-        <div class="toggle" role="group" aria-labelledby="airLabel">
+        <span class="label" id="airLabel">The air at cruise height</span>
+        <div class="choice" role="group" aria-labelledby="airLabel">
           <button type="button" data-air="dry" aria-pressed="true">Dry</button>
           <button type="button" data-air="humid" aria-pressed="false">Very cold and humid</button>
         </div>
       </div>
       <div>
-        <span class="ctrl-label" id="timeLabel">Time of day</span>
-        <div class="toggle" role="group" aria-labelledby="timeLabel">
+        <span class="label" id="timeLabel">Time of day</span>
+        <div class="choice" role="group" aria-labelledby="timeLabel">
           <button type="button" data-time="day" aria-pressed="true">Day</button>
           <button type="button" data-time="night" aria-pressed="false">Night</button>
         </div>
       </div>
     </div>
     <div class="verdict" aria-live="polite">
-      <div class="verdict-title" id="verdictTitle">Short trail, little effect</div>
+      <p class="verdict-title" id="verdictTitle">Short trail, little effect</p>
       <p id="verdictBody">The ice fades in seconds to minutes. There is little or no effect on the climate.</p>
     </div>
-  </div>
+  </figure>
 
-  <div class="callout">
-    <div class="callout-big">2–3%</div>
-    <p>of flights cause about 80% of contrail warming. They are mostly long, high, night-time flights. So changing the height or route of a small number of flights could cut most of it.</p>
-  </div>
-  <p class="src" style="margin-top:10px">Teoh et al. (2020, 2024).</p>
+  <p class="pull"><span class="big num">2–3%</span> of flights cause about 80% of contrail warming. They are mostly long, high, night-time flights. So changing the height or route of a small number of flights could cut most of it.</p>
+  <p class="src">Teoh et al. (2020, 2024).</p>
 
   <h2>Why it comes as a range</h2>
-  <p class="lead">To put non-CO₂ warming in the same units as CO₂, studies use a multiplier: for every tonne of CO₂ a flight makes, how many tonnes of "CO₂-equivalent" warming it really causes. Three well-known estimates disagree.</p>
+  <aside class="aside"><span class="n">Why this is not the same as “two thirds”.</span> The two-thirds figure is the warming happening right now from all flights so far. A multiplier asks a different question: how much to add for a tonne of CO₂ from one flight today, over the next 100 years. Contrails warm hard but fade fast, so over 100 years they count for less.</aside>
+  <p class="lead">To put non-CO₂ warming in the same units as CO₂, studies use a multiplier: for every tonne of CO₂ a flight makes, how many tonnes of “CO₂-equivalent” warming it really causes. Three well-known estimates disagree.</p>
   <div class="mult" id="multBars"></div>
   <div class="mkey"><span class="k1">CO₂ itself (1×)</span><span class="k2">Extra from contrails and NOx</span></div>
-  <div class="note">
-    <strong>Why this is not the same as "two thirds":</strong> the two-thirds figure is the warming happening right now from all flights so far. A multiplier asks a different question: how much to add for a tonne of CO₂ from one flight today, over the next 100 years. Contrails warm hard but fade fast, so over 100 years they count for less. Different questions give different numbers.
-  </div>
 
   <h2>What non-CO₂ could add to a carbon bill</h2>
+  <aside class="aside"><span class="n">A “what if”, not a forecast.</span> If the EU does price non-CO₂, it may use its own per-flight method instead of one multiplier for every flight. That could be much higher for some routes and close to zero for others.</aside>
   <p class="lead">No rule prices non-CO₂ today. But if it were priced the same way as CO₂, this shows roughly how much more a fleet would pay.</p>
   <div class="calc">
     <div class="calc-inputs">
@@ -249,44 +171,57 @@
         <div class="hint">EU ETS was about €80 when last checked (24 July 2026).</div>
       </div>
     </div>
-    <div class="today"><span>CO₂ cost today</span><strong id="todayOut">-</strong></div>
-    <div class="extra-label">Extra if non-CO₂ were priced too</div>
-    <div class="extra">
-      <div class="ex"><div class="ex-val" id="exLow">-</div><div class="ex-lbl">Low: ×1.23 (Johansson et al. 2025)</div></div>
-      <div class="ex mid"><div class="ex-val" id="exMid">-</div><div class="ex-lbl">Middle: ×1.63 (Lee et al. 2020/21)</div></div>
-      <div class="ex"><div class="ex-val" id="exHigh">-</div><div class="ex-lbl">High: ×1.7 (EASA)</div></div>
+    <p class="today">CO₂ cost today <strong id="todayOut" class="num">-</strong></p>
+    <p class="extra-label">Extra if non-CO₂ were priced too</p>
+    <div class="readouts extra">
+      <div class="readout ex"><div class="v" id="exLow">-</div><div class="k">Low, ×1.23 (Johansson et al. 2025)</div></div>
+      <div class="readout ex mid"><div class="v" id="exMid">-</div><div class="k">Middle, ×1.63 (Lee et al. 2020/21)</div></div>
+      <div class="readout ex"><div class="v" id="exHigh">-</div><div class="k">High, ×1.7 (EASA)</div></div>
     </div>
-    <p class="calc-note">This is a "what if", not a forecast. If the EU does price non-CO₂, it may use its own per-flight method instead of one multiplier for every flight. That could be much higher for some routes and close to zero for others.</p>
   </div>
 
   <h2>What the EU is doing</h2>
-  <ol class="steps">
+  <ol class="timeline">
     <li>
-      <div class="step-date">1 January 2025</div>
-      <div class="step-title">Tracking starts</div>
+      <p class="when">1 January 2025</p>
+      <h3>Tracking starts</h3>
       <p>Airlines in the EU scheme must monitor, report and verify non-CO₂ effects. The EU estimates them for each flight from flight data, the plane, the fuel and the weather.</p>
     </li>
     <li class="now">
-      <div class="step-date">17 July 2026</div>
-      <div class="step-title">A plan to reward contrail work</div>
+      <p class="when">17 July 2026</p>
+      <h3>A plan to reward contrail work</h3>
       <p>The EU plans to set aside up to 3 million free allowances up to 2033, with no more than 420,000 a year, shared between airlines in the scheme (about €33.6m a year at today's price). Airlines would get them for planning flights around contrails and for better reporting. It is only a plan for now.</p>
     </li>
     <li>
-      <div class="step-date">By 31 December 2027</div>
-      <div class="step-title">The big decision</div>
+      <p class="when">By 31 December 2027</p>
+      <h3>The big decision</h3>
       <p>The European Commission reports on what the tracking found and, if it sees fit, proposes a law to deal with non-CO₂ effects. That could mean bringing them into the EU carbon market.</p>
     </li>
   </ol>
 
-  <div class="pointer">Looking for how the grounded GTF engines compare with older engines on NOx and other pollution? That is now in the <a href="/aviation-emissions/gtf-exposure-calculator/">GTF calculator</a>.</div>
+  <p class="pointer">Looking for how the grounded GTF engines compare with older engines on NOx and other pollution? That is now in the <a href="/aviation-emissions/gtf-exposure-calculator/">GTF calculator</a>.</p>
 
-  <p class="footer-note">Sources: Lee et al. (2021), Atmospheric Environment 244. Teoh et al. (2020, 2024). Johansson et al. (2025). EASA report on non-CO₂ effects. EU ETS Directive as amended in 2023 (Directive (EU) 2023/958). Ireland EPA guidance on aviation in the EU ETS. The contrail allowance figures come from the EU plan of 17 July 2026, which may change. This page is for understanding the issue. It is not advice on what to report or pay.</p>
-</div>
+  <p class="endnote">Sources: Lee et al. (2021), Atmospheric Environment 244. Teoh et al. (2020, 2024). Johansson et al. (2025). EASA report on non-CO₂ effects. EU ETS Directive as amended in 2023 (Directive (EU) 2023/958). Ireland EPA guidance on aviation in the EU ETS. The contrail allowance figures come from the EU plan of 17 July 2026, which may change. This page is for understanding the issue. It is not advice on what to report or pay.</p>
+</main>
 
-<footer class="site-footer">
-  <div class="site-footer-in">
-    <a class="wordmark" href="/aviation-emissions/" style="font-size:15px"><b>AVIATION EMISSIONS</b><span>// explained</span></a>
-    <div><a href="mailto:becharjaymal@gmail.com">becharjaymal@gmail.com</a></div>
+<section class="contactband" aria-label="Contact">
+  <div class="in">
+    <div>
+      <h2>Got a question about carbon rules?</h2>
+      <p>Drop me a line about what you're working on and I'll set up a quick chat. No prep needed.</p>
+    </div>
+    <a class="btn" href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">Get in touch</a>
+  </div>
+</section>
+<footer class="sitefoot">
+  <div class="in">
+    <div class="links">
+      <span style="color:#fff">Aviation Emissions</span>
+      <a href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">becharjaymal@gmail.com</a>
+      <a href="/aviation-emissions/engagement-overview/">How I can help</a>
+      <span class="num">© 2026</span>
+    </div>
+    <p>Built by Jaymal Bechar, doctoral researcher in mechanical and aerospace engineering, University of Manchester. Tool outputs are estimates for planning, not compliance filings. Sources are listed on each page.</p>
   </div>
 </footer>
 
@@ -357,6 +292,6 @@
   calc();
 })();
 </script>
-<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "99311d4c453e49c091ebf8972f3c2200"}'></script><!-- End Cloudflare Web Analytics -->
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "99311d4c453e49c091ebf8972f3c2200"}'></script>
 </body>
 </html>

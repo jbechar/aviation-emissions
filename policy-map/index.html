@@ -3,206 +3,136 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#060C16">
 <title>Policy map | Aviation Emissions Explained</title>
+<meta name="description" content="Which carbon scheme covers a flight, and roughly what the carbon costs: EU, UK and Swiss ETS and CORSIA, on an interactive globe.">
+<link rel="preload" href="/aviation-emissions/assets/fonts/stix-two-text-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/aviation-emissions/assets/site.css">
 <style>
-  :root {
-    --ink: #111111; --muted: #555555; --rule: #BBBBBB; --box: #F4F4F2; --link: #1A3D6D;
-    --navy: #0E2A40; --money: #111111; --highlight: #FFF4D6;
-    --water: #F2F5F8; --land-edge: #FFFFFF;
-    --regime-eu: #2A5C8F; --regime-uk: #3F8A78; --regime-ch: #C79A3E; --regime-corsia: #9B86B5; --regime-none: #D3D6D9;
-    --serif: 'STIX Two Text', Times, serif;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; }
-  body { background: #FFFFFF; color: var(--ink); font-family: var(--serif); font-size: 18px; line-height: 1.5; }
-  button, input, select { font-family: var(--serif); }
-  a { color: var(--link); }
-  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+:root{--muted:var(--stone);--link:var(--prussian);--highlight:transparent;--water:transparent;--land-edge:var(--paper);
+  --regime-eu:#2A5C8F;--regime-uk:#3F8A78;--regime-ch:#C79A3E;--regime-corsia:#9B86B5;--regime-none:#D6D0C3}
+.section-intro{max-width:var(--measure)}
+.doc > h2:first-of-type{margin-top:0}
 
-  /* Header */
-  .site-header { background: var(--navy); color: #FFFFFF; }
-  .site-header-in { max-width: 1100px; margin: 0 auto; padding: 14px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 28px; }
-  .wordmark { color: #FFFFFF; text-decoration: none; font-size: 19px; font-weight: bold; letter-spacing: 0.04em; text-transform: uppercase; }
-  .site-nav { display: flex; flex-wrap: wrap; gap: 6px 24px; font-size: 17px; }
-  .site-nav a { color: #DDE3E8; text-decoration: none; }
-  .site-nav a:hover, .site-nav a[aria-current="page"] { color: #FFFFFF; text-decoration: underline; }
+/* Globe and route checker side by side, no panels */
+.map-layout{display:flex;flex-wrap:wrap;gap:32px 56px;align-items:flex-start;margin-top:12px}
+.figure{flex:1 1 520px;min-width:0}
+.globe-wrap{position:relative}
+#worldMap{display:block;width:100%;max-width:600px;height:auto;margin:0 auto;cursor:grab;touch-action:none}
+#worldMap:active{cursor:grabbing}
+.sphere{fill:#E3E6E4}
+.sphere-outline{fill:none;stroke:#8C877C;stroke-width:1}
+.graticule{fill:none;stroke:#FFFFFF;stroke-width:.6;stroke-opacity:.7}
+.country{stroke:var(--land-edge);stroke-width:.5;cursor:pointer;fill:var(--regime-none)}
+@media (hover:hover) and (pointer:fine){.country:hover{stroke:var(--ink);stroke-width:1}}
+.country.regime-eu-ets{fill:var(--regime-eu)} .country.regime-uk-ets{fill:var(--regime-uk)} .country.regime-ch-ets{fill:var(--regime-ch)}
+.country.regime-corsia-only{fill:var(--regime-corsia)} .country.regime-none{fill:var(--regime-none)}
+.great-circle-line{stroke:#C4502C;stroke-width:2.2;fill:none}
+.route-endpoint{fill:#FFFFFF;stroke:#C4502C;stroke-width:2}
+.route-endpoint-label{font-family:var(--serif);font-size:15px;fill:var(--ink);paint-order:stroke;stroke:var(--paper);stroke-width:3.5px}
+#tooltip{position:absolute;display:none;pointer-events:none;z-index:10;max-width:240px;background:var(--paper);color:var(--ink);border:1px solid var(--ink);padding:6px 10px;font-size:15px}
+#tooltip .t-regime{color:var(--stone);font-style:italic}
+.globe-controls{position:absolute;right:0;bottom:0}
+.plain-btn{font:inherit;font-size:15px;background:none;border:0;border-bottom:1px solid var(--field-line);color:var(--stone);padding:4px 0;min-height:40px;cursor:pointer}
+.plain-btn:hover{color:var(--ink);border-bottom-color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 18px;margin-top:8px;font-size:15px}
+.legend-item{display:inline-flex;align-items:center;gap:6px}
+.swatch{width:12px;height:12px;display:inline-block}
 
-  /* Document body */
-  .doc { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
-  .title-block { padding: 40px 0 8px; }
-  .crumbs { font-size: 15px; color: var(--muted); margin: 0 0 10px; }
-  .crumbs a { color: var(--muted); }
-  h1 { font-size: 38px; font-weight: bold; line-height: 1.15; margin: 0 0 8px; }
-  .meta { font-size: 15px; color: var(--muted); margin: 0 0 18px; }
-  .lead { max-width: 70ch; margin: 0; }
-  h2 { font-size: 24px; font-weight: bold; margin: 48px 0 10px; }
-  h2 .num { display: inline-block; min-width: 1.6em; }
-  .section-intro { max-width: 70ch; margin: 0 0 18px; }
+.route-box{flex:1 1 340px;min-width:0}
+.route-box h3{font-size:24px;margin-bottom:14px}
+.route-field{margin-bottom:16px;min-width:0}
+.route-field label{display:block;font-size:16px;margin-bottom:4px}
+.airport-field{position:relative}
+.airport-field input[type="text"]:disabled{color:var(--stone)}
+.airport-suggestions{position:absolute;top:calc(100% + 2px);left:0;right:0;background:#FBF9F4;border:1px solid var(--field-line);max-height:240px;overflow-y:auto;z-index:40;display:none}
+.airport-suggestion-item{padding:7px 10px;font-size:15.5px;cursor:pointer}
+.airport-suggestion-item:hover,.airport-suggestion-item[aria-selected="true"]{background:var(--paper-2)}
+.airport-suggestion-item .as-code{color:var(--prussian);margin-right:6px}
+.portfolio-row input[type="number"]{width:100%;font:inherit;font-size:17px;color:var(--ink);background:#FBF9F4;border:0;border-bottom:1px solid var(--field-line);border-radius:0;padding:8px 2px 7px;min-height:44px}
 
-  /* Globe + route checker */
-  .map-layout { display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; }
-  .figure { flex: 1 1 520px; min-width: 0; margin: 0; }
-  .globe-wrap { position: relative; background: var(--water); }
-  #worldMap { display: block; width: 100%; max-width: 600px; height: auto; margin: 0 auto; cursor: grab; touch-action: none; }
-  #worldMap:active { cursor: grabbing; }
-  .sphere { fill: #DCE6EF; }
-  .sphere-outline { fill: none; stroke: #8A99A8; stroke-width: 1; }
-  .graticule { fill: none; stroke: #FFFFFF; stroke-width: 0.6; stroke-opacity: 0.8; }
-  .country { stroke: var(--land-edge); stroke-width: 0.5; cursor: pointer; fill: var(--regime-none); }
-  @media (hover: hover) and (pointer: fine) { .country:hover { stroke: var(--ink); stroke-width: 1; } }
-  .country.regime-eu-ets { fill: var(--regime-eu); }
-  .country.regime-uk-ets { fill: var(--regime-uk); }
-  .country.regime-ch-ets { fill: var(--regime-ch); }
-  .country.regime-corsia-only { fill: var(--regime-corsia); }
-  .country.regime-none { fill: var(--regime-none); }
-  .great-circle-line { stroke: #B3261E; stroke-width: 2.2; fill: none; }
-  .route-endpoint { fill: #FFFFFF; stroke: #B3261E; stroke-width: 2; }
-  .route-endpoint-label { font-family: var(--serif); font-weight: bold; font-size: 15px; fill: var(--ink); paint-order: stroke; stroke: #FFFFFF; stroke-width: 3.5px; }
-  #tooltip { position: absolute; display: none; pointer-events: none; z-index: 10; max-width: 240px; background: #FFFFFF; color: var(--ink); border: 1px solid var(--ink); padding: 6px 10px; font-size: 15px; }
-  #tooltip .t-name { font-weight: bold; }
-  #tooltip .t-regime { color: var(--muted); }
-  .globe-controls { position: absolute; right: 10px; bottom: 10px; }
-  .plain-btn { font-size: 16px; background: #FFFFFF; color: var(--ink); border: 1px solid #888888; padding: 6px 14px; min-height: 40px; cursor: pointer; }
-  .plain-btn { transition: background-color 150ms ease, transform 160ms var(--ease-out); }
-  @media (hover: hover) and (pointer: fine) { .plain-btn:hover { background: #EEEEEE; } }
-  .plain-btn:active { transform: scale(0.97); }
-  figcaption { font-size: 16px; margin-top: 10px; }
-  figcaption b { font-weight: bold; }
-  .legend { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 6px; font-size: 16px; }
-  .legend-item { display: inline-flex; align-items: center; gap: 6px; }
-  .swatch { width: 13px; height: 13px; display: inline-block; }
+.route-result{margin-top:8px;font-variant-numeric:lining-nums tabular-nums}
+.reg-card{margin-top:16px}
+.reg-card .r-name{font-size:21px}
+.reg-card .r-desc{font-size:16px;color:var(--body-ink)}
+.no-reg{color:var(--stone);font-style:italic}
+.cost-panel{margin-top:22px}
+.cost-header{font-size:19px;margin-bottom:8px}
+.cost-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;margin-bottom:12px}
+.cs-label{font-size:14.5px;color:var(--stone)}
+.cs-value{font-size:24px;font-variant-numeric:lining-nums tabular-nums}
+.cs-unit{font-size:14px;color:var(--stone);margin-left:3px}
+.range-table{margin:4px 0 14px;font-size:15.5px}
+.range-table th,.range-table td{text-align:right;padding:7px 10px 7px 0}
+.range-table th:first-child,.range-table td:first-child{text-align:left;color:var(--stone)}
+.range-table tbody tr:last-child td{color:var(--ink)}
+.cost-big{display:flex;flex-direction:column;margin-top:12px}
+.cb-label{font-size:15px;color:var(--stone)}
+.cb-value{font-size:clamp(1.9rem,3vw,2.4rem);line-height:1.15;color:var(--prussian);font-variant-numeric:lining-nums tabular-nums}
+.cb-note,.cost-disclaimer{font-size:14.5px;color:var(--stone)}
+.cost-disclaimer{margin-top:12px}
 
-  .route-box { flex: 1 1 360px; min-width: 0; background: var(--box); padding: 18px 20px 20px; }
-  .route-box h3 { font-size: 20px; font-weight: bold; margin: 0 0 12px; }
-  .route-field { margin-bottom: 12px; min-width: 0; }
-  .route-field label { display: block; font-weight: bold; font-size: 16px; margin-bottom: 3px; }
-  select, .airport-field input[type="text"], .portfolio-row input[type="number"] { width: 100%; font-size: 17px; color: var(--ink); background: #FFFFFF; border: 1px solid #999999; border-radius: 0; padding: 7px 9px; min-height: 42px; }
-  select:focus, .airport-field input[type="text"]:focus, .portfolio-row input[type="number"]:focus { border-color: var(--ink); }
-  .airport-field { position: relative; }
-  .airport-field input[type="text"]:disabled { color: var(--muted); background: #F0F0F0; }
-  .airport-suggestions { position: absolute; top: calc(100% + 2px); left: 0; right: 0; background: #FFFFFF; border: 1px solid var(--ink); max-height: 240px; overflow-y: auto; z-index: 40; display: none; }
-  .airport-suggestion-item { padding: 6px 9px; font-size: 16px; cursor: pointer; }
-  .airport-suggestion-item:hover, .airport-suggestion-item[aria-selected="true"] { background: #EEEEEE; }
-  .airport-suggestion-item .as-code { font-weight: bold; margin-right: 6px; }
+.scenario-compare{margin-top:24px}
+.sc-header{font-size:19px;margin-bottom:6px}
+.sc-tag{display:block;font-size:14.5px;color:var(--stone);font-style:italic}
+.sc-grid{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;gap:10px}
+.sc-col{padding:6px 0}
+.sc-col-changed .sc-col-regime{color:var(--prussian)}
+.sc-col-changed .sc-col-regime::after{content:" (changes)";font-style:italic;font-size:14px;color:var(--stone)}
+.sc-col-label{font-size:14px;color:var(--stone)}
+.sc-col-cost{font-variant-numeric:lining-nums tabular-nums}
+.sc-arrow{align-self:center;color:var(--stone)}
+.sc-note{font-size:14.5px;color:var(--stone);margin-top:6px}
 
-  .route-result { margin-top: 6px; }
-  .reg-card { margin-top: 14px; }
-  .reg-card .r-name { font-weight: bold; font-size: 19px; }
-  .reg-card .r-desc { font-size: 16px; }
-  .no-reg { color: var(--muted); }
+/* Fleet total */
+.portfolio-panel{margin-top:8px}
+.portfolio-row{display:grid;grid-template-columns:1.6fr .7fr 1.4fr 1.4fr .9fr auto;gap:12px 20px;align-items:end;padding:12px 0}
+.portfolio-row .route-field{margin:0}
+.portfolio-row-remove{font:inherit;font-size:15px;background:none;border:0;border-bottom:1px solid var(--field-line);color:var(--stone);height:44px;padding:0 4px;cursor:pointer}
+.portfolio-row-remove:hover{color:var(--crit);border-bottom-color:var(--crit)}
+.portfolio-row-invalid{grid-column:1/-1;font-size:15px;color:var(--crit)}
+.portfolio-add-btn{margin:16px 0 28px}
+.portfolio-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px 40px;font-variant-numeric:lining-nums tabular-nums}
+.ps-label{font-size:14.5px;color:var(--stone);margin-bottom:2px}
+.ps-value{font-size:clamp(1.7rem,2.6vw,2.2rem);line-height:1.15}
+.ps-text{font-size:16px}
+.method{max-width:var(--measure)}
+@media (max-width:760px){.portfolio-row{grid-template-columns:1fr 1fr;padding:16px 0}.portfolio-row .route-field:nth-child(1),.portfolio-row .airport-field{grid-column:1/-1}}
 
-  .cost-panel { margin-top: 18px; }
-  .cost-header { font-weight: bold; font-size: 18px; margin-bottom: 6px; }
-  .cost-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-  .cs-label { font-size: 15px; color: var(--muted); }
-  .cs-value { font-size: 22px; font-weight: bold; font-variant-numeric: tabular-nums; }
-  .cs-unit { font-weight: normal; font-size: 15px; color: var(--muted); margin-left: 3px; }
-  .range-table { width: 100%; border-collapse: collapse; margin: 0 0 12px; font-size: 16px; font-variant-numeric: tabular-nums; background: #FFFFFF; }
-  .range-table th, .range-table td { padding: 5px 8px; text-align: right; }
-  .range-table th:first-child, .range-table td:first-child { text-align: left; }
-  .range-table thead th { font-weight: bold; background: #E6E6E2; }
-  .range-table tbody tr:last-child td { font-weight: bold; }
-  .cost-big { display: flex; flex-direction: column; margin-top: 10px; }
-  .cb-label { font-size: 15px; color: var(--muted); }
-  .cb-value { font-size: 28px; font-weight: bold; line-height: 1.2; font-variant-numeric: tabular-nums; }
-  .cb-note { font-size: 15px; color: var(--muted); }
-  .cost-disclaimer { font-size: 15px; color: var(--muted); margin-top: 10px; }
-
-  .scenario-compare { margin-top: 20px; }
-  .sc-header { font-weight: bold; font-size: 18px; margin-bottom: 4px; }
-  .sc-tag { display: block; font-weight: normal; font-size: 15px; color: var(--muted); font-style: italic; }
-  .sc-grid { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; gap: 8px; }
-  .sc-col { background: #FFFFFF; padding: 8px 10px; }
-  .sc-col-changed { background: var(--highlight); }
-  .sc-col-label { font-size: 14px; color: var(--muted); }
-  .sc-col-regime { font-weight: bold; }
-  .sc-col-cost { font-variant-numeric: tabular-nums; }
-  .sc-arrow { align-self: center; color: var(--muted); }
-  .sc-note { font-size: 15px; color: var(--muted); margin-top: 6px; }
-
-  /* Fleet */
-  .portfolio-panel { background: var(--box); padding: 8px 20px 20px; }
-  .portfolio-row { display: grid; grid-template-columns: 1.6fr 0.7fr 1.4fr 1.4fr 0.9fr auto; gap: 10px; align-items: end; padding: 10px 0; }
-  .portfolio-row .route-field { margin: 0; }
-  .portfolio-row-remove { font-size: 18px; background: #FFFFFF; border: 1px solid #999999; color: var(--ink); height: 42px; padding: 0 12px; cursor: pointer; }
-  .portfolio-row-remove { transition: background-color 150ms ease, transform 160ms var(--ease-out); }
-  @media (hover: hover) and (pointer: fine) { .portfolio-row-remove:hover { background: #EEEEEE; } }
-  .portfolio-row-remove:active { transform: scale(0.95); }
-  .portfolio-row-invalid { grid-column: 1 / -1; font-size: 15px; color: #B3261E; }
-  .portfolio-add-btn { margin: 12px 0 20px; }
-  .portfolio-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px 24px; }
-  .ps-label { font-size: 15px; color: var(--muted); margin-bottom: 2px; }
-  .ps-value { font-size: 26px; font-weight: bold; line-height: 1.2; font-variant-numeric: tabular-nums; }
-  .ps-text { font-size: 16px; }
-
-  /* Method */
-  .method { max-width: 75ch; margin: 0; padding-left: 1.4em; }
-  .method li { margin-bottom: 6px; }
-
-  .site-footer { margin-top: 64px; background: var(--navy); color: #DDE3E8; }
-  .site-footer-in { max-width: 1100px; margin: 0 auto; padding: 28px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 28px; font-size: 16px; }
-  .site-footer a { color: #FFFFFF; }
-
-  @media (max-width: 760px) {
-    h1 { font-size: 30px; }
-    .portfolio-panel { padding: 8px 14px 14px; }
-    .portfolio-row { grid-template-columns: 1fr 1fr; padding: 14px 0; }
-    .portfolio-row .route-field:nth-child(1), .portfolio-row .airport-field { grid-column: 1 / -1; }
-  }
-</style>
-<link rel="preload" href="/aviation-emissions/assets/fonts/stix-two-text-400.woff2" as="font" type="font/woff2" crossorigin>
-<style>
-@font-face{font-family:"STIX Two Text";src:url("/aviation-emissions/assets/fonts/stix-two-text-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:"STIX Two Text";src:url("/aviation-emissions/assets/fonts/stix-two-text-400-italic.woff2") format("woff2");font-weight:400;font-style:italic;font-display:swap}
-@font-face{font-family:"STIX Two Text";src:url("/aviation-emissions/assets/fonts/stix-two-text-600.woff2") format("woff2");font-weight:500 700;font-style:normal;font-display:swap}
-body{font-variant-numeric:lining-nums}
-
-  /* Polish: shared details */
-  :root { --ease-out: cubic-bezier(0.23, 1, 0.32, 1); }
-  ::selection { background: #CFE0F0; color: var(--ink); }
-  h1, h2, h3 { text-wrap: balance; }
-  p, figcaption, li { text-wrap: pretty; }
-  select, .airport-field input[type="text"], .portfolio-row input[type="number"] { transition: border-color 150ms ease; }
-  @media (hover: hover) and (pointer: fine) { select:hover, .airport-field input[type="text"]:hover, .portfolio-row input[type="number"]:hover { border-color: #666666; } }
-  .route-result, .portfolio-summary { font-variant-numeric: lining-nums tabular-nums; }
-  @media (prefers-reduced-motion: reduce) { .plain-btn, .portfolio-row-remove { transition: none; } .plain-btn:active, .portfolio-row-remove:active { transform: none; } }
 </style>
 </head>
 <body>
-<header class="site-header">
-  <div class="site-header-in">
-    <a class="wordmark" href="/aviation-emissions/">Aviation Emissions Explained</a>
-    <nav class="site-nav" aria-label="Main">
-      <a href="/aviation-emissions/#insights">Insights</a>
-      <a href="/aviation-emissions/#tools" aria-current="page">Tools</a>
-      <a href="/aviation-emissions/#services">Services</a>
-      <a href="/aviation-emissions/#contact">Contact</a>
-      <a href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">Book a briefing</a>
+<header class="masthead">
+  <div class="mast-bar">
+    <a class="mark" href="/aviation-emissions/">Aviation Emissions <i>explained</i></a>
+    <nav class="topnav" aria-label="Main">
+      <a href="/aviation-emissions/#forcing">Climate effect</a>
+      <a href="/aviation-emissions/#tools">Tools</a>
+      <a href="/aviation-emissions/#method">Method</a>
+      <a href="/aviation-emissions/#work">Work with me</a>
     </nav>
+  </div>
+  <div class="intro">
+    <h1>Policy map: carbon rules for flights</h1>
+    <p class="lede">Which carbon scheme covers a flight, and roughly what the carbon costs. It covers the EU, UK and Swiss schemes and CORSIA.</p>
+    <p class="meta">Carbon prices checked 24 July 2026: EU €80/t, UK £72/t, CORSIA $5/t.</p>
   </div>
 </header>
 
 <main class="doc">
-  <div class="title-block">
-    <p class="crumbs"><a href="/aviation-emissions/">Home</a> / <a href="/aviation-emissions/#tools">Tools</a> / Policy map</p>
-    <h1>Policy Map: Carbon Rules for Flights</h1>
-    <p class="meta">Carbon prices checked 24 July 2026: EU &euro;80/t, UK &pound;72/t, CORSIA $5/t</p>
-    <p class="lead">This page shows which carbon scheme covers a flight and roughly what the carbon costs. It covers the EU, UK and Swiss schemes and CORSIA.</p>
-  </div>
-
-  <h2><span class="num">1.</span>Schemes by country and route</h2>
+  <h2>Schemes by country and route</h2>
   <p class="section-intro">Drag the globe to turn it. Hover over a country to see its scheme. To check a flight, pick two airports and a plane on the right.</p>
-  <div class="map-layout">
+  <div class="map-layout wide">
     <figure class="figure">
       <div class="globe-wrap">
         <svg id="worldMap" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rotating globe showing carbon schemes by country">
-          <text x="300" y="300" text-anchor="middle" fill="#555555" font-size="18" font-family="STIX Two Text, Georgia, serif" id="mapLoadingText">Loading globe...</text>
+          <text x="300" y="300" text-anchor="middle" fill="#6B655B" font-size="18" font-family="STIX Two Text, Georgia, serif" id="mapLoadingText">Loading globe...</text>
         </svg>
         <div id="tooltip"></div>
         <div class="globe-controls"><button class="plain-btn" id="spinBtn" type="button">Stop rotation</button></div>
       </div>
-      <figcaption>
-        <b>Figure 1.</b> Carbon scheme by country, 2026. The red line is the shortest path between the two airports picked.
+      <figcaption class="figcap">
+        <i>Fig. 1.</i> Carbon scheme by country, 2026. The red line is the shortest path between the two airports picked.
         <div class="legend">
           <span class="legend-item"><span class="swatch" style="background:var(--regime-eu);"></span>EU ETS</span>
           <span class="legend-item"><span class="swatch" style="background:var(--regime-uk);"></span>UK ETS</span>
@@ -256,15 +186,15 @@ body{font-variant-numeric:lining-nums}
     </div>
   </div>
 
-  <h2><span class="num">2.</span>Fleet total</h2>
+  <h2>Fleet total</h2>
   <p class="section-intro">One row per plane type. Give each a route and how many flights it does a year, and the page adds up the yearly carbon cost.</p>
-  <div class="portfolio-panel">
+  <div class="portfolio-panel wide">
     <div id="portfolioRows"></div>
-    <button class="plain-btn portfolio-add-btn" id="portfolioAddBtn" type="button">+ Add a plane</button>
+    <button class="btn quiet portfolio-add-btn" id="portfolioAddBtn" type="button">+ Add a plane</button>
     <div class="portfolio-summary" id="portfolioSummary"></div>
   </div>
 
-  <h2><span class="num">3.</span>Method and limits</h2>
+  <h2>Method and limits</h2>
   <ol class="method">
     <li>Covers the EU, UK and Swiss schemes and CORSIA. Nothing else yet.</li>
     <li>CORSIA countries follow ICAO&apos;s 2026 list. It changes every year.</li>
@@ -277,12 +207,27 @@ body{font-variant-numeric:lining-nums}
   </ol>
 </main>
 
-<footer class="site-footer">
-  <div class="site-footer-in">
-    <a href="/aviation-emissions/">Aviation Emissions Explained</a>
-    <a href="mailto:becharjaymal@gmail.com">becharjaymal@gmail.com</a>
+<section class="contactband" aria-label="Contact">
+  <div class="in">
+    <div>
+      <h2>Got a question about carbon rules?</h2>
+      <p>Drop me a line about what you're working on and I'll set up a quick chat. No prep needed.</p>
+    </div>
+    <a class="btn" href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">Get in touch</a>
+  </div>
+</section>
+<footer class="sitefoot">
+  <div class="in">
+    <div class="links">
+      <span style="color:#fff">Aviation Emissions</span>
+      <a href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">becharjaymal@gmail.com</a>
+      <a href="/aviation-emissions/engagement-overview/">How I can help</a>
+      <span class="num">© 2026</span>
+    </div>
+    <p>Built by Jaymal Bechar, doctoral researcher in mechanical and aerospace engineering, University of Manchester. Tool outputs are estimates for planning, not compliance filings. Sources are listed on each page.</p>
   </div>
 </footer>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <script src="https://unpkg.com/topojson-client@3"></script>
 <script>
@@ -1064,6 +1009,6 @@ fetch('https://raw.githubusercontent.com/jpatokal/openflights/master/data/airpor
     setTimeout(() => clearInterval(check), 8000);
   });
 </script>
-<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "99311d4c453e49c091ebf8972f3c2200"}'></script><!-- End Cloudflare Web Analytics -->
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "99311d4c453e49c091ebf8972f3c2200"}'></script>
 </body>
 </html>

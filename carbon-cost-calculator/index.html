@@ -3,145 +3,85 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#060C16">
 <title>Carbon cost calculator | Aviation Emissions Explained</title>
 <meta name="description" content="What EU ETS, UK ETS, CORSIA and SAF mandates cost an airline in 2026, set against its profit. Worked example on Wizz Air, easyJet and Norwegian.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" href="/aviation-emissions/assets/fonts/stix-two-text-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/aviation-emissions/assets/site.css">
 <style>
-  :root {
-    --paper: #F5F6F3; --ink: #0E1A24; --muted: #51606E; --line: #D8DDE2;
-    --navy: #0E2A40; --accent: #1F3A5F; --accent-soft: #EAF0F6; --link: #1F3A5F; --field: #FFFFFF;
-    --eu: #1F3A5F; --uk: #7FA6C9; --corsia: #B8C4CE; --saf: #D9822B;
-    --ok: #2E6B45; --ok-bg: #E3F0E7; --warn: #8A5300; --warn-bg: #FAEDD6; --crit: #A4281F; --crit-bg: #F8E1DE;
-    --body: 'Public Sans', system-ui, sans-serif;
-    --head: 'Source Serif 4', Georgia, serif;
-    --mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; }
-  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; }
-  a { color: var(--link); text-underline-offset: 3px; }
-  a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+/* Scheme colours, shared with the policy map and route report */
+:root{--eu:#2A5C8F;--uk:#3F8A78;--corsia:#9B86B5;--saf:#B4762B;--accent:var(--prussian)}
+.doc h2#scen-h{margin-top:0}
+.scen{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px 40px;align-items:end}
+.field label{display:flex;justify-content:space-between;gap:8px}
+.field label output{color:var(--prussian);font-variant-numeric:lining-nums tabular-nums}
+.check{display:flex;align-items:center;gap:10px;font-size:16px;min-height:44px}
+.tabs{margin:72px 0 0}
+.tabs button{font-size:22px}
+.main{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:40px 64px;margin-top:32px;align-items:start}
+.main h3{font-size:22px;margin-bottom:10px}
+.main h3.split{margin-top:28px}
+.inputs .hint{margin:8px 0 14px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 28px}
+.flag{color:var(--warn);font-style:italic;font-size:.85em}
+.badge{font-style:italic;font-size:18px;margin-left:10px}
+.badge.ok{color:var(--ok)} .badge.warn{color:var(--warn)} .badge.crit{color:var(--crit)}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 40px;margin:12px 0 28px}
+.stat p{margin:0!important}
+.stat .k{font-size:14.5px;color:var(--stone)!important}
+.stat .v{font-size:clamp(1.8rem,2.8vw,2.5rem);line-height:1.15;color:var(--ink)!important;font-variant-numeric:lining-nums tabular-nums}
+.stat .s{font-size:14px;color:var(--stone)!important}
+.bar{display:flex;height:16px;background:var(--rule-p)}
+.bar span{display:block;height:100%;transition:width .25s ease;border-right:1px solid var(--paper)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:15px;color:var(--stone);margin:12px 0 0;padding:0;list-style:none}
+.legend li{display:flex;align-items:center;gap:8px;margin:0}
+.legend i{width:10px;height:10px;display:inline-block}
+table{min-width:680px}
+th,td{text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+tbody tr.on td{color:var(--prussian)}
+tbody tr.on td:first-child{font-style:italic}
+#notes p{font-size:16px}
+@media (max-width:900px){.main{grid-template-columns:1fr}}
+@media (max-width:560px){.stats{grid-template-columns:1fr 1fr;gap:18px 20px}.tabs button{font-size:19px}}
 
-  /* Site header (matches homepage) */
-  .site-header { background: var(--navy); border-bottom: 1px solid rgba(255,255,255,0.1); }
-  .site-header-in { max-width: 1200px; margin: 0 auto; padding: 18px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; }
-  .wordmark { display: flex; align-items: baseline; gap: 10px; text-decoration: none; color: #FFFFFF; font-family: var(--mono); font-size: 17px; }
-  .wordmark b { font-weight: 600; letter-spacing: 0.02em; }
-  .wordmark span { color: #8FA3B6; }
-  .site-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; font-size: 15px; }
-  .site-nav a { color: #C9D2DB; text-decoration: none; }
-  .site-nav a:hover { color: #FFFFFF; text-decoration: underline; text-underline-offset: 4px; }
-  .site-nav a[aria-current="page"] { color: #FFFFFF; }
-  .site-nav .cta { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; background: #FFFFFF; color: var(--ink); border-radius: 4px; font-weight: 600; }
-  .site-nav .cta:hover { color: var(--ink); text-decoration: none; background: #E9EDF0; }
-  .wrap { max-width: 1040px; margin: 0 auto; padding: 3.5rem 24px 2rem; }
-  h1, h2, h3 { font-family: var(--head); font-weight: 500; line-height: 1.15; text-wrap: balance; }
-  h1 { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.015em; margin: 0 0 1rem; max-width: 22ch; }
-  .eyebrow { font-size: 13px; font-weight: 600; color: #B0601F; margin: 0 0 0.75rem; }
-  .sub { font-size: 17px; margin: 0; max-width: 64ch; color: #3A4A5A; }
-  section { margin-top: 3rem; }
-  .slabel { font-size: clamp(1.5rem, 2.4vw, 1.9rem); letter-spacing: -0.01em; padding-bottom: 0.6rem; border-bottom: 1px solid var(--ink); margin: 0 0 1.25rem; }
-  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
-
-  .box { background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; padding: 1.5rem; }
-  .scen { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.25rem 1.75rem; align-items: end; }
-  .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-  .field label { font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; gap: 8px; }
-  .field label output { font-family: var(--mono); font-weight: 500; color: var(--accent); }
-  .field input[type=number] { font: 500 15px var(--mono); color: var(--ink); background: var(--field); border: 1px solid #C3CBD2; border-radius: 4px; padding: 9px 12px; min-height: 44px; width: 100%; }
-  .field input[readonly] { background: #EEF1F3; color: var(--muted); }
-  input[type=range] { width: 100%; accent-color: var(--accent); min-height: 28px; }
-  .check { display: flex; align-items: center; gap: 10px; font-size: 15px; min-height: 44px; }
-  .check input { width: 20px; height: 20px; accent-color: var(--accent); }
-  .btn { font: 600 15px var(--body); min-height: 44px; padding: 0 18px; border-radius: 4px; border: 1px solid #C3CBD2; background: #FFFFFF; color: var(--ink); cursor: pointer; }
-  .btn:hover { background: #EEF1F3; }
-
-  .tabs { display: inline-flex; flex-wrap: wrap; border: 1px solid #C3CBD2; border-radius: 4px; overflow: hidden; margin-top: 2rem; }
-  .tabs button { font: 500 15px var(--body); background: #FFFFFF; color: var(--ink); border: 0; border-right: 1px solid #C3CBD2; padding: 10px 20px; min-height: 44px; cursor: pointer; }
-  .tabs button:last-child { border-right: 0; }
-  .tabs button[aria-pressed="true"] { background: var(--accent); color: #FFFFFF; }
-
-  .main { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: flex-start; margin-top: 1rem; }
-  .inputs { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 1rem; }
-  .verdict { flex: 2 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 1.25rem; }
-  .inputs h2, .verdict h2 { font-size: 22px; margin: 0; }
-  .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem; }
-  .hint { font-size: 14px; color: var(--muted); margin: 0; }
-  .flag { color: #B0601F; font-weight: 600; }
-
-  .badge { display: inline-flex; align-items: center; font-size: 13px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
-  .badge.ok { background: var(--ok-bg); color: var(--ok); } .badge.warn { background: var(--warn-bg); color: var(--warn); } .badge.crit { background: var(--crit-bg); color: var(--crit); }
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
-  .stat p { margin: 0; }
-  .stat .k { font-size: 14px; color: var(--muted); }
-  .stat .v { font-family: var(--head); font-weight: 600; font-size: 30px; line-height: 1.15; font-variant-numeric: tabular-nums; }
-  .stat .s { font-size: 13px; color: var(--muted); }
-  .bar { display: flex; height: 22px; border-radius: 3px; overflow: hidden; background: var(--line); }
-  .bar span { display: block; height: 100%; transition: width .25s ease; }
-  .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; color: var(--muted); margin: 10px 0 0; padding: 0; list-style: none; }
-  .legend li { display: flex; align-items: center; gap: 6px; }
-  .legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
-
-  .tablebox { overflow-x: auto; background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; }
-  table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 660px; }
-  th, td { text-align: right; padding: 11px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; }
-  tbody tr:last-child td { border-bottom: 0; }
-  th:first-child, td:first-child { text-align: left; }
-  th { font-size: 13px; font-weight: 600; color: var(--muted); }
-  tbody tr.on { background: var(--accent-soft); }
-
-  #notes { font-size: 14px; color: #3A4A5A; }
-  #notes p { margin: 0 0 0.75rem; max-width: 90ch; }
-  .page-footer { font-size: 14px; color: var(--muted); margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
-  .site-footer { margin-top: 3rem; background: var(--navy); color: #C9D2DB; }
-  .site-footer-in { max-width: 1200px; margin: 0 auto; padding: 40px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px 32px; font-size: 14px; }
-  .site-footer a { color: #FFFFFF; }
-  @media (max-width: 620px) {
-    .box { padding: 1.1rem; }
-    .tabs { display: flex; width: 100%; }
-    .tabs button { flex: 1 1 auto; }
-  }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
-<header class="site-header">
-  <div class="site-header-in">
-    <a class="wordmark" href="/aviation-emissions/"><b>AVIATION EMISSIONS</b><span>// explained</span></a>
-    <nav class="site-nav" aria-label="Main">
-      <a href="/aviation-emissions/#insights">Insights</a>
-      <a href="/aviation-emissions/#tools" aria-current="page">Tools</a>
-      <a href="/aviation-emissions/#services">Services</a>
-      <a href="/aviation-emissions/#contact">Contact</a>
-      <a class="cta" href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">Book a briefing</a>
+<header class="masthead">
+  <div class="mast-bar">
+    <a class="mark" href="/aviation-emissions/">Aviation Emissions <i>explained</i></a>
+    <nav class="topnav" aria-label="Main">
+      <a href="/aviation-emissions/#forcing">Climate effect</a>
+      <a href="/aviation-emissions/#tools">Tools</a>
+      <a href="/aviation-emissions/#method">Method</a>
+      <a href="/aviation-emissions/#work">Work with me</a>
     </nav>
+  </div>
+  <div class="intro">
+    <h1>Can this airline carry its carbon bill?</h1>
+    <p class="lede">What EU ETS, UK ETS, CORSIA and the SAF mandates cost an airline in 2026, set against its last reported profit. The worked example uses three European airlines that lease much of their fleet. Move the prices and the scope to see whose margin breaks first. Every input can be changed.</p>
   </div>
 </header>
 
-<main class="wrap">
-  <p class="eyebrow">Tool · 2026 rules</p>
-  <h1>Can this airline carry its carbon bill?</h1>
-  <p class="sub">What EU ETS, UK ETS, CORSIA and the SAF mandates cost an airline in 2026, set against its last reported profit. The worked example uses three European airlines that lease much of their fleet. Move the prices and the scope to see whose margin breaks first. Every input can be changed.</p>
-
-  <section aria-labelledby="scen-h">
-    <h2 class="slabel" id="scen-h">Scenario</h2>
-    <div class="box scen">
+<main class="doc">
+  <section aria-labelledby="scen-h" class="wide">
+    <h2 id="scen-h">Scenario</h2>
+    <div class="scen">
       <div class="field"><label for="eua">EU carbon price <output id="euaOut"></output></label><input id="eua" type="range" min="40" max="200" step="0.05" value="86.55"></div>
       <div class="field"><label for="uka">UK carbon price <output id="ukaOut"></output></label><input id="uka" type="range" min="30" max="200" step="1" value="72"></div>
       <div class="field"><label for="corsia">CORSIA credit price <output id="corsiaOut"></output></label><input id="corsia" type="range" min="5" max="60" step="1" value="20"></div>
       <div class="field"><label for="saf">Extra cost of SAF over jet fuel <output id="safOut"></output></label><input id="saf" type="range" min="500" max="3500" step="50" value="1400"></div>
       <label class="check" for="ext"><input id="ext" type="checkbox"> EU ETS also covers flights leaving Europe</label>
-      <div class="field"><button id="reset" class="btn" type="button">Reset to today's prices</button></div>
+      <div class="field"><button id="reset" class="btn quiet" type="button">Reset to today's prices</button></div>
     </div>
   </section>
 
-  <div class="tabs" role="group" aria-label="Airline" id="tabs"></div>
+  <div class="choice tabs wide" role="group" aria-label="Airline" id="tabs"></div>
 
-  <div class="main">
-    <section class="box inputs" aria-labelledby="in-h" style="margin-top:0">
-      <h2 id="in-h">Inputs</h2>
+  <div class="main wide">
+    <section class="inputs" aria-labelledby="in-h">
+      <h3 id="in-h">Inputs</h3>
       <p class="hint" id="period"></p>
       <div class="grid2">
         <div class="field"><label for="co2">CO₂ (Mt a year)</label><input id="co2" type="number" step="0.01" min="0"></div>
@@ -150,7 +90,7 @@
         <div class="field"><label for="op" id="opLabel">Operating profit (€m)</label><input id="op" type="number" step="1"></div>
       </div>
       <p class="hint">Fuel is CO₂ divided by 3.16.</p>
-      <h3 style="font-size:18px;margin:0.25rem 0 0">Where the CO₂ falls <span class="flag">· rough guess</span></h3>
+      <h3 class="split">Where the CO₂ falls <span class="flag">(a rough guess)</span></h3>
       <div class="grid2">
         <div class="field"><label for="shEU">EU ETS (%)</label><input id="shEU" type="number" step="1" min="0" max="100"></div>
         <div class="field"><label for="shUK">UK ETS (%)</label><input id="shUK" type="number" step="1" min="0" max="100"></div>
@@ -160,11 +100,8 @@
       <p class="hint">These splits are placeholders. A full study works them out flight by flight from schedules and modelled fuel burn.</p>
     </section>
 
-    <section class="box verdict" aria-labelledby="v-h" aria-live="polite" style="margin-top:0">
-      <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px">
-        <h2 id="v-h">2026 carbon bill</h2>
-        <span id="badge" class="badge"></span>
-      </div>
+    <section class="verdict" aria-labelledby="v-h" aria-live="polite">
+      <h3 id="v-h">2026 carbon bill <span id="badge" class="badge"></span></h3>
       <div class="stats">
         <div class="stat"><p class="k">Total carbon cost</p><p class="v" id="sTotal"></p><p class="s" id="sTotalSub"></p></div>
         <div class="stat"><p class="k">Share of revenue</p><p class="v" id="sRev"></p><p class="s">of last reported revenue</p></div>
@@ -179,34 +116,46 @@
     </section>
   </div>
 
-  <section aria-labelledby="p-h">
-    <h2 class="slabel" id="p-h">All three, same scenario</h2>
-    <div class="tablebox">
+  <section aria-labelledby="p-h" class="wide">
+    <h2 id="p-h">All three, same scenario</h2>
+    <div class="tablewrap">
       <table>
         <thead><tr><th>Airline</th><th>Carbon cost €m</th><th>% revenue</th><th>× profit</th><th>Extra cost vs today €m</th><th>Profit after €m</th><th>Status</th></tr></thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
-    <p class="hint" style="margin-top:0.75rem">Watch: the extra cost eats more than half of profit. Critical: it eats all of it.</p>
+    <p class="hint" style="margin-top:12px">Watch: the extra cost eats more than half of profit. Critical: it eats all of it.</p>
   </section>
 
   <section id="notes" aria-labelledby="n-h">
-    <h2 class="slabel" id="n-h">How it works and where the numbers come from</h2>
-    <p>Carbon cost = CO₂ under the EU scheme × EU price + CO₂ under the UK scheme × UK price + CO₂ under CORSIA × share to offset × credit price + required SAF × extra cost of SAF. Free allowances end in 2026 in both the EU and UK schemes. SAF: the EU requires 2% of fuel; the UK figure of 3.6% for 2026 sits on the straight line from 2% in 2025 to 10% in 2030. "Extra cost vs today" compares the scenario with today's prices and today's scope.</p>
+    <h2 id="n-h">How it works and where the numbers come from</h2>
+    <p>Carbon cost = CO₂ under the EU scheme × EU price + CO₂ under the UK scheme × UK price + CO₂ under CORSIA × share to offset × credit price + required SAF × extra cost of SAF. Free allowances end in 2026 in both the EU and UK schemes. SAF: the EU requires 2% of fuel; the UK figure of 3.6% for 2026 sits on the straight line from 2% in 2025 to 10% in 2030. “Extra cost vs today” compares the scenario with today's prices and today's scope.</p>
     <p>Prices: EU €86.55 a tonne (6 Nov 2026). UK £60.17, the government's September 2026 average, about €72. CORSIA credits have no public price; US$20–25 is an estimate, about €20. The SAF figure of about €1,400 a tonne comes from Wizz Air paying €56.5m for roughly 27,000 tonnes, minus the price of normal jet fuel. Currency rates: European Central Bank, 6 Nov 2026.</p>
     <p>Wizz Air: results for the year to 31 March 2026. Wizz does not publish total CO₂, so it is <span class="flag">estimated</span> from 2.2 tonnes of fuel per block hour × 861,653 block hours × 3.16. easyJet: year to 30 September 2025; profit is headline profit before tax; CO₂ from its 2025 environmental factsheet. easyJet says 92% of its 2026 carbon is already bought at €64, which this page leaves out. Norwegian: 2025 results; CO₂ is its 2025 direct emissions.</p>
     <p>Profit is from the last reported year, which already paid carbon at lower prices with some free allowances. So the 2026 bill is a forward estimate, not a restatement of past results. Built from public data for illustration; not investment advice.</p>
   </section>
 
-  <footer class="page-footer">
-    Still a work in progress, and nobody else has checked the numbers yet. Want this for your own portfolio of airlines? <a href="/aviation-emissions/#contact">Get in touch</a>.
-  </footer>
+  <p class="endnote">Still a work in progress, and nobody else has checked the numbers yet. Want this for your own portfolio of airlines? <a href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">Get in touch</a>.</p>
 </main>
 
-<footer class="site-footer">
-  <div class="site-footer-in">
-    <a class="wordmark" href="/aviation-emissions/" style="font-size:15px"><b>AVIATION EMISSIONS</b><span>// explained</span></a>
-    <div><a href="mailto:becharjaymal@gmail.com">becharjaymal@gmail.com</a></div>
+<section class="contactband" aria-label="Contact">
+  <div class="in">
+    <div>
+      <h2>Got a question about carbon rules?</h2>
+      <p>Drop me a line about what you're working on and I'll set up a quick chat. No prep needed.</p>
+    </div>
+    <a class="btn" href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">Get in touch</a>
+  </div>
+</section>
+<footer class="sitefoot">
+  <div class="in">
+    <div class="links">
+      <span style="color:#fff">Aviation Emissions</span>
+      <a href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">becharjaymal@gmail.com</a>
+      <a href="/aviation-emissions/engagement-overview/">How I can help</a>
+      <span class="num">© 2026</span>
+    </div>
+    <p>Built by Jaymal Bechar, doctoral researcher in mechanical and aerospace engineering, University of Manchester. Tool outputs are estimates for planning, not compliance filings. Sources are listed on each page.</p>
   </div>
 </footer>
 
@@ -283,6 +232,6 @@
   load();
 })();
 </script>
-<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "99311d4c453e49c091ebf8972f3c2200"}'></script><!-- End Cloudflare Web Analytics -->
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "99311d4c453e49c091ebf8972f3c2200"}'></script>
 </body>
 </html>

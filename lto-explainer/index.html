@@ -3,124 +3,98 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0E2A40">
+<meta name="theme-color" content="#060C16">
 <title>The LTO cycle, step by step | Aviation Emissions Explained</title>
 <meta name="description" content="Why aircraft engine emissions change with thrust, and where in the landing and take-off cycle NOx, CO and HC come from. Median of all engines in the ICAO Engine Emissions Databank.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" href="/aviation-emissions/assets/fonts/stix-two-text-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/aviation-emissions/assets/site.css">
 <style>
-  :root {
-    --paper: #F5F6F3; --ink: #0E1A24; --muted: #51606E; --line: #D8DDE2; --body-text: #3A4A5A;
-    --navy: #0E2A40; --link: #1F3A5F; --tint: #EEF1F3;
-    --body: 'Public Sans', system-ui, sans-serif;
-    --head: 'Source Serif 4', Georgia, serif;
-    --mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
-    --fg: var(--ink); --bg: var(--paper); --card: #FFFFFF;
-    --nox: #E8673A; --co: #1DAF7A; --hc: #E09A00;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; }
-  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; }
-  a { color: var(--link); text-underline-offset: 3px; }
-  a:focus-visible, button:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+/* Variables the chart script reads */
+:root{--fg:var(--ink);--muted:var(--stone);--line:var(--rule-p);--card:var(--paper);--body:var(--serif);
+  --nox:#D9542E; --co:#1E8A5E; --hc:#C98A1E}
+svg{width:100%;height:auto;display:block}
+svg text{font-family:var(--serif)}
+.flight{margin-top:24px}
+.controls{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px 32px;margin:28px 0 8px}
+.stepnav{display:flex;gap:10px}
+.stepnav .btn{min-height:42px;padding:0 18px;font-size:16px}
 
-  /* Site header (matches homepage) */
-  .site-header { background: var(--navy); border-bottom: 1px solid rgba(255,255,255,0.1); }
-  .site-header-in { max-width: 1200px; margin: 0 auto; padding: 18px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; }
-  .wordmark { display: flex; align-items: baseline; gap: 10px; text-decoration: none; color: #FFFFFF; font-family: var(--mono); font-size: 17px; }
-  .wordmark b { font-weight: 600; letter-spacing: 0.02em; }
-  .wordmark span { color: #8FA3B6; }
-  .site-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; font-size: 15px; }
-  .site-nav a { color: #C9D2DB; text-decoration: none; }
-  .site-nav a:hover { color: #FFFFFF; text-decoration: underline; text-underline-offset: 4px; }
-  .site-nav a[aria-current="page"] { color: #FFFFFF; }
-  .site-nav .cta { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; background: #FFFFFF; color: var(--ink); border-radius: 4px; font-weight: 600; }
-  .site-nav .cta:hover { color: var(--ink); text-decoration: none; background: #E9EDF0; }
-  .site-footer { margin-top: 3rem; background: var(--navy); color: #C9D2DB; }
-  .site-footer-in { max-width: 1200px; margin: 0 auto; padding: 40px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px 32px; font-size: 14px; }
-  .site-footer a { color: #FFFFFF; }
+/* Panel: plain text with readouts, no card */
+.panel{margin-top:28px;max-width:var(--measure)}
+.panel h2{font-size:clamp(1.7rem,2.8vw,2.3rem);margin:0 0 12px}
+.panel p{margin:0 0 1.2em;color:var(--body-ink)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:20px 40px;margin:8px 0 24px}
+.stat .k{font-size:14.5px;color:var(--stone)}
+.stat .v{font-size:clamp(1.5rem,2.2vw,1.9rem);line-height:1.2;font-variant-numeric:lining-nums tabular-nums}
+td.num,th.num{text-align:right;font-variant-numeric:lining-nums tabular-nums}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:10px;vertical-align:0}
+.bars{display:grid;gap:18px;margin:12px 0}
+.bar-row .lab{font-size:16px;margin-bottom:6px}
+.bar{display:flex;height:30px;overflow:hidden;background:var(--rule-p)}
+.bar span{display:flex;align-items:center;justify-content:center;font-size:13px;white-space:nowrap;overflow:hidden;border-right:1px solid var(--paper)}
+.legend-steps{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14.5px;color:var(--stone)}
 
-  main { max-width: 980px; margin: 0 auto; padding: 3.5rem 24px 2rem; }
-  h1, h2 { font-family: var(--head); font-weight: 500; line-height: 1.15; }
-  h1 { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.015em; margin: 0 0 1rem; max-width: 20ch; }
-  h2 { font-size: 22px; font-weight: 600; margin: 0 0 .4rem; }
-  .lede { font-size: 17px; color: var(--body-text); margin: 0 0 2rem; max-width: 64ch; }
-  .fig-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 16px; border-bottom: 1px solid var(--ink); padding-bottom: .5rem; margin-bottom: 12px; }
-  .fig-head b { font-family: var(--head); font-size: 20px; font-weight: 600; }
-  .fig-head span { font-family: var(--mono); font-size: 13px; color: var(--muted); }
-  svg { width: 100%; height: auto; display: block; }
-  svg text { font-family: var(--body); }
-  .chart-wrap, .flight-wrap { background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 10px 8px; }
-  .flight-wrap { margin-top: 14px; }
-  .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 16px 0 6px; }
-  .steps { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
-  button { font: inherit; font-size: 14px; font-weight: 500; color: var(--ink); background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; min-height: 40px; padding: 0 14px; cursor: pointer; transition: background .15s, border-color .15s; }
-  button:hover { border-color: var(--muted); }
-  button[aria-current="true"] { background: var(--navy); color: #FFFFFF; border-color: var(--navy); }
-  .nav { display: flex; gap: 6px; }
-  .panel { background: var(--card); border: 1px solid var(--line); border-top: 4px solid var(--navy); border-radius: 4px; padding: 20px 22px; margin-top: 10px; }
-  .panel p { margin: 0 0 1rem; max-width: 70ch; color: var(--body-text); }
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin: .4rem 0 1rem; }
-  .stat { background: var(--tint); border-radius: 4px; padding: 10px 14px; }
-  .stat .k { font-family: var(--mono); font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-  .stat .v { font-family: var(--head); font-size: 22px; font-weight: 600; }
-  table { width: 100%; border-collapse: collapse; font-size: 15px; }
-  th, td { text-align: left; padding: 8px; border-top: 1px solid var(--line); }
-  th { font-family: var(--mono); font-weight: 500; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; border-top: none; }
-  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-  .table-scroll { overflow-x: auto; }
-  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
-  .bars { display: grid; gap: 12px; margin: .6rem 0 .6rem; }
-  .bar-row .lab { font-size: 15px; margin-bottom: 4px; }
-  .bar { display: flex; height: 32px; border-radius: 4px; overflow: hidden; background: var(--line); }
-  .bar span { display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; border-right: 1px solid #FFFFFF; }
-  .legend-steps { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--muted); }
-  .src { font-size: 13px; color: var(--muted); margin-top: 1.5rem; max-width: 80ch; }
-  @media (max-width: 680px) { .site-nav { gap: 8px 18px; } .panel { padding: 16px; } }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
-<header class="site-header">
-  <div class="site-header-in">
-    <a class="wordmark" href="/aviation-emissions/"><b>AVIATION EMISSIONS</b><span>// explained</span></a>
-    <nav class="site-nav" aria-label="Main">
-      <a href="/aviation-emissions/#insights">Insights</a>
-      <a href="/aviation-emissions/#tools" aria-current="page">Tools</a>
-      <a href="/aviation-emissions/#services">Services</a>
-      <a href="/aviation-emissions/#contact">Contact</a>
-      <a class="cta" href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">Book a briefing</a>
+<header class="masthead">
+  <div class="mast-bar">
+    <a class="mark" href="/aviation-emissions/">Aviation Emissions <i>explained</i></a>
+    <nav class="topnav" aria-label="Main">
+      <a href="/aviation-emissions/#forcing">Climate effect</a>
+      <a href="/aviation-emissions/#tools">Tools</a>
+      <a href="/aviation-emissions/#method">Method</a>
+      <a href="/aviation-emissions/#work">Work with me</a>
     </nav>
+  </div>
+  <div class="intro">
+    <h1>The LTO cycle, step by step</h1>
+    <p class="lede">At low thrust, fuel burns less completely, so carbon monoxide (CO) and unburnt hydrocarbons (HC) per kilogram of fuel rise. At high thrust, the combustor runs hotter and nitrogen oxides (NO<sub>x</sub>) rise. Step through the landing and take-off cycle to see which pollutant each phase produces.</p>
   </div>
 </header>
 
-<main>
-  <h1>The LTO cycle, step by step</h1>
-  <p class="lede">At low thrust, fuel burns less completely, so carbon monoxide (CO) and unburnt hydrocarbons (HC) per kilogram of fuel rise. At high thrust, the combustor runs hotter and nitrogen oxides (NO<sub>x</sub>) rise. Step through the landing and take-off (LTO) cycle to see which pollutant each phase produces.</p>
+<main class="doc">
+  <figure class="wide">
+    <svg id="chart" viewBox="0 0 900 420" role="img" aria-label="Median emission index of NOx, CO and HC across all engines in the ICAO Engine Emissions Databank, at the four LTO thrust settings"></svg>
+    <figcaption class="figcap"><i>Fig. 1.</i> Emission index against thrust. Median of all 586 engines in the ICAO Engine Emissions Databank; bars show the middle 50% of engines.</figcaption>
+  </figure>
 
-  <div class="fig-head"><b>Emission index against thrust</b><span>Median of all 586 engines in the ICAO Engine Emissions Databank</span></div>
-  <div class="chart-wrap"><svg id="chart" viewBox="0 0 900 420" role="img" aria-label="Median emission index of NOx, CO and HC across all engines in the ICAO Engine Emissions Databank, at the four LTO thrust settings"></svg></div>
-  <div class="flight-wrap"><svg id="flight" viewBox="0 0 1000 250" role="img" aria-label="Aircraft moving through the LTO cycle"></svg></div>
+  <figure class="wide flight">
+    <svg id="flight" viewBox="0 0 1000 250" role="img" aria-label="Aircraft moving through the LTO cycle"></svg>
+  </figure>
 
-  <div class="controls">
-    <div class="steps" id="steps"></div>
-    <div class="nav">
-      <button id="prev" aria-label="Previous phase">&larr;</button>
-      <button id="play" aria-label="Play through all phases">Play</button>
-      <button id="next" aria-label="Next phase">&rarr;</button>
+  <div class="controls wide">
+    <div class="choice" id="steps"></div>
+    <div class="stepnav">
+      <button class="btn quiet" id="prev" aria-label="Previous phase">Previous</button>
+      <button class="btn" id="play" aria-label="Play through all phases">Play</button>
+      <button class="btn quiet" id="next" aria-label="Next phase">Next</button>
     </div>
   </div>
 
   <section class="panel" id="panel" aria-live="polite"></section>
 
-  <p class="src">Emission indices are the median of all 586 engine records in the ICAO Engine Emissions Databank (v32) at each certification thrust setting; bars show the interquartile range. Fuel flows are illustrative values for a single-aisle turbofan and are used only to show relative contributions. Times in mode and thrust settings follow the ICAO LTO cycle: take-off 0.7 min at 100%, climb 2.2 min at 85%, approach 4.0 min at 30%, taxi/ground idle 26.0 min at 7%.</p>
+  <p class="endnote">Emission indices are the median of all 586 engine records in the ICAO Engine Emissions Databank (v32) at each certification thrust setting; bars show the interquartile range. Fuel flows are illustrative values for a single-aisle turbofan and are used only to show relative contributions. Times in mode and thrust settings follow the ICAO LTO cycle: take-off 0.7 min at 100%, climb 2.2 min at 85%, approach 4.0 min at 30%, taxi and ground idle 26.0 min at 7%. Pollutant colours match the EGCC emissions charts used across this site.</p>
 </main>
 
-<footer class="site-footer">
-  <div class="site-footer-in">
-    <a class="wordmark" href="/aviation-emissions/" style="font-size:15px"><b>AVIATION EMISSIONS</b><span>// explained</span></a>
-    <div><a href="mailto:becharjaymal@gmail.com">becharjaymal@gmail.com</a></div>
+<section class="contactband" aria-label="Contact">
+  <div class="in">
+    <div>
+      <h2>Got a question about carbon rules?</h2>
+      <p>Drop me a line about what you're working on and I'll set up a quick chat. No prep needed.</p>
+    </div>
+    <a class="btn" href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">Get in touch</a>
+  </div>
+</section>
+<footer class="sitefoot">
+  <div class="in">
+    <div class="links">
+      <span style="color:#fff">Aviation Emissions</span>
+      <a href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">becharjaymal@gmail.com</a>
+      <a href="/aviation-emissions/engagement-overview/">How I can help</a>
+      <span class="num">© 2026</span>
+    </div>
+    <p>Built by Jaymal Bechar, doctoral researcher in mechanical and aerospace engineering, University of Manchester. Tool outputs are estimates for planning, not compliance filings. Sources are listed on each page.</p>
   </div>
 </footer>
 

@@ -1,0 +1,144 @@
+/* Aviation Emissions: shared page system.
+   Cool page, warm accent: night navy with amber. Warm page, cool accent: paper with Prussian blue.
+   One family (STIX Two Text). No boxes, tiles or pills: structure comes from type, space and hairlines in data. */
+
+@font-face{font-family:"STIX Two Text";src:url("/aviation-emissions/assets/fonts/stix-two-text-regular.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"STIX Two Text";src:url("/aviation-emissions/assets/fonts/stix-two-text-italic.woff2") format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"STIX Two Text";src:url("/aviation-emissions/assets/fonts/stix-two-text-medium.woff2") format("woff2");font-weight:500 700;font-style:normal;font-display:swap}
+
+:root{
+  --night:#060C16; --night-2:#0A1220; --rule-n:#1B2533; --mist:#8B97A5; --soft:#C3CAD3; --amber:#F0A443;
+  --paper:#F2EEE5; --paper-2:#EAE5D9; --ink:#11161C; --body-ink:#2E3238; --stone:#6B655B; --rule-p:#D9D2C3; --field-line:#BDB4A2; --prussian:#1F5FAD;
+  /* emission colours, from the EGCC LTO chart (light-paper versions) */
+  --c-co2:#2E333D; --c-nox:#C4502C; --c-co:#1E8A5E; --c-hc:#C98A1E; --c-nvpm:#5A3F86;
+  /* status, quiet */
+  --ok:#2F6B47; --warn:#9A5B00; --crit:#A4281F;
+  --serif:"STIX Two Text","STIX Two",Georgia,"Times New Roman",serif;
+  --ease:cubic-bezier(0.23,1,0.32,1);
+  --measure:46rem; --side:15rem; --gutter:3.5rem;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:18px;line-height:1.6;font-variant-numeric:lining-nums proportional-nums;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-weight:500;text-wrap:balance;margin:0}
+p,li{text-wrap:pretty}
+a{color:var(--prussian);text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{text-decoration-thickness:2px}
+::selection{background:var(--prussian);color:var(--paper)}
+:focus-visible{outline:1.5px solid var(--prussian);outline-offset:3px}
+button,input,select,textarea{font-family:var(--serif)}
+sub,sup{line-height:0}
+.num,.tabular{font-variant-numeric:lining-nums tabular-nums}
+
+/* Masthead: the dark band every page opens with */
+.masthead{background:var(--night);color:#fff;background-image:linear-gradient(rgba(140,170,210,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(140,170,210,.05) 1px,transparent 1px);background-size:48px 48px;background-position:-1px -1px}
+.masthead ::selection{background:var(--amber);color:var(--night)}
+.masthead :focus-visible{outline-color:var(--amber)}
+.mast-bar{max-width:1280px;margin:0 auto;padding:26px 32px 0;display:flex;align-items:baseline;justify-content:space-between;gap:12px 40px;flex-wrap:wrap}
+.mark{font-size:19px;color:#fff;text-decoration:none}
+.mark i{color:var(--mist)}
+.topnav{display:flex;flex-wrap:wrap;gap:6px 30px;font-size:16px}
+.topnav a{color:var(--mist);text-decoration:none;transition:color 150ms ease}
+.topnav a:hover,.topnav a[aria-current="page"]{color:#fff}
+.masthead .intro{max-width:1280px;margin:0 auto;padding:88px 32px 72px}
+.masthead h1{font-size:clamp(2.3rem,4.6vw,4rem);line-height:1.04;letter-spacing:-.02em;max-width:18ch}
+.masthead .lede{margin:24px 0 0;font-size:clamp(1.05rem,1.4vw,1.2rem);line-height:1.55;color:var(--soft);max-width:38em}
+.masthead .meta{margin:18px 0 0;font-size:15px;color:var(--mist);font-style:italic;max-width:46em}
+@media (max-width:640px){.mast-bar{padding:22px 20px 0}.masthead .intro{padding:56px 20px 48px}.topnav{gap:4px 20px;font-size:15px}}
+
+/* Document column with a right margin for side notes */
+.doc{max-width:1280px;margin:0 auto;padding:72px 32px 24px}
+.doc > *{max-width:var(--measure)}
+.doc > .wide{max-width:calc(var(--measure) + var(--gutter) + var(--side))}
+.doc h2{font-size:clamp(1.7rem,2.8vw,2.3rem);line-height:1.12;letter-spacing:-.015em;margin:96px 0 18px}
+.doc > h2:first-child{margin-top:0}
+.doc h3{font-size:22px;line-height:1.25;margin:0 0 8px}
+.doc p{margin:0 0 1em;color:var(--body-ink)}
+.doc .lead{font-size:20px;line-height:1.55;color:var(--ink)}
+.doc ul,.doc ol{padding-left:1.2em;color:var(--body-ink)}
+.doc li{margin-bottom:.5em}
+.doc li::marker{color:var(--stone)}
+@media (max-width:640px){.doc{padding:52px 20px 16px}.doc h2{margin-top:68px}}
+
+/* Side notes (journal-style marginalia) */
+.aside{font-size:15px;line-height:1.5;color:var(--stone)}
+.aside b,.aside strong{color:var(--ink);font-weight:500}
+.aside .n{font-style:italic;color:var(--ink)}
+@media (min-width:1100px){
+  .aside{float:right;clear:right;width:var(--side);margin:6px 0 1em var(--gutter)}
+}
+@media (max-width:1099px){.aside{margin:0 0 1.4em;padding-left:1.4em;font-style:normal}}
+
+/* Figures: no frames, just the drawing and its caption */
+figure{margin:0}
+.fig{margin:28px 0 8px}
+.figcap,.src{font-size:14.5px;color:var(--stone);margin-top:12px;max-width:var(--measure)}
+.figcap i:first-child,.figcap em:first-child{color:var(--ink)}
+
+/* Readouts: a value with a quiet label, no tile behind it */
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:22px 40px;margin:8px 0 20px}
+.readout .k{font-size:14.5px;color:var(--stone);line-height:1.35}
+.readout .v{font-size:clamp(1.6rem,2.4vw,2.1rem);line-height:1.15;letter-spacing:-.01em;font-variant-numeric:lining-nums tabular-nums;color:var(--ink)}
+.readout .s{font-size:14px;color:var(--stone)}
+
+/* Forms */
+.field{min-width:0}
+.field label,.label{display:block;font-size:16px;color:var(--ink);margin-bottom:6px}
+.field input[type=number],.field input[type=text],.field select,select,input[type=text]{width:100%;font:inherit;font-size:17px;color:var(--ink);background:#FBF9F4;border:0;border-bottom:1px solid var(--field-line);border-radius:0;padding:8px 2px 7px;min-height:44px;transition:border-color 150ms ease}
+.field input:hover,select:hover,input[type=text]:hover{border-bottom-color:var(--stone)}
+.field input:focus,select:focus,input[type=text]:focus{outline:none;border-bottom:1.5px solid var(--prussian)}
+.field input[readonly]{background:transparent;color:var(--stone)}
+.hint{font-size:14.5px;color:var(--stone);margin-top:6px}
+input[type=range]{width:100%;accent-color:var(--prussian);min-height:28px}
+input[type=checkbox]{accent-color:var(--prussian);width:18px;height:18px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 22px;font:inherit;font-size:17px;background:var(--ink);color:var(--paper);border:1px solid var(--ink);border-radius:0;cursor:pointer;text-decoration:none;transition:background-color 160ms ease,border-color 160ms ease,transform 160ms var(--ease)}
+.btn:hover{background:var(--prussian);border-color:var(--prussian);color:var(--paper)}
+.btn:active{transform:scale(.98)}
+.btn.quiet{background:transparent;color:var(--ink);border-color:var(--field-line)}
+.btn.quiet:hover{border-color:var(--ink);background:transparent;color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* Segmented choice: text options, the chosen one underlined in Prussian blue */
+.choice{display:flex;flex-wrap:wrap;gap:4px 26px}
+.choice button{font:inherit;font-size:17px;background:none;border:0;padding:6px 0 5px;min-height:44px;color:var(--stone);cursor:pointer;border-bottom:1.5px solid transparent;transition:color 150ms ease,border-color 150ms ease}
+.choice button:hover{color:var(--ink)}
+.choice button[aria-pressed="true"],.choice button[aria-current="true"],.choice button.active{color:var(--ink);border-bottom-color:var(--prussian)}
+
+/* Tables: rules only where they separate data */
+table{border-collapse:collapse;width:100%;font-size:16px;font-variant-numeric:lining-nums tabular-nums}
+th{font-weight:400;font-size:14.5px;color:var(--stone);text-align:left;padding:10px 16px 10px 0;border-bottom:1px solid var(--ink)}
+td{padding:12px 16px 12px 0;border-bottom:1px solid var(--rule-p);vertical-align:top}
+.table-scroll,.tablewrap{overflow-x:auto}
+
+/* Status words instead of pills */
+.status{font-style:italic}
+.status.ok{color:var(--ok)} .status.warn{color:var(--warn)} .status.crit{color:var(--crit)}
+
+/* Closing note and contact band */
+.endnote{font-size:14.5px;color:var(--stone);margin-top:80px;max-width:var(--measure)}
+.contactband{background:var(--night-2);color:#fff;margin-top:96px}
+.contactband .in{max-width:1280px;margin:0 auto;padding:88px 32px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:28px}
+.contactband h2{font-size:clamp(2rem,3.6vw,3.1rem);line-height:1.08;letter-spacing:-.018em;max-width:14em}
+.contactband p{margin:14px 0 0;font-size:17px;color:var(--soft);max-width:32em}
+.contactband .btn{background:#fff;color:var(--night);border-color:#fff}
+.contactband .btn:hover{background:transparent;color:#fff;border-color:#fff}
+.contactband :focus-visible{outline-color:var(--amber)}
+@media (max-width:640px){.contactband .in{padding:64px 20px}}
+
+/* Footer: same as the homepage */
+.sitefoot{background:var(--night);color:var(--mist);border-top:1px solid var(--rule-n);font-size:14px}
+.sitefoot .in{max-width:1280px;margin:0 auto;padding:56px 32px 48px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:32px 64px}
+.sitefoot .links{display:flex;flex-direction:column;gap:4px}
+.sitefoot a{color:var(--soft);text-decoration:none}
+.sitefoot a:hover{color:#fff;text-decoration:underline;text-decoration-color:var(--amber);text-underline-offset:4px}
+.sitefoot p{margin:0;max-width:60em}
+@media (max-width:760px){.sitefoot .in{grid-template-columns:1fr;padding:44px 20px}}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+@media print{
+  .masthead{background:none;color:var(--ink)} .masthead .lede,.masthead .meta{color:var(--stone)}
+  .topnav,.contactband,.sitefoot,.no-print{display:none!important}
+  body{background:#fff}
+}
