@@ -3,119 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Climate rules - Aviation emissions</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#060C16">
+<title>Climate rules | Aviation Emissions Explained</title>
+<meta name="description" content="Each carbon rule that applies to flying, what it costs and how the cost works: EU ETS, UK ETS, Swiss ETS, CORSIA, non-CO₂ tracking, SAF mandates and CSRD.">
+<link rel="preload" href="/aviation-emissions/assets/fonts/stix-two-text-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/aviation-emissions/assets/site.css">
 <style>
-  :root {
-    --paper: #f1f3ee; --ink: #1b2733; --muted: #5a6672; --line: #cbd2cc;
-    --money: #a3246f; --link: #2b5c8a; --tint: #e6e9e3;
-    --body: 'Atkinson Hyperlegible', 'Segoe UI', Arial, sans-serif;
-    --head: 'Barlow Semi Condensed', 'Arial Narrow', Arial, sans-serif;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --paper: #151b21; --ink: #e6eae6; --muted: #97a3ac; --line: #2e3a42;
-      --money: #e27db8; --link: #8db8e0; --tint: #1c242b;
-    }
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; }
-  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6; }
-  a { color: var(--link); text-underline-offset: 3px; }
-  a:focus-visible, button:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+.lens-bar .label{font-size:15px;color:var(--stone);margin-bottom:2px}
+.lens-btn{font-size:19px!important}
+.lens-hint{font-size:15px;color:var(--stone)!important;margin-top:10px!important;min-height:1.5em}
+.lens-hint b{color:var(--ink);font-weight:500}
 
-  .site-nav { max-width: 760px; margin: 0 auto; padding: 1.25rem 1.5rem 0; display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 15px; }
-  .site-nav a { color: var(--muted); text-decoration: none; }
-  .site-nav a:hover { color: var(--ink); text-decoration: underline; }
-  .site-nav a[aria-current="page"] { color: var(--ink); font-weight: 700; }
-  .site-nav .home { color: var(--ink); font-weight: 700; margin-right: auto; }
+/* Price ledger: rows of data, separated only between rows */
+.price-grid{margin-top:12px}
+.price-card{display:grid;grid-template-columns:10rem 9rem 1fr;gap:0 24px;align-items:baseline;padding:18px 0}
+.price-card + .price-card{border-top:1px solid var(--rule-p)}
+.pname{font-size:18px}
+.pval{font-size:clamp(2rem,3.4vw,2.6rem);line-height:1;letter-spacing:-.015em;color:var(--prussian);font-variant-numeric:lining-nums tabular-nums}
+.punit{font-size:14px;color:var(--stone);margin-left:3px;letter-spacing:0}
+.pnote{font-size:15.5px;color:var(--stone)}
+.price-card.flag .pnote{color:var(--ink)}
+.price-card.flag .pnote::before{content:"Watch this one. ";font-style:italic;color:var(--warn)}
 
-  .wrap { max-width: 760px; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
-  h1, h2, h3 { font-family: var(--head); font-weight: 600; line-height: 1.15; }
-  h1 { font-size: clamp(34px, 6vw, 46px); margin: 0 0 1rem; max-width: 15ch; }
-  h2 { font-size: 26px; margin: 3.5rem 0 1rem; }
-  h3 { font-size: 23px; margin: 0 0 0.5rem; }
-  .subtitle { font-size: 19px; margin: 0 0 1rem; max-width: 62ch; }
-  .last-updated { color: var(--muted); font-size: 15px; margin: 0; }
-  .eyebrow { display: none; }
+/* Rules: heading, description and cost, without cards or accent bars */
+.policy-card{display:flex;flex-direction:column;margin-top:48px}
+.policy-card h3{order:-1;font-size:26px;line-height:1.2;margin-bottom:12px}
+.badge{display:block;font-size:15px;font-style:italic;color:var(--stone);margin-top:6px;font-weight:400}
+.pdesc{order:1;margin:0 0 1em!important}
+.pfin{order:2;margin:0!important;color:var(--ink)!important}
+.pfin-label{font-style:italic;color:var(--prussian)}
+.pfin-label::after{content:". "}
+.plens{order:0;display:none;margin:0 0 1em!important;font-size:17px;color:var(--ink)!important}
+body[data-view="capital"] .plens,body[data-view="ops"] .plens{display:block}
+body[data-view="capital"] .plens::before{content:"For finance and risk. ";font-style:italic;color:var(--prussian)}
+body[data-view="ops"] .plens::before{content:"For compliance and operations. ";font-style:italic;color:var(--prussian)}
+body[data-view="capital"] .pfin{order:0;margin-bottom:1em!important}
+body[data-view="capital"] .plens{order:1}
+body[data-view="capital"] .pdesc{order:2;margin:0!important;color:var(--stone)!important;font-size:16px}
+@media (max-width:620px){.price-card{grid-template-columns:1fr auto}.pnote{grid-column:1/-1;margin-top:8px}}
 
-  /* Who is reading */
-  .lens-bar { margin-top: 2.25rem; }
-  .lens-label { display: block; font-weight: 700; margin-bottom: 8px; }
-  .lens-btns { display: inline-flex; flex-wrap: wrap; border: 1.5px solid var(--ink); border-radius: 6px; overflow: hidden; }
-  .lens-btn { font: inherit; font-size: 16px; background: transparent; color: var(--ink); border: 0; border-right: 1.5px solid var(--ink); padding: 8px 16px; cursor: pointer; }
-  .lens-btn:last-child { border-right: 0; }
-  .lens-btn:hover { background: var(--tint); }
-  .lens-btn.active { background: var(--ink); color: var(--paper); }
-  .lens-hint { color: var(--muted); font-size: 15px; margin-top: 10px; min-height: 1em; }
-  .lens-hint b { color: var(--ink); }
-
-  /* Price ledger */
-  .price-grid { margin: 0; border-top: 2px solid var(--ink); }
-  .price-card { display: grid; grid-template-columns: 9rem 8.5rem 1fr; gap: 0 1.25rem; align-items: baseline; padding: 1rem 0; border-bottom: 1px solid var(--line); }
-  .pname { font-weight: 700; }
-  .pval { font-family: var(--head); font-weight: 600; font-size: 34px; line-height: 1; color: var(--money); font-variant-numeric: tabular-nums; }
-  .punit { font-family: var(--body); font-weight: 400; font-size: 14px; color: var(--muted); margin-left: 3px; }
-  .pnote { font-size: 15px; color: var(--muted); }
-  .price-card.flag .pnote { color: var(--ink); }
-  .price-card.flag .pnote::before { content: "Watch this one. "; font-weight: 700; }
-
-  /* Rules */
-  .policy-card { display: flex; flex-direction: column; padding: 2rem 0; border-top: 1px solid var(--line); }
-  h2 + .policy-card { border-top: 2px solid var(--ink); }
-  .policy-card h3 { order: -1; }
-  .badge { display: block; font-family: var(--body); font-size: 14px; font-weight: 400; color: var(--muted); margin-top: 4px; }
-  .pdesc { order: 1; margin: 0 0 1rem; }
-  .pfin { order: 2; margin: 0; padding-left: 1rem; border-left: 3px solid var(--money); }
-  .pfin-label { font-weight: 700; color: var(--money); }
-  .pfin-label::after { content: ": "; }
-  .plens { order: 0; display: none; margin: 0 0 1rem; padding: 10px 14px; background: var(--tint); border-radius: 6px; }
-  body[data-view="capital"] .plens, body[data-view="ops"] .plens { display: block; }
-  body[data-view="capital"] .plens::before { content: "For finance and risk: "; font-weight: 700; }
-  body[data-view="ops"] .plens::before { content: "For compliance and operations: "; font-weight: 700; }
-  body[data-view="capital"] .pfin { order: 0; margin-bottom: 1rem; }
-  body[data-view="capital"] .plens { order: 1; }
-  body[data-view="capital"] .pdesc { order: 2; margin: 0; color: var(--muted); font-size: 16px; }
-
-  .footer-note { font-size: 15px; color: var(--muted); margin-top: 3rem; padding-top: 1.5rem; border-top: 2px solid var(--ink); }
-
-  @media (max-width: 620px) {
-    body { font-size: 16px; }
-    .price-card { grid-template-columns: 1fr auto; }
-    .pnote { grid-column: 1 / -1; margin-top: 6px; }
-    .lens-btns { display: flex; flex-direction: column; width: 100%; }
-    .lens-btn { border-right: 0; border-bottom: 1.5px solid var(--ink); text-align: left; }
-    .lens-btn:last-child { border-bottom: 0; }
-  }
 </style>
 </head>
 <body>
-<nav class="site-nav" aria-label="Site">
-  <a class="home" href="/aviation-emissions/">Aviation emissions</a>
-  <a href="/aviation-emissions/policy-map/">Policy map</a>
-  <a href="/aviation-emissions/climate-policies/" aria-current="page">Climate rules</a>
-  <a href="/aviation-emissions/corsia-calculator/">ETS vs CORSIA</a>
-  <a href="/aviation-emissions/gtf-exposure-calculator/">GTF calculator</a>
-  <a href="/aviation-emissions/gtf-non-co2-supplement/">GTF pollution</a>
-  <a href="/aviation-emissions/smbc-jsa-brief/">SMBC / JSA brief</a>
-  <a href="/aviation-emissions/engagement-overview/">How I can help</a>
-</nav>
+<header class="masthead">
+  <div class="mast-bar">
+    <a class="mark" href="/aviation-emissions/">Aviation Emissions <i>explained</i></a>
+    <nav class="topnav" aria-label="Main">
+      <a href="/aviation-emissions/#forcing">Climate effect</a>
+      <a href="/aviation-emissions/#tools">Tools</a>
+      <a href="/aviation-emissions/#method">Method</a>
+      <a href="/aviation-emissions/#work">Work with me</a>
+    </nav>
+  </div>
+  <div class="intro">
+    <h1>The rules that make flying pay for carbon</h1>
+    <p class="lede">Airlines now have to pay for some of the pollution they make. This page explains each rule, what it costs, and how the cost works. Almost all of them only charge for CO₂. The clouds and NOx that planes make cause more warming, but the rules are only just starting to cover them.</p>
+    <p class="meta">I update this page by hand. I last checked prices on 24 July 2026. Carbon prices change every day, so use these as a rough guide, not an exact price.</p>
+  </div>
+</header>
 
-<div class="wrap">
-  <h1>The rules that make flying pay for carbon</h1>
-  <p class="subtitle">Airlines now have to pay for some of the pollution they make. This page explains each rule, what it costs, and how the cost works. Almost all of them only charge for CO&#8322;. The clouds and NOx that planes make cause more warming, but the rules are only just starting to cover them. See the EU non-CO&#8322; entry below.</p>
-  <p class="last-updated">I update this page by hand. I last checked prices on 24 July 2026. Carbon prices change every day, so use these as a rough guide, not an exact price.</p>
-
+<main class="doc">
   <div class="lens-bar">
-    <span class="lens-label">I work in:</span>
-    <div class="lens-btns">
+    <span class="label">I work in</span>
+    <div class="choice lens-btns">
       <button class="lens-btn" data-lens="general" onclick="setLens('general')">Anything else</button>
       <button class="lens-btn" data-lens="capital" onclick="setLens('capital')">Finance and risk</button>
       <button class="lens-btn" data-lens="ops" onclick="setLens('ops')">Compliance and operations</button>
     </div>
-    <div class="lens-hint" id="lens-hint"></div>
+    <p class="lens-hint" id="lens-hint"></p>
   </div>
 
   <h2>What carbon costs right now</h2>
@@ -207,11 +162,29 @@
     <p class="pfin"><span class="pfin-label">What it costs</span>You don&apos;t pay for carbon here. You pay to collect the data and have someone check it. The bigger risk is indirect. Bad flight data can hurt a company&apos;s green ratings, and that can make borrowing cost more.</p>
   </div>
 
-  <p class="footer-note">
-    Where this comes from: European Commission press releases (the 17 July 2026 review and the 5,000km plan), Ishka Airfinance, ICE, Carbon Pulse and Energy Aspects for prices, and EASA for SAF prices. This page is here to help you understand the rules. It is not legal advice. For decisions about what to file, or fines, talk to your compliance advisor or lawyer.<br><br>
-    Jaymal Bechar, PhD researcher, aviation emissions, University of Manchester
-  </p>
-</div>
+  <p class="endnote">Where this comes from: European Commission press releases (the 17 July 2026 review and the 5,000km plan), Ishka Airfinance, ICE, Carbon Pulse and Energy Aspects for prices, and EASA for SAF prices. This page is here to help you understand the rules. It is not legal advice. For decisions about what to file, or fines, talk to your compliance advisor or lawyer.</p>
+</main>
+
+<section class="contactband" aria-label="Contact">
+  <div class="in">
+    <div>
+      <h2>Got a question about carbon rules?</h2>
+      <p>Drop me a line about what you're working on and I'll set up a quick chat. No prep needed.</p>
+    </div>
+    <a class="btn" href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">Get in touch</a>
+  </div>
+</section>
+<footer class="sitefoot">
+  <div class="in">
+    <div class="links">
+      <span style="color:#fff">Aviation Emissions</span>
+      <a href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">becharjaymal@gmail.com</a>
+      <a href="/aviation-emissions/engagement-overview/">How I can help</a>
+      <span class="num">© 2026</span>
+    </div>
+    <p>Built by Jaymal Bechar, doctoral researcher in mechanical and aerospace engineering, University of Manchester. Tool outputs are estimates for planning, not compliance filings. Sources are listed on each page.</p>
+  </div>
+</footer>
 
 <script>
   var LENS_COPY = {

@@ -1,203 +1,147 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Route Carbon Cost Report</title>
+<meta name="theme-color" content="#060C16">
+<title>Route carbon cost report | Aviation Emissions Explained</title>
+<meta name="description" content="Pick a route and aircraft type for a one-page carbon cost estimate: which scheme applies, fuel burn, CO₂ and a cost range.">
+<link rel="preload" href="/aviation-emissions/assets/fonts/stix-two-text-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/aviation-emissions/assets/site.css">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
-  :root {
-    --bg: #0e1417; --panel: #161d22; --panel-raised: #1c242a;
-    --line: #2c383f; --line-strong: #435159;
-    --text: #eef0ee; --text-muted: #8ea3ac;
-    --amber: #eeab4c; --teal: #57c2b1; --rust: #e0724a;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; min-height: 100%; }
-  body {
-    background: var(--bg); color: var(--text);
-    font-family: 'IBM Plex Sans', sans-serif;
-    line-height: 1.6;
-  }
-  .wrap { max-width: 760px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
-  .eyebrow {
-    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
-    letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber);
-    margin-bottom: 10px;
-  }
-  h1 { font-size: 24px; font-weight: 600; margin: 0 0 8px; }
-  .subtitle { font-size: 14px; color: var(--text-muted); margin: 0 0 2rem; max-width: 560px; }
+.doc{padding-top:56px}
+.row{display:flex;gap:20px 36px;flex-wrap:wrap;margin-bottom:22px}
+.field{flex:1;min-width:200px;position:relative}
+.suggestions{position:absolute;top:calc(100% + 2px);left:0;right:0;background:#FBF9F4;border:1px solid var(--field-line);max-height:240px;overflow-y:auto;z-index:20;display:none}
+.suggestion-item{padding:8px 12px;font-size:15.5px;cursor:pointer}
+.suggestion-item:hover{background:var(--paper-2)}
+.suggestion-item .s-code{color:var(--prussian);margin-right:8px;font-variant-numeric:lining-nums}
+#generateBtn{margin-top:6px}
 
-  .input-panel {
-    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
-    padding: 1.5rem; margin-bottom: 1.75rem;
-  }
-  .row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 1rem; }
-  .field { flex: 1; min-width: 180px; position: relative; }
-  .field label {
-    display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;
-    font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.04em;
-  }
-  select, input[type="text"] {
-    width: 100%; background: var(--panel-raised); color: var(--text); border: 1px solid var(--line-strong);
-    border-radius: 6px; padding: 9px 10px; font-size: 14px; font-family: inherit;
-  }
-  input[type="text"]:disabled { color: var(--text-muted); font-style: italic; }
-  .suggestions {
-    position: absolute; top: calc(100% + 2px); left: 0; right: 0;
-    background: var(--panel-raised); border: 1px solid var(--line-strong); border-radius: 6px;
-    max-height: 220px; overflow-y: auto; z-index: 20; display: none;
-  }
-  .suggestion-item { padding: 8px 10px; font-size: 12.5px; cursor: pointer; border-bottom: 1px solid var(--line); }
-  .suggestion-item:last-child { border-bottom: none; }
-  .suggestion-item:hover { background: var(--panel); }
-  .suggestion-item .s-code { color: var(--amber); font-family: 'IBM Plex Mono', monospace; margin-right: 6px; }
+#report{display:none;margin-top:72px}
+.report-card h2{margin:0 0 6px!important}
+.report-route{font-size:19px;color:var(--stone)!important}
+.sub{font-size:20px;margin:32px 0 6px!important}
+.reg-card{margin:12px 0}
+.reg-card .r-name{font-size:20px;color:var(--ink)}
+.reg-card .r-desc{font-size:16px;color:var(--body-ink)}
+.cost-panel{margin-top:36px}
+.cost-header{font-size:20px;margin-bottom:12px}
+.cost-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:18px 40px;margin-bottom:16px}
+.cs-label{font-size:14.5px;color:var(--stone)}
+.cs-value{font-size:clamp(1.5rem,2.4vw,2rem);font-variant-numeric:lining-nums tabular-nums}
+.cs-unit{font-size:14px;color:var(--stone);margin-left:3px}
+.range-table{margin:6px 0 16px}
+.range-table th,.range-table td{text-align:right}
+.range-table th:first-child,.range-table td:first-child{text-align:left;color:var(--stone)}
+.range-table tbody tr:last-child td{color:var(--ink)}
+.cost-big{display:flex;align-items:baseline;gap:8px 16px;flex-wrap:wrap;margin-top:20px}
+.cb-label{font-size:17px}
+.cb-value{font-size:clamp(2rem,3.6vw,2.8rem);line-height:1;color:var(--prussian);font-variant-numeric:lining-nums tabular-nums}
+.cb-note{font-size:14.5px;color:var(--stone);margin-left:auto}
+.cost-disclaimer{font-size:14.5px;color:var(--stone);margin-top:18px}
+.price-footnote{font-size:14px;color:var(--stone);margin-top:8px;font-style:italic}
+.no-reg{color:var(--stone);font-style:italic}
+.context-line{font-size:15px;color:var(--stone)!important;margin-top:20px!important}
+.report-footer{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-top:40px}
+.report-footer p{margin:0!important}
+.f-name{font-size:17px;color:var(--ink)!important}
+.f-role,.f-date{font-size:14px;color:var(--stone)!important}
+.f-right{text-align:right}
+.action-row{margin-top:24px}
+@media print{.doc{padding:0}#report{display:block!important;margin:0}.masthead .intro{padding:24px 0}.mast-bar{display:none}}
 
-  .generate-btn {
-    background: var(--amber); color: #14201f; border: none; border-radius: 6px;
-    padding: 11px 22px; font-size: 14px; font-weight: 600; cursor: pointer;
-    font-family: inherit;
-  }
-  .generate-btn:hover { opacity: 0.9; }
-  .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  #report { display: none; }
-  .report-card {
-    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
-    padding: 1.75rem; margin-bottom: 1.5rem;
-  }
-  .report-route { font-size: 14.5px; color: var(--text-muted); margin-top: 4px; }
-  .reg-card {
-    background: var(--panel-raised); border: 1px solid var(--line-strong); border-radius: 6px;
-    padding: 12px 14px; margin-bottom: 8px;
-  }
-  .reg-card .r-name { font-weight: 600; font-size: 14px; margin-bottom: 3px; }
-  .reg-card .r-desc { font-size: 13px; color: var(--text-muted); }
-  .cost-panel {
-    background: var(--panel-raised); border: 1px solid var(--amber);
-    border-radius: 8px; padding: 1.25rem 1.5rem; margin-top: 1rem;
-  }
-  .cost-panel .cost-header {
-    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
-    letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber);
-    margin-bottom: 12px;
-  }
-  .cost-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 12px; }
-  .cost-stat .cs-label { font-size: 11px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
-  .cost-stat .cs-value { font-size: 20px; font-weight: 600; color: var(--text); }
-  .cost-stat .cs-unit { font-size: 12px; color: var(--text-muted); margin-left: 3px; }
-  .range-table { width: 100%; border-collapse: collapse; margin: 4px 0 12px; font-size: 12.5px; }
-  .range-table th, .range-table td { padding: 6px 4px; text-align: right; border-bottom: 1px solid var(--line); }
-  .range-table th:first-child, .range-table td:first-child { text-align: left; }
-  .range-table td:first-child { color: var(--text-muted); }
-  .range-table th { color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
-  .range-table tbody tr:last-child td { border-bottom: none; font-weight: 600; color: var(--text); }
-  .cost-big { border-top: 1px solid var(--line-strong); padding-top: 12px; margin-top: 4px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-  .cost-big .cb-label { font-size: 12px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.05em; }
-  .cost-big .cb-value { font-size: 28px; font-weight: 600; color: var(--amber); }
-  .cost-big .cb-note { font-size: 11.5px; color: var(--text-muted); margin-left: auto; }
-  .cost-disclaimer { font-size: 11.5px; color: var(--text-muted); margin-top: 10px; border-top: 1px solid var(--line); padding-top: 8px; }
-  .price-footnote { font-size: 11px; color: var(--text-muted); margin-top: 6px; font-style: italic; }
-
-  .context-line { font-size: 12.5px; color: var(--text-muted); margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
-
-  .report-footer {
-    display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 8px;
-    margin-top: 1.75rem; padding-top: 1rem; border-top: 1px solid var(--line);
-  }
-  .report-footer .f-name { font-weight: 600; font-size: 13.5px; }
-  .report-footer .f-role { font-size: 12px; color: var(--text-muted); }
-  .report-footer .f-link { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--teal); text-decoration: none; }
-  .report-footer .f-date { font-size: 10.5px; color: var(--text-muted); text-align: right; }
-
-  .action-row { display: flex; gap: 10px; margin-top: 1rem; }
-  .print-btn {
-    background: transparent; color: var(--teal); border: 1px solid var(--teal); border-radius: 6px;
-    padding: 9px 18px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
-  }
-  .print-btn:hover { background: rgba(87, 194, 177, 0.1); }
-  .no-reg { font-size: 13px; color: var(--text-muted); font-style: italic; }
-
-  @media print {
-    body { background: #fff !important; color: #111 !important; }
-    .input-panel, .action-row, .no-print { display: none !important; }
-    .wrap { max-width: 100%; padding: 0; }
-    #report { display: block !important; }
-    .report-card { background: #fff !important; border: 1px solid #ccc !important; }
-    .reg-card, .cost-panel { background: #f7f7f7 !important; border-color: #ccc !important; }
-    .eyebrow, .cost-big .cb-value { color: #b5762a !important; }
-    .cost-panel { border-color: #b5762a !important; }
-    h1, .f-name, .cs-value, .cb-value { color: #111 !important; }
-    .f-link { color: #1a7a6c !important; }
-  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="eyebrow">Aviation Emissions &middot; Policy Map</div>
-  <h1>Route Carbon Cost Report</h1>
-  <p class="subtitle">Pick a route and aircraft type to generate a one-page carbon cost estimate: applicable ETS/CORSIA scheme, fuel burn, CO&#8322;, and cost range. Print or save as PDF when you're ready.</p>
+<header class="masthead">
+  <div class="mast-bar">
+    <a class="mark" href="/aviation-emissions/">Aviation Emissions <i>explained</i></a>
+    <nav class="topnav" aria-label="Main">
+      <a href="/aviation-emissions/#forcing">Climate effect</a>
+      <a href="/aviation-emissions/#tools">Tools</a>
+      <a href="/aviation-emissions/#method">Method</a>
+      <a href="/aviation-emissions/#work">Work with me</a>
+    </nav>
+  </div>
+  <div class="intro">
+    <h1>Route carbon cost report</h1>
+    <p class="lede">Pick a route and aircraft type for a one-page carbon cost estimate: which scheme applies, fuel burn, CO₂ and a cost range. Print or save it as a PDF when you're ready.</p>
+  </div>
+</header>
 
-  <div class="input-panel no-print">
+<main class="doc">
+  <div class="input-panel no-print wide">
     <div class="row">
       <div class="field airport-field">
-        <label>From</label>
+        <label for="fromInput">From</label>
         <input type="text" id="fromInput" placeholder="Loading airport data..." disabled autocomplete="off">
         <div class="suggestions" id="fromSuggestions"></div>
       </div>
       <div class="field airport-field">
-        <label>To</label>
+        <label for="toInput">To</label>
         <input type="text" id="toInput" placeholder="Loading airport data..." disabled autocomplete="off">
         <div class="suggestions" id="toSuggestions"></div>
       </div>
     </div>
     <div class="row">
       <div class="field">
-        <label>Aircraft type</label>
+        <label for="aircraftType">Aircraft type</label>
         <select id="aircraftType"></select>
       </div>
       <div class="field">
-        <label>Prepared for (optional)</label>
+        <label for="preparedFor">Prepared for (optional)</label>
         <input type="text" id="preparedFor" placeholder="e.g. Milan Posarac, Macquarie AirFinance">
       </div>
       <div class="field">
-        <label>Reference (optional)</label>
+        <label for="briefRef">Reference (optional)</label>
         <input type="text" id="briefRef" placeholder="e.g. GTF Fleet Exposure follow-up">
       </div>
     </div>
-    <button class="generate-btn" id="generateBtn" disabled>Generate report</button>
+    <button class="btn" id="generateBtn" disabled>Generate report</button>
   </div>
 
   <div id="report">
     <div class="report-card">
-      <div class="eyebrow" id="reportEyebrow">Route Carbon Cost Report</div>
-      <div class="report-route" id="reportRoute"></div>
+      <h2 id="reportEyebrow">Route carbon cost report</h2>
+      <p class="report-route" id="reportRoute"></p>
 
-      <div style="margin-top:1.5rem;">
-        <div class="eyebrow" style="margin-bottom:8px;">Applicable scheme(s)</div>
-        <div id="regimeResult"></div>
-      </div>
+      <h3 class="sub">Which scheme applies</h3>
+      <div id="regimeResult"></div>
 
       <div id="costResult"></div>
 
-      <div class="context-line no-print" id="contextLine" style="display:none;"></div>
+      <p class="context-line no-print" id="contextLine" style="display:none;"></p>
 
       <div class="report-footer">
         <div>
-          <div class="f-name">Jaymal Bechar</div>
-          <div class="f-role">PhD Researcher, Aviation Emissions | University of Manchester</div>
+          <p class="f-name">Jaymal Bechar</p>
+          <p class="f-role">Doctoral researcher, aviation emissions, University of Manchester</p>
         </div>
-        <div style="text-align:right;">
-          <div><a class="f-link" href="https://jbechar.github.io/aviation-emissions/policy-map/">jbechar.github.io/aviation-emissions/policy-map</a></div>
-          <div class="f-date" id="reportDate"></div>
+        <div class="f-right">
+          <p><a class="f-link" href="https://jbechar.github.io/aviation-emissions/policy-map/">jbechar.github.io/aviation-emissions/policy-map</a></p>
+          <p class="f-date" id="reportDate"></p>
         </div>
       </div>
     </div>
     <div class="action-row no-print">
-      <button class="print-btn" id="printBtn">Print / Save as PDF</button>
+      <button class="btn quiet" id="printBtn">Print or save as PDF</button>
     </div>
   </div>
-</div>
+</main>
+
+
+<footer class="sitefoot">
+  <div class="in">
+    <div class="links">
+      <span style="color:#fff">Aviation Emissions</span>
+      <a href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">becharjaymal@gmail.com</a>
+      <a href="/aviation-emissions/engagement-overview/">How I can help</a>
+      <span class="num">© 2026</span>
+    </div>
+    <p>Built by Jaymal Bechar, doctoral researcher in mechanical and aerospace engineering, University of Manchester. Tool outputs are estimates for planning, not compliance filings. Sources are listed on each page.</p>
+  </div>
+</footer>
 
 <script>
 // ---- Ported directly from the live policy-map tool so numbers always match ----

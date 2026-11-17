@@ -3,218 +3,127 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#060C16">
 <title>ETS vs CORSIA | Aviation Emissions Explained</title>
+<meta name="description" content="How the EU and UK carbon markets differ from CORSIA, why flying has both, and a calculator for what an airline owes under CORSIA.">
+<link rel="preload" href="/aviation-emissions/assets/fonts/stix-two-text-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/aviation-emissions/assets/site.css">
 <style>
-  :root {
-    --paper: #F5F6F3; --ink: #0E1A24; --muted: #51606E; --line: #D8DDE2;
-    --navy: #0E2A40; --accent: #E39A55; --accent-deep: #CF8441; --accent-soft: #FBEFE3;
-    --money: #A04A10; --link: #1F3A5F; --tint: #EEF1F3; --field: #FFFFFF;
-    --body: 'STIX Two Text', system-ui, sans-serif;
-    --head: 'STIX Two Text', Georgia, serif;
-    --mono: 'STIX Two Text', ui-monospace, Menlo, Consolas, monospace;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; }
-  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6; }
-  a { color: var(--link); text-underline-offset: 3px; }
-  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+/* Timeline: a real sequence of years, drawn as a line with stations */
+.timeline-wrap{position:relative;height:96px;margin:28px 0 8px}
+.timeline-line{position:absolute;top:33px;left:0;right:0;height:1px;background:var(--ink)}
+.tl-point,.tl-range{position:absolute;top:34px;cursor:pointer;text-align:center}
+.tl-point{transform:translate(-50%,-8px)}
+.tl-range{transform:translateY(-8px)}
+.tl-dot{width:15px;height:15px;border-radius:50%;background:var(--paper);border:1.5px solid var(--ink);margin:0 auto;transition:background-color 150ms ease,border-color 150ms ease,transform 200ms var(--ease)}
+.tl-range-bar{height:15px;border-radius:8px;background:var(--paper);border:1.5px solid var(--ink);transition:background-color 150ms ease}
+.tl-year{font-size:16px;color:var(--stone);margin-top:10px;white-space:nowrap;font-variant-numeric:lining-nums tabular-nums}
+@media (hover:hover) and (pointer:fine){.tl-point:hover .tl-year,.tl-range:hover .tl-year{color:var(--ink)}.tl-point:hover .tl-dot{transform:scale(1.15)}}
+.tl-point.active .tl-dot,.tl-range.active .tl-range-bar{background:var(--prussian);border-color:var(--prussian)}
+.tl-point.active .tl-year,.tl-range.active .tl-year{color:var(--ink);font-style:italic}
+.tl-detail{min-height:7.5em;margin-top:8px}
+.tl-detail-title{font-size:24px;line-height:1.25;color:var(--ink)!important;margin:0 0 6px!important}
 
-  /* Site header (matches homepage) */
-  .site-header { background: var(--navy); border-bottom: 1px solid rgba(255,255,255,0.1); }
-  .site-header-in { max-width: 1200px; margin: 0 auto; padding: 18px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; }
-  .wordmark { display: flex; align-items: baseline; gap: 10px; text-decoration: none; color: #FFFFFF; font-family: var(--mono); font-size: 17px; }
-  .wordmark b { font-weight: 600; letter-spacing: 0.02em; }
-  .wordmark span { color: #8FA3B6; }
-  .site-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; font-size: 15px; }
-  .site-nav a { color: #C9D2DB; text-decoration: none; }
-  .site-nav a:hover { color: #FFFFFF; text-decoration: underline; text-underline-offset: 4px; }
-  .site-nav a[aria-current="page"] { color: #FFFFFF; }
-  .site-nav .cta { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; background: #FFFFFF; color: var(--ink); border-radius: 4px; font-weight: 600; }
-  .site-nav .cta:hover { color: var(--ink); text-decoration: none; background: #E9EDF0; }
+/* Comparison table */
+.compare-table{margin-top:8px}
+.compare-table th{font-size:18px;color:var(--ink)}
+.compare-table td:first-child{width:9.5rem;color:var(--stone);font-style:italic}
 
-  .wrap { max-width: 800px; margin: 0 auto; padding: 3.5rem 24px 2rem; }
-  h1, h2, h3 { font-family: var(--head); font-weight: 500; line-height: 1.15; }
-  h1 { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.015em; margin: 0 0 1rem; max-width: 20ch; }
-  h2 { font-size: clamp(1.6rem, 2.6vw, 2.1rem); letter-spacing: -0.01em; margin: 3.5rem 0 1rem; }
-  h3 { font-size: 22px; font-weight: 600; margin: 0 0 0.5rem; }
-  .subtitle { font-size: 17px; margin: 0; max-width: 62ch; color: #3A4A5A; }
+.draft{font-style:italic;color:var(--warn)!important}
 
-  /* Timeline */
-  .timeline-wrap { position: relative; height: 90px; margin: 1.5rem 0 0.5rem; }
-  .timeline-line { position: absolute; top: 33px; left: 0; right: 0; height: 1px; background: var(--ink); }
-  .tl-point, .tl-range { position: absolute; top: 34px; cursor: pointer; text-align: center; }
-  .tl-point { transform: translate(-50%, -8px); }
-  .tl-range { transform: translateY(-8px); }
-  .tl-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--paper); border: 2px solid var(--ink); margin: 0 auto; transition: background-color 150ms ease, border-color 150ms ease, transform 200ms var(--ease-out); }
-  .tl-range-bar { height: 16px; border-radius: 8px; background: var(--paper); border: 2px solid var(--ink); transition: background-color 150ms ease, border-color 150ms ease; }
-  .tl-year { font-family: var(--mono); font-weight: 500; font-size: 14px; color: var(--muted); margin-top: 8px; white-space: nowrap; }
-  @media (hover: hover) and (pointer: fine) {
-    .tl-point:hover .tl-year, .tl-range:hover .tl-year { color: var(--ink); }
-    .tl-point:hover .tl-dot { transform: scale(1.15); }
-  }
-  .tl-point:focus-visible, .tl-range:focus-visible { outline: 2px solid var(--link); outline-offset: 4px; border-radius: 4px; }
-  .tl-point.active .tl-dot, .tl-range.active .tl-range-bar { background: var(--accent); border-color: var(--accent-deep); }
-  .tl-point.active .tl-year, .tl-range.active .tl-year { color: var(--ink); font-weight: 600; }
-  .tl-detail { padding: 1rem 1.25rem; background: #FFFFFF; border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 4px; min-height: 6.5em; }
-  .tl-detail-title { font-family: var(--head); font-weight: 600; font-size: 19px; margin-bottom: 4px; }
-  .tl-detail-body { color: #3A4A5A; }
+/* Calculator */
+.calc-panel{margin-top:16px}
+.calc-panel .field{margin-bottom:22px;max-width:28rem}
+.result-panel{margin-top:32px}
+.result-row{display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid var(--rule-p);font-size:16px}
+.rlabel{color:var(--stone)}
+.rval{text-align:right;font-variant-numeric:lining-nums tabular-nums}
+.result-final{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin-top:28px}
+.rf-label{font-size:18px}
+.rf-val{font-size:clamp(2.4rem,4.4vw,3.4rem);line-height:1;letter-spacing:-.02em;color:var(--prussian);font-variant-numeric:lining-nums tabular-nums}
+.worked{font-size:15px;color:var(--stone)!important;margin-top:12px!important}
+.worked code{font-family:var(--serif);color:var(--ink);font-variant-numeric:lining-nums tabular-nums}
 
-  /* Comparison */
-  .compare-table, .sgf-table { width: 100%; border-collapse: collapse; margin: 0.5rem 0 1.5rem; font-size: 15px; background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; }
-  .compare-table th, .compare-table td, .sgf-table th, .sgf-table td { padding: 12px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
-  .compare-table tr:last-child td, .sgf-table tr:last-child td { border-bottom: 0; }
-  .compare-table tr:first-child th, .sgf-table tr:first-child th { font-family: var(--head); font-weight: 600; font-size: 19px; border-bottom: 1px solid var(--ink); }
-  .compare-table td:first-child { font-weight: 600; width: 9rem; }
-  .sgf-table td:nth-child(2) { font-family: var(--mono); font-size: 14px; }
-  .compare-note { background: var(--accent-soft); border-left: 4px solid var(--accent); border-radius: 4px; padding: 1rem 1.25rem; margin: 0 0 1rem; }
+/* Explainer blocks */
+.policy-card{margin-top:36px}
+.formula{font-size:clamp(1.4rem,2.4vw,1.8rem);font-style:italic;color:var(--ink)!important;margin:12px 0 16px!important;font-variant-numeric:lining-nums}
+.sgf-table td:nth-child(2){font-variant-numeric:lining-nums tabular-nums}
 
-  .draft-flag { border: 1px dashed var(--muted); border-radius: 4px; padding: 1rem 1.25rem; margin: 2.5rem 0 0; background: #FFFFFF; color: #3A4A5A; }
+@media (max-width:620px){
+  .tl-year{font-size:13px}
+  .compare-table,.compare-table tbody,.compare-table tr,.compare-table td{display:block;width:100%}
+  .compare-table tr:first-child{display:none}
+  .compare-table tr{padding:14px 0;border-bottom:1px solid var(--rule-p)}
+  .compare-table td{border:0;padding:3px 0}
+  .compare-table td:first-child{width:auto}
+  .compare-table td:nth-child(2)::before{content:"EU / UK ETS: ";color:var(--ink)}
+  .compare-table td:nth-child(3)::before{content:"CORSIA: ";color:var(--ink)}
+}
 
-  /* Calculator */
-  .calc-panel { background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; padding: 1.5rem; }
-  .field { margin-bottom: 1.25rem; }
-  .field label { display: block; font-weight: 600; font-size: 15px; margin-bottom: 6px; }
-  .field input, .field select { width: 100%; max-width: 26rem; font: inherit; color: var(--ink); background: var(--field); border: 1px solid #C3CBD2; border-radius: 4px; padding: 9px 12px; min-height: 44px; transition: border-color .15s; }
-  @media (hover: hover) and (pointer: fine) { .field input:hover, .field select:hover { border-color: var(--muted); } }
-  .field input:focus, .field select:focus { border-color: var(--ink); }
-  .field .hint { font-size: 14px; color: var(--muted); margin-top: 6px; max-width: 60ch; }
-  .result-panel { margin-top: 1.75rem; padding-top: 0.5rem; border-top: 1px solid var(--ink); }
-  .result-row { display: flex; justify-content: space-between; gap: 1rem; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
-  .result-row .rlabel { color: var(--muted); }
-  .result-row .rval { font-variant-numeric: tabular-nums; text-align: right; }
-  #outSgf { font-family: var(--mono); font-size: 14px; }
-  .result-final { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; padding: 1rem 1.25rem; background: var(--accent-soft); border-left: 4px solid var(--accent); }
-  .rf-label { font-weight: 600; }
-  .rf-val { font-family: var(--head); font-weight: 600; font-size: 40px; line-height: 1; color: var(--money); font-variant-numeric: tabular-nums; }
-  .worked { font-size: 14px; color: var(--muted); margin: 0.75rem 0 0; }
-  .worked code, .formula-box { font-family: var(--mono); font-size: 0.92em; }
-  .worked code { color: var(--ink); }
-
-  /* Explainer sections */
-  .policy-card { padding: 1.75rem 0; border-top: 1px solid var(--line); }
-  h2 + .policy-card { border-top: 1px solid var(--ink); }
-  .policy-card p { margin: 0; color: #3A4A5A; }
-  .policy-card p + p { margin-top: 0.75rem !important; }
-  .formula-box { background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; padding: 12px 16px; margin: 0.75rem 0; overflow-x: auto; white-space: nowrap; }
-
-  .footer-note { font-size: 14px; color: var(--muted); margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
-
-  .site-footer { margin-top: 3rem; background: var(--navy); color: #C9D2DB; }
-  .site-footer-in { max-width: 1200px; margin: 0 auto; padding: 40px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px 32px; font-size: 14px; }
-  .site-footer a { color: #FFFFFF; }
-
-  @media (max-width: 620px) {
-    .tl-year { font-size: 12px; }
-    .compare-table, .compare-table tbody, .compare-table tr, .compare-table td { display: block; width: 100%; }
-    .compare-table tr:first-child { display: none; }
-    .compare-table tr { padding: 12px 14px; border-bottom: 1px solid var(--line); }
-    .compare-table td { border: 0; padding: 2px 0; }
-    .compare-table td:nth-child(2)::before { content: "EU / UK ETS: "; font-weight: 600; }
-    .compare-table td:nth-child(3)::before { content: "CORSIA: "; font-weight: 600; }
-    .calc-panel { padding: 1.1rem; }
-    .rf-val { font-size: 34px; }
-  }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
-
-  /* Polish: shared details */
-  :root { --ease-out: cubic-bezier(0.23, 1, 0.32, 1); }
-  ::selection { background: #CFE0F0; color: var(--ink); }
-  h1, h2, h3 { text-wrap: balance; }
-  p, .tl-detail-body, .hint, li { text-wrap: pretty; }
-  .result-row .rval, .rf-val, .sgf-table td:nth-child(2), .worked { font-variant-numeric: lining-nums tabular-nums; }
-  .site-nav .cta { transition: background-color 150ms ease, transform 160ms var(--ease-out); }
-  .site-nav .cta:active { transform: scale(0.97); }
-  @media (prefers-reduced-motion: reduce) { .site-nav .cta:active { transform: none; } }
-</style>
-<link rel="preload" href="/aviation-emissions/assets/fonts/stix-two-text-400.woff2" as="font" type="font/woff2" crossorigin>
-<style>
-@font-face{font-family:"STIX Two Text";src:url("/aviation-emissions/assets/fonts/stix-two-text-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:"STIX Two Text";src:url("/aviation-emissions/assets/fonts/stix-two-text-400-italic.woff2") format("woff2");font-weight:400;font-style:italic;font-display:swap}
-@font-face{font-family:"STIX Two Text";src:url("/aviation-emissions/assets/fonts/stix-two-text-600.woff2") format("woff2");font-weight:500 700;font-style:normal;font-display:swap}
-body{font-variant-numeric:lining-nums}
 </style>
 </head>
 <body>
-<header class="site-header">
-  <div class="site-header-in">
-    <a class="wordmark" href="/aviation-emissions/"><b>AVIATION EMISSIONS</b><span>// explained</span></a>
-    <nav class="site-nav" aria-label="Main">
-      <a href="/aviation-emissions/#insights">Insights</a>
-      <a href="/aviation-emissions/#tools" aria-current="page">Tools</a>
-      <a href="/aviation-emissions/#services">Services</a>
-      <a href="/aviation-emissions/#contact">Contact</a>
-      <a class="cta" href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">Book a briefing</a>
+<header class="masthead">
+  <div class="mast-bar">
+    <a class="mark" href="/aviation-emissions/">Aviation Emissions <i>explained</i></a>
+    <nav class="topnav" aria-label="Main">
+      <a href="/aviation-emissions/#forcing">Climate effect</a>
+      <a href="/aviation-emissions/#tools">Tools</a>
+      <a href="/aviation-emissions/#method">Method</a>
+      <a href="/aviation-emissions/#work">Work with me</a>
     </nav>
+  </div>
+  <div class="intro">
+    <h1>ETS and CORSIA, and why there are two</h1>
+    <p class="lede">Flying has more than one carbon rule, and they work in very different ways. This page shows how that happened, what the difference is, and lets you work out what an airline owes under CORSIA.</p>
   </div>
 </header>
 
-<div class="wrap">
-  <h1>ETS and CORSIA, and why there are two</h1>
-  <p class="subtitle">Flying has more than one carbon rule, and they work in very different ways. This page shows how that happened, what the difference is, and lets you work out what an airline owes under CORSIA.</p>
-
+<main class="doc">
   <h2>How it got like this</h2>
-  <div class="timeline-wrap" id="timelineWrap">
+  <div class="timeline-wrap wide" id="timelineWrap">
     <div class="timeline-line"></div>
-    <div class="tl-point" style="left:6%" data-id="2012" tabindex="0" role="button" aria-controls="tlDetail" aria-pressed="false">
-      <div class="tl-dot"></div>
-      <div class="tl-year">2012</div>
-    </div>
-    <div class="tl-point" style="left:22%" data-id="2013" tabindex="0" role="button" aria-controls="tlDetail" aria-pressed="false">
-      <div class="tl-dot"></div>
-      <div class="tl-year">2013</div>
-    </div>
-    <div class="tl-point" style="left:44%" data-id="2016" tabindex="0" role="button" aria-controls="tlDetail" aria-pressed="false">
-      <div class="tl-dot"></div>
-      <div class="tl-year">2016</div>
-    </div>
-    <div class="tl-point" style="left:66%" data-id="2021" tabindex="0" role="button" aria-controls="tlDetail" aria-pressed="false">
-      <div class="tl-dot"></div>
-      <div class="tl-year">2021</div>
-    </div>
-    <div class="tl-range" style="left:83%; width:15%" data-id="2024-2027" tabindex="0" role="button" aria-controls="tlDetail" aria-pressed="false">
-      <div class="tl-range-bar"></div>
-      <div class="tl-year">2024-2027</div>
-    </div>
+    <div class="tl-point" style="left:6%" data-id="2012" tabindex="0" role="button" aria-controls="tlDetail" aria-pressed="false"><div class="tl-dot"></div><div class="tl-year">2012</div></div>
+    <div class="tl-point" style="left:22%" data-id="2013" tabindex="0" role="button" aria-controls="tlDetail" aria-pressed="false"><div class="tl-dot"></div><div class="tl-year">2013</div></div>
+    <div class="tl-point" style="left:44%" data-id="2016" tabindex="0" role="button" aria-controls="tlDetail" aria-pressed="false"><div class="tl-dot"></div><div class="tl-year">2016</div></div>
+    <div class="tl-point" style="left:66%" data-id="2021" tabindex="0" role="button" aria-controls="tlDetail" aria-pressed="false"><div class="tl-dot"></div><div class="tl-year">2021</div></div>
+    <div class="tl-range" style="left:83%; width:15%" data-id="2024-2027" tabindex="0" role="button" aria-controls="tlDetail" aria-pressed="false"><div class="tl-range-bar"></div><div class="tl-year">2024–2027</div></div>
   </div>
   <div class="tl-detail" id="tlDetail" aria-live="polite">
-    <div class="tl-detail-title" id="tlDetailTitle">Tap a year above</div>
-    <div class="tl-detail-body" id="tlDetailBody">Five things happened that explain why flying ended up with two rules that overlap, instead of one.</div>
+    <p class="tl-detail-title" id="tlDetailTitle">Tap a year above</p>
+    <p class="tl-detail-body" id="tlDetailBody">Five things happened that explain why flying ended up with two rules that overlap, instead of one.</p>
   </div>
 
   <h2>How ETS and CORSIA are different</h2>
+  <aside class="aside"><span class="n">The bit people get wrong.</span> CORSIA covers the whole world, but that does not make it cost more. It only charges for growth above 2019, and its credits are much cheaper than EU allowances. So per tonne, CORSIA costs a lot less today, even though the EU scheme covers far fewer flights. The EU's new 5,000km plan is built to sit on top of CORSIA: if both rules cover the same flight, the airline takes off what it already paid for CORSIA, so nobody pays twice for the same tonne.</aside>
   <table class="compare-table">
     <tr><th></th><th>EU / UK ETS</th><th>CORSIA</th></tr>
     <tr><td>How it works</td><td>There is a limit on total carbon. Airlines buy and sell permits under it.</td><td>Airlines pay for carbon above a starting line by buying offset credits.</td></tr>
-    <tr><td>What you pay for</td><td>Every tonne of CO&#8322; on the flights it covers</td><td>Only the tonnes above 85% of 2019 (the starting line)</td></tr>
+    <tr><td>What you pay for</td><td>Every tonne of CO₂ on the flights it covers</td><td>Only the tonnes above 85% of 2019 (the starting line)</td></tr>
     <tr><td>What you buy</td><td>Allowances. There is only one kind, there are only so many, and they are sold on an exchange.</td><td>Offset credits from approved groups (Gold Standard, Verra, ACR). Some are better than others, and prices vary.</td></tr>
-    <tr><td>Price</td><td>Changes every day. About &euro;80 a tonne (EU) and &pound;72 a tonne (UK)</td><td>No one price. Roughly $5 to $20 a tonne, depending on the credit</td></tr>
+    <tr><td>Price</td><td>Changes every day. About €80 a tonne (EU) and £72 a tonne (UK)</td><td>No one price. Roughly $5 to $20 a tonne, depending on the credit</td></tr>
     <tr><td>Which flights</td><td>Flights inside the area (EU scheme: inside Europe. UK scheme: inside the UK)</td><td>Flights between two countries, but only if both countries are in CORSIA</td></tr>
     <tr><td>Over time</td><td>The limit gets smaller every year, to push carbon down</td><td>No push to go below the starting line. The aim is just to not grow past 2019</td></tr>
-    <tr><td>The sum</td><td>Tonnes &times; 1. One allowance for every tonne. Simple.</td><td>Tonnes &times; the growth factor. You pay for a part, not all of it</td></tr>
+    <tr><td>The sum</td><td>Tonnes × 1. One allowance for every tonne. Simple.</td><td>Tonnes × the growth factor. You pay for a part, not all of it</td></tr>
   </table>
-  <div class="compare-note">
-    <strong>The bit people get wrong:</strong> CORSIA covers the whole world, but that does not make it cost more. It only charges for growth above 2019, and its credits are much cheaper than EU allowances. So per tonne, CORSIA costs a lot less today, even though the EU scheme covers far fewer flights. The EU&apos;s new 5,000km plan is built to sit on top of CORSIA. If both rules cover the same flight, the airline takes off what it already paid for CORSIA. So nobody pays twice for the same tonne.
-  </div>
-
-  <div class="draft-flag" style="margin-top:0;">
-    <strong>Everything below here is a draft. It is not finished yet.</strong> I checked the formula and the 2024 numbers against ICAO&apos;s own sum, and they match to 7 decimal places (see the example). What I have not checked yet: some tricky cases about which country pairs count, the discount for clean fuel, and the new sum that starts in 2030. It stays a draft until a compliance expert has looked at it.
-  </div>
 
   <h2>Work out what an airline owes</h2>
+  <aside class="aside"><span class="n">Draft.</span> I checked the formula and the 2024 numbers against ICAO's own sum, and they match to 7 decimal places. Still to check: some tricky cases about which country pairs count, the discount for clean fuel, and the new sum that starts in 2030. It stays a draft until a compliance expert has looked at it.</aside>
+  <p class="draft">Everything from here down is a draft and not finished yet.</p>
   <div class="calc-panel">
     <div class="field">
-      <label for="operatorEmissions">Airline&apos;s CO&#8322; on CORSIA flights this year (tonnes)</label>
+      <label for="operatorEmissions">Airline's CO₂ on CORSIA flights this year (tonnes)</label>
       <input type="number" id="operatorEmissions" value="50000" min="0" inputmode="numeric">
-      <div class="hint">Only count flights between two countries that are both in CORSIA. Not all of the airline&apos;s flights.</div>
+      <div class="hint">Only count flights between two countries that are both in CORSIA. Not all of the airline's flights.</div>
     </div>
     <div class="field">
       <label for="complianceYear">Year</label>
       <select id="complianceYear"></select>
-      <div class="hint">2021 to 2029 all use the whole-industry growth factor. 2024 uses ICAO&apos;s real number. Later years are guesses for now, because ICAO only puts out each year&apos;s number the year after.</div>
+      <div class="hint">2021 to 2029 all use the whole-industry growth factor. 2024 uses ICAO's real number. Later years are guesses for now, because ICAO only puts out each year's number the year after.</div>
     </div>
     <div class="result-panel" aria-live="polite">
       <div class="result-row"><span class="rlabel">Growth factor for this year</span><span class="rval" id="outSgf">-</span></div>
-      <div class="result-row"><span class="rlabel">Formula</span><span class="rval">Owed = airline&apos;s tonnes &times; growth factor</span></div>
+      <div class="result-row"><span class="rlabel">Formula</span><span class="rval">Owed = airline's tonnes × growth factor</span></div>
       <div class="result-final">
         <span class="rf-label">Tonnes the airline has to offset</span>
         <span class="rf-val" id="outResult">-</span>
@@ -226,21 +135,21 @@ body{font-variant-numeric:lining-nums}
   <h2>How the growth factor is worked out</h2>
   <div class="policy-card">
     <h3>The formula</h3>
-    <div class="formula-box">SGF_y&nbsp;=&nbsp;(SE_y&nbsp;&minus;&nbsp;SE_B,y)&nbsp;/&nbsp;SE_y</div>
-    <p>SE_y is all the CO&#8322; from every airline, on flights between CORSIA countries, in that year. SE_B,y is the starting line: 85% of the CO&#8322; on those same flights in 2019. ICAO works this out once a year for the whole industry. It is the same number for every airline.</p>
+    <p class="formula">SGF<sub>y</sub> = (SE<sub>y</sub> − SE<sub>B,y</sub>) / SE<sub>y</sub></p>
+    <p>SE<sub>y</sub> is all the CO₂ from every airline, on flights between CORSIA countries, in that year. SE<sub>B,y</sub> is the starting line: 85% of the CO₂ on those same flights in 2019. ICAO works this out once a year for the whole industry. It is the same number for every airline.</p>
   </div>
   <div class="policy-card">
-    <h3>Example, using ICAO&apos;s real 2024 numbers</h3>
-    <p>Starting line (85% of 2019): <strong>305,522,071 t CO&#8322;</strong>. Real CO&#8322; in 2024 on the same flights: <strong>361,159,641 t CO&#8322;</strong>.</p>
-    <p style="margin-top:8px;">SGF_2024 = (361,159,641 &minus; 305,522,071) / 361,159,641 = <strong>0.15405257</strong>. That is the same number ICAO put out. So an airline with 50,000 tonnes on CORSIA flights in 2024 has to offset 50,000 &times; 0.15405257, which is about <strong>7,703 t CO&#8322;</strong>.</p>
+    <h3>Example, using ICAO's real 2024 numbers</h3>
+    <p>Starting line (85% of 2019): <strong>305,522,071 t CO₂</strong>. Real CO₂ in 2024 on the same flights: <strong>361,159,641 t CO₂</strong>.</p>
+    <p>SGF<sub>2024</sub> = (361,159,641 − 305,522,071) / 361,159,641 = <strong>0.15405257</strong>. That is the same number ICAO put out. So an airline with 50,000 tonnes on CORSIA flights in 2024 has to offset 50,000 × 0.15405257, which is about <strong>7,703 t CO₂</strong>.</p>
   </div>
   <div class="policy-card">
     <h3>What changes in 2030</h3>
-    <p>From 2030, each airline&apos;s own growth starts to count too, not just the whole industry&apos;s. It counts for 20% from 2030 to 2032, and 70% from 2033 to 2035. This calculator only does the sum from before 2030 for now. I have not built the new part yet.</p>
+    <p>From 2030, each airline's own growth starts to count too, not just the whole industry's. It counts for 20% from 2030 to 2032, and 70% from 2033 to 2035. This calculator only does the sum from before 2030 for now. I have not built the new part yet.</p>
   </div>
   <div class="policy-card">
     <h3>Discount for clean fuel (not built yet)</h3>
-    <p>If an airline uses clean fuel (SAF) that meets CORSIA&apos;s rules, it can take that off what it owes. For normal jet fuel, 1 kg burned makes 3.16 kg of CO&#8322;. This calculator does not take off the discount yet. So the answer is the most an airline could owe, not the final amount.</p>
+    <p>If an airline uses clean fuel (SAF) that meets CORSIA's rules, it can take that off what it owes. For normal jet fuel, 1 kg burned makes 3.16 kg of CO₂. This calculator does not take off the discount yet. So the answer is the most an airline could owe, not the final amount.</p>
   </div>
 
   <h2>Growth factor for each year</h2>
@@ -248,17 +157,30 @@ body{font-variant-numeric:lining-nums}
     <tr><th>Year</th><th>SGF</th><th>Status</th></tr>
     <tr><td>2021 to 2023 (trial)</td><td>About 0 (joining was a choice, and COVID reset the starting line)</td><td>Out</td></tr>
     <tr><td>2024</td><td>0.15405257</td><td>Out (ICAO, 2025)</td></tr>
-    <tr><td>2025 and later</td><td>Not out yet</td><td>ICAO puts out each year&apos;s number the year after</td></tr>
+    <tr><td>2025 and later</td><td>Not out yet</td><td>ICAO puts out each year's number the year after</td></tr>
   </table>
 
-  <p class="footer-note">
-    Where this comes from: ICAO Assembly Resolutions A39-3 and A41-22, the ICAO Environmental Technical Manual (Doc 9501) Volume IV, ICAO&apos;s CORSIA webinars (Sessions 5 and 6), and ICAO&apos;s 2024 growth factor announcement. This is a draft tool, not advice. For what an airline really has to file, ask a compliance advisor or the country&apos;s regulator.
-  </p>
-</div>
-<footer class="site-footer">
-  <div class="site-footer-in">
-    <a class="wordmark" href="/aviation-emissions/" style="font-size:15px"><b>AVIATION EMISSIONS</b><span>// explained</span></a>
-    <div><a href="mailto:becharjaymal@gmail.com">becharjaymal@gmail.com</a></div>
+  <p class="endnote">Where this comes from: ICAO Assembly Resolutions A39-3 and A41-22, the ICAO Environmental Technical Manual (Doc 9501) Volume IV, ICAO's CORSIA webinars (Sessions 5 and 6), and ICAO's 2024 growth factor announcement. This is a draft tool, not advice. For what an airline really has to file, ask a compliance advisor or the country's regulator.</p>
+</main>
+
+<section class="contactband" aria-label="Contact">
+  <div class="in">
+    <div>
+      <h2>Got a question about carbon rules?</h2>
+      <p>Drop me a line about what you're working on and I'll set up a quick chat. No prep needed.</p>
+    </div>
+    <a class="btn" href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">Get in touch</a>
+  </div>
+</section>
+<footer class="sitefoot">
+  <div class="in">
+    <div class="links">
+      <span style="color:#fff">Aviation Emissions</span>
+      <a href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">becharjaymal@gmail.com</a>
+      <a href="/aviation-emissions/engagement-overview/">How I can help</a>
+      <span class="num">© 2026</span>
+    </div>
+    <p>Built by Jaymal Bechar, doctoral researcher in mechanical and aerospace engineering, University of Manchester. Tool outputs are estimates for planning, not compliance filings. Sources are listed on each page.</p>
   </div>
 </footer>
 
@@ -337,6 +259,6 @@ document.getElementById('operatorEmissions').addEventListener('input', calculate
 yearSelect.addEventListener('change', calculate);
 calculate();
 </script>
-<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "99311d4c453e49c091ebf8972f3c2200"}'></script><!-- End Cloudflare Web Analytics -->
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "99311d4c453e49c091ebf8972f3c2200"}'></script>
 </body>
 </html>
