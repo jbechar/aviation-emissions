@@ -4,36 +4,96 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#060C16">
-<title>How the carbon money works | Aviation Emissions Explained</title>
-<meta name="description" content="What a carbon credit is, how it is made, checked, sold and retired, and how airlines pay for carbon on top of it: EU ETS and UK ETS allowances, CORSIA credits and voluntary claims.">
+<title>Where airlines' carbon money goes | Aviation Emissions Explained</title>
+<meta name="description" content="Which carbon scheme a flight pays into, what each one costs, how a carbon credit is made, and what to check before buying CORSIA credits.">
 <link rel="preload" href="/aviation-emissions/assets/fonts/stix-two-text-regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/aviation-emissions/assets/site.css">
 <style>
-:root{--credit:#1E8A5E;--money:#B9791A;--gov:#6B655B}
+/* Bands, as on the homepage */
+.wrap{max-width:1280px;margin:0 auto;padding:0 32px}
+@media (max-width:640px){.wrap{padding:0 20px}}
+section.band{padding:120px 0}
+@media (max-width:640px){section.band{padding:80px 0}}
+.night{background:var(--night);color:#fff}
+.night ::selection{background:var(--amber);color:var(--night)}
+.night :focus-visible{outline-color:var(--amber)}
+.head{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:24px 64px;align-items:end;margin-bottom:56px}
+.head h2{font-size:clamp(2rem,3.6vw,3.1rem);line-height:1.08;letter-spacing:-.018em}
+.head p{color:var(--stone);max-width:34em;font-size:17px;margin:0}
+.night .head p{color:var(--mist)}
+@media (max-width:860px){.head{grid-template-columns:1fr;margin-bottom:40px}}
+.fig{font-style:italic;color:var(--stone);font-size:15px;margin:0 0 18px}
+.night .fig{color:var(--mist)}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.scroll svg{min-width:760px}
 svg{width:100%;height:auto;display:block}
 svg text{font-family:var(--serif)}
-.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-.scroll svg{min-width:720px}
-.controls{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px 32px;margin:28px 0 8px}
-.stepnav{display:flex;gap:10px}
-.stepnav .btn{min-height:42px;padding:0 18px;font-size:16px}
-.panel{margin-top:24px;max-width:var(--measure);min-height:15rem}
-.panel h3{font-size:26px;margin:0 0 10px}
-.panel p{margin:0 0 1em;color:var(--body-ink)}
-.panel .who{font-style:italic;color:var(--stone);margin:-4px 0 12px}
-.panel .money{color:var(--ink)}
-.panel .money::before{content:"Money. ";font-style:italic;color:var(--money)}
-.readouts .v.sm{font-size:clamp(1.15rem,1.6vw,1.35rem);line-height:1.3}
+
+/* Scheme picker on the dark sheet */
+.night .choice button{color:var(--mist)}
+.night .choice button:hover{color:#fff}
+.night .choice button[aria-pressed="true"]{color:#fff;border-bottom-color:var(--amber)}
+.picker{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 28px;margin-bottom:22px}
+.picker .label{font-size:15px;color:var(--mist);font-style:italic}
+.readline{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px 64px;margin-top:36px;min-height:7.5em}
+.readline h3{font-size:26px;line-height:1.2}
+.readline p{margin:0;color:var(--soft);font-size:17px;max-width:34em}
+.readline p + p{margin-top:10px}
+.readline .m{color:#fff}
+.readline .m b{font-weight:400;color:var(--amber);font-style:italic}
+@media (max-width:860px){.readline{grid-template-columns:1fr}}
+
 /* drawing states */
 .col,.base,.pipe,.nolink{transition:opacity 260ms ease}
-.dim{opacity:.18}
-.flow{stroke-dasharray:6 8;animation:flow 1.4s linear infinite}
+.dim{opacity:.16}
+.flow{stroke-dasharray:6 8;animation:flow 1.6s linear infinite}
 .flow.up{animation-direction:reverse}
 @keyframes flow{to{stroke-dashoffset:-28}}
-.station text{transition:fill 200ms ease}
-.legend{display:flex;flex-wrap:wrap;gap:6px 24px;font-size:14.5px;color:var(--stone);margin-top:10px}
-.legend i{display:inline-block;width:22px;height:0;border-top:2px dashed;vertical-align:4px;margin-right:8px}
-td.k{width:30%}
+
+/* Cost ledger */
+.ledger th:not(:first-child),.ledger td:not(:first-child){padding-left:8px}
+.ledger td{font-size:17px;padding-top:20px;padding-bottom:20px}
+.ledger td.name{font-size:22px;line-height:1.2;width:17%}
+.ledger td.name small{display:block;font-size:14.5px;color:var(--stone);margin-top:4px}
+.ledger td.price{font-size:26px;white-space:nowrap;letter-spacing:-.01em}
+.ledger td.price small{display:block;font-size:14px;color:var(--stone);letter-spacing:0}
+.ledger td.credit{color:var(--ok)}
+.ledger .nocredit{color:var(--stone)}
+.after{margin-top:22px;font-size:16px;color:var(--body-ink);max-width:46em}
+@media (max-width:760px){
+  .ledger thead{display:none}
+  .ledger,.ledger tbody,.ledger tr,.ledger td{display:block;width:auto!important;padding-left:0!important}
+  .ledger tr{border-bottom:1px solid var(--rule-p);padding:18px 0}
+  .ledger td{border:0;padding:3px 0}
+  .ledger td[data-k]::before{content:attr(data-k) ": ";color:var(--stone);font-size:15px}
+}
+
+/* Life cycle */
+.paper2{background:var(--paper-2)}
+.controls{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px 32px;margin:20px 0 8px}
+.stepnav{display:flex;gap:10px}
+.stepnav .btn{min-height:42px;padding:0 18px;font-size:16px}
+.steptext{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:12px 64px;margin-top:28px;min-height:9em}
+.steptext h3{font-size:26px;line-height:1.2}
+.steptext .who{font-style:italic;color:var(--stone);margin:6px 0 0;font-size:16px}
+.steptext p{margin:0;color:var(--body-ink);max-width:34em}
+.steptext p + p{margin-top:10px}
+.steptext .m b{font-weight:400;font-style:italic;color:var(--warn)}
+@media (max-width:860px){.steptext{grid-template-columns:1fr}}
+
+/* Checklist */
+.checks{list-style:none;margin:0;padding:0;border-top:2px solid var(--prussian);counter-reset:c}
+.checks li{display:grid;grid-template-columns:3rem minmax(0,5fr) minmax(0,6fr);gap:8px 32px;padding:22px 0;border-bottom:1px solid var(--rule-p);counter-increment:c;margin:0}
+.checks li::before{content:counter(c);font-size:15px;color:var(--prussian);font-variant-numeric:tabular-nums;padding-top:5px}
+.checks b{font-weight:500;font-size:21px;line-height:1.3;color:var(--ink)}
+.checks span{color:var(--body-ink);font-size:17px}
+@media (max-width:760px){.checks li{grid-template-columns:2rem 1fr}.checks span{grid-column:2}}
+.vol{margin-top:56px;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:12px 64px}
+.vol h3{font-size:26px;line-height:1.2}
+.vol p{margin:0;color:var(--body-ink);max-width:34em}
+.vol p + p{margin-top:10px}
+@media (max-width:860px){.vol{grid-template-columns:1fr}}
+.endnote{margin-top:72px}
 </style>
 </head>
 <body>
@@ -48,113 +108,105 @@ td.k{width:30%}
     </nav>
   </div>
   <div class="intro">
-    <h1>How the carbon money works</h1>
-    <p class="lede">Airlines pay for carbon in two different ways. Inside Europe, they buy permits from the government. On most other international flights, they buy carbon credits from projects that cut pollution somewhere else. This page starts with credits, then shows where airlines pay on top of them.</p>
-    <p class="meta">I last checked prices on 21 November 2026. Carbon prices change every day, so use them as a rough guide.</p>
+    <h1>Where airlines' carbon money goes</h1>
+    <p class="lede">Airlines pay for carbon in two ways. In Europe, they buy permits from the government. Under CORSIA, they buy carbon credits from projects that cut pollution somewhere else. Here is which one a flight pays, what it costs, and where the money ends up.</p>
+    <p class="meta">Prices checked 21 November 2026. They change every day.</p>
   </div>
 </header>
 
-<main class="doc">
+<section class="band night" aria-labelledby="h-floors">
+  <div class="wrap">
+    <div class="head">
+      <h2 id="h-floors">A permit and a credit are both one tonne. They point opposite ways.</h2>
+      <p>An allowance lets you put a tonne of CO₂ into the air. A credit shows a tonne was cut or taken out somewhere else. The EU and UK schemes only take allowances. CORSIA only takes credits.</p>
+    </div>
 
-  <h2>It all comes down to one tonne</h2>
-  <p class="lead">A carbon market turns climate results into units you can buy, sell and use up. To compare a cookstove in Rwanda with a forest in Guyana, every unit means the same thing: one tonne of CO₂, or the same warming from other gases (written tCO₂e).</p>
-  <div class="readouts">
-    <div class="readout"><div class="k">1 carbon credit</div><div class="v">1 tonne</div><div class="s">cut or taken out of the air by a project</div></div>
-    <div class="readout"><div class="k">1 allowance</div><div class="v">1 tonne</div><div class="s">that a government lets you put into the air</div></div>
-    <div class="readout"><div class="k">1 tonne of jet fuel burned</div><div class="v num">3.16 t</div><div class="s">of CO₂ made</div></div>
-  </div>
-  <p>A credit and an allowance are both counted in tonnes, but they point in opposite directions. An allowance is a permit to pollute. A credit is proof that pollution was cut. Governments make allowances by passing a law with a cap. Credits are made by projects, under rules written mostly by private groups.</p>
-
-  <h2>Two floors</h2>
-  <p>Think of it as a building. The ground floor is where units come from. The top floor is where airlines hand them in. The two European schemes stand on a government cap. CORSIA and voluntary claims stand on carbon credits. Pick a scheme to follow its money.</p>
-
-  <div class="controls wide">
-    <div class="choice" id="schemes" role="group" aria-label="Pick a scheme"></div>
-  </div>
-  <figure class="wide">
+    <div class="picker">
+      <span class="label">Follow the money for</span>
+      <div class="choice" id="schemes" role="group" aria-label="Pick a scheme"></div>
+    </div>
+    <p class="fig">Fig. 1. Where each scheme gets its units. Money goes down, units come up.</p>
     <div class="scroll">
-    <svg id="floors" viewBox="0 0 1000 540" role="img" aria-label="Two-floor drawing. Top floor: EU ETS, UK ETS, CORSIA and voluntary claims. EU and UK ETS take allowances from a government cap. CORSIA and voluntary claims take carbon credits from projects. Money flows down, units flow up.">
-      <defs>
-        <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="#BDB4A2" stroke-width="1.2"/></pattern>
-        <marker id="arrU" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--prussian)"/></marker>
-        <marker id="arrM" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--money)"/></marker>
-      </defs>
-    </svg>
+      <svg id="floors" viewBox="0 0 1200 560" role="img" aria-label="Drawing in two levels. Top: EU ETS, UK ETS, CORSIA and voluntary claims. The EU and UK schemes draw allowances from a government cap. CORSIA and voluntary claims draw carbon credits from projects. CORSIA has a gate: approved programme and a host-country letter."></svg>
     </div>
-    <div class="legend"><span><i style="color:var(--money)"></i>Money goes down</span><span><i style="color:var(--prussian)"></i>Units go up and are handed in</span></div>
-    <figcaption class="figcap"><i>Fig. 1.</i> Where each scheme gets its units. The EU and UK schemes do not accept carbon credits. CORSIA only accepts credits from approved programmes, and only when the host country agrees not to count the same tonne itself.</figcaption>
-  </figure>
+    <div class="readline" id="schemePanel" aria-live="polite"></div>
+  </div>
+</section>
 
-  <section class="panel" id="schemePanel" aria-live="polite"></section>
-
-  <h2>The ground floor: how a credit is made</h2>
-  <p>A credit goes through the same steps whoever ends up buying it. It can take 2 to 5 years from the first idea to the first credits, so projects often need money long before they earn any. Step through it below.</p>
-
-  <figure class="wide">
-    <div class="scroll"><svg id="life" viewBox="0 0 1000 230" role="img" aria-label="The life of a carbon credit, from project developer to standard, auditor, registry, broker and buyer"></svg></div>
-  </figure>
-  <div class="controls wide">
-    <div class="choice" id="steps"></div>
-    <div class="stepnav">
-      <button class="btn quiet" id="prev" aria-label="Previous step">Previous</button>
-      <button class="btn" id="play" aria-label="Play through all steps">Play</button>
-      <button class="btn quiet" id="next" aria-label="Next step">Next</button>
+<section class="band" aria-labelledby="h-cost">
+  <div class="wrap">
+    <div class="head">
+      <h2 id="h-cost">What each one costs, and who gets paid</h2>
+      <p>Per tonne of CO₂, as of November 2026. The European schemes charge for every tonne. CORSIA only charges for growth.</p>
     </div>
+    <div class="table-scroll">
+      <table class="ledger">
+        <thead><tr><th>Scheme</th><th>What you hand in</th><th>Price a tonne</th><th>When</th><th>The money goes to</th></tr></thead>
+        <tbody>
+          <tr><td class="name">EU ETS<small>Flights inside Europe</small></td><td data-k="Hand in">EU allowances. <span class="nocredit">No credits.</span></td><td class="price num" data-k="Price">€87 to €90<small>Nov 2026</small></td><td data-k="When">By 30 September, for last year's flights</td><td data-k="Money to">EU governments, through auctions</td></tr>
+          <tr><td class="name">UK ETS<small>UK flights, UK to Europe</small></td><td data-k="Hand in">UK allowances. <span class="nocredit">No credits.</span></td><td class="price num" data-k="Price">about £63<small>mid-Oct 2026</small></td><td data-k="When">Once a year</td><td data-k="Money to">The UK government, through auctions</td></tr>
+          <tr><td class="name">CORSIA<small>Most other international flights</small></td><td data-k="Hand in" class="credit">CORSIA-eligible carbon credits</td><td class="price num" data-k="Price">about $12.75<small>29 Oct 2026</small></td><td data-k="When">By 31 January 2028, for 2024 to 2026 flights</td><td data-k="Money to">The project, after broker and fees</td></tr>
+          <tr><td class="name">Voluntary<small>Offsets, company goals</small></td><td data-k="Hand in" class="credit">Any credit the buyer picks</td><td class="price" data-k="Price">varies<small>by project type</small></td><td data-k="When">No deadline</td><td data-k="Money to">The project, after broker and fees</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="after">CORSIA only counts the CO₂ above 85% of an airline's 2019 level, so most tonnes cost nothing under it. <a href="/aviation-emissions/corsia-calculator/">Work out what a route owes with the CORSIA calculator</a>, or see <a href="/aviation-emissions/climate-policies/">every rule and its price</a>.</p>
   </div>
-  <section class="panel" id="stepPanel" aria-live="polite"></section>
+</section>
 
-  <h2>Who does what</h2>
-  <p>Many groups touch one credit. Each one has a single job, and most of them are paid a fee for it.</p>
-  <div class="table-scroll wide">
-    <table>
-      <thead><tr><th>Who</th><th>What they do</th><th>Examples</th></tr></thead>
-      <tbody>
-        <tr><td class="k">Project developer</td><td>Runs the real work that cuts or removes pollution. Writes the plan, collects the data and finds the money.</td><td>A cookstove business, a solar company, a group planting mangroves</td></tr>
-        <tr><td class="k">Standard</td><td>Writes the rules. Says which projects count and publishes the "recipes" (methodologies) for working out the tonnes.</td><td>Verra, Gold Standard</td></tr>
-        <tr><td class="k">Auditor (VVB)</td><td>Checks the plan before it starts, then checks the results later. Approved by the standard, but a separate company.</td><td>DNV, SGS, Bureau Veritas</td></tr>
-        <tr><td class="k">Registry</td><td>The record book. Gives each credit a serial number, tracks who owns it, and marks it as used up.</td><td>Usually run by the standard</td></tr>
-        <tr><td class="k">Broker or trader</td><td>Matches sellers with buyers. May bundle credits from many projects.</td><td>Brokers, exchanges, trading desks</td></tr>
-        <tr><td class="k">Buyer</td><td>Pays for credits and uses them up to meet a rule or make a claim.</td><td>Airlines under CORSIA, companies with climate goals</td></tr>
-        <tr><td class="k">Integrity groups</td><td>Say what "good" looks like and rate credits. Buyers watch them, so they move prices.</td><td>ICVCM (Core Carbon Principles), rating agencies</td></tr>
-        <tr><td class="k">Financiers</td><td>Lend or invest before credits exist, and get paid back from future credit sales.</td><td>Impact funds, banks, carbon funds</td></tr>
-      </tbody>
-    </table>
+<section class="band paper2" aria-labelledby="h-life">
+  <div class="wrap">
+    <div class="head">
+      <h2 id="h-life">How one credit is made, sold and used up</h2>
+      <p>The same five steps, whoever buys it. From first idea to first credit usually takes 2 to 5 years, so projects need money long before they earn any.</p>
+    </div>
+    <p class="fig">Fig. 2. The life of one credit.</p>
+    <div class="scroll"><svg id="life" viewBox="0 0 1200 220" role="img" aria-label="The life of a carbon credit: project, auditor, registry, buyer"></svg></div>
+    <div class="controls">
+      <div class="choice" id="steps"></div>
+      <div class="stepnav">
+        <button class="btn quiet" id="prev" aria-label="Previous step">Previous</button>
+        <button class="btn" id="play" aria-label="Play through all steps">Play</button>
+        <button class="btn quiet" id="next" aria-label="Next step">Next</button>
+      </div>
+    </div>
+    <div class="steptext" id="stepPanel" aria-live="polite"></div>
   </div>
+</section>
 
-  <h2>Where does the money actually go?</h2>
-  <p>It depends on the floor.</p>
-  <p><b>EU and UK ETS.</b> The airline buys allowances at a government auction or from another company. Auction money goes to governments. None of it goes to a project. The climate gain comes from the cap: there are fewer allowances each year, so the total pollution has to fall.</p>
-  <p><b>CORSIA and voluntary claims.</b> The airline pays a broker or the developer for credits. Most of the money ends up with the project, after the broker's margin and the fees for the standard, the registry and the auditors. This is the money that pays for the stoves, panels or trees. That is why it matters so much that the tonnes are real.</p>
+<section class="band" aria-labelledby="h-check">
+  <div class="wrap">
+    <div class="head">
+      <h2 id="h-check">Before you buy a CORSIA credit, check five things</h2>
+      <p>Supply is short. Airlines need more than 200 million eligible credits for 2024 to 2026, and a credit that fails one of these does not count.</p>
+    </div>
+    <ol class="checks">
+      <li><b>It comes from an approved programme</b><span>ICAO has approved ten programmes for 2024 to 2026. A credit from anywhere else does not count, however good it is.</span></li>
+      <li><b>The host country has signed off</b><span>The country where the project sits sends a letter of authorization. It agrees to take that tonne off its own climate total, so the tonne is not counted twice.</span></li>
+      <li><b>The project is recent enough</b><span>Its first crediting period started on or after 1 January 2016.</span></li>
+      <li><b>The tonnes were cut in 2021 to 2026</b><span>This is the credit's vintage. Older vintages do not count for this period.</span></li>
+      <li><b>It is labelled and cancelled in time</b><span>The registry marks it as CORSIA-eligible. The airline cancels it by 31 January 2028.</span></li>
+    </ol>
 
-  <h2>Why CORSIA credits are hard to find</h2>
-  <p>Not every credit counts for CORSIA. It has to come from one of the ten programmes ICAO has approved for 2024 to 2026. The host country also has to send a letter (a "letter of authorization"). In it, the country agrees to take that tonne off its own climate total, so the same tonne is not counted twice. This is called a corresponding adjustment.</p>
-  <p>Few countries had sent these letters, so supply has been short. Airlines need more than 200 million credits for 2024 to 2026 flights, and they have until 31 January 2028 to hand them in. A missed deadline is a compliance problem, so buying late is a real risk.</p>
-  <div class="readouts">
-    <div class="readout"><div class="k">Approved programmes, 2024 to 2026</div><div class="v num">10</div><div class="s">ICAO, 2026</div></div>
-    <div class="readout"><div class="k">Credits airlines need for 2024 to 2026</div><div class="v num">200m+</div><div class="s">IATA estimate</div></div>
-    <div class="readout"><div class="k">Deadline to hand them in</div><div class="v num">31 Jan 2028</div><div class="s">ICAO</div></div>
+    <div class="vol">
+      <h3>For voluntary claims, nobody checks for you</h3>
+      <div>
+        <p>There is no rulebook, so quality varies a lot. Some methods have let projects claim more tonnes than they saved, mostly in forests. Standards earn a fee on every credit, and they have been slow to tighten up.</p>
+        <p>The ICVCM's Core Carbon Principles label is the closest thing to a shared bar. Even then, look at the project itself before you put your name to a claim.</p>
+      </div>
+    </div>
+
+    <p class="endnote">Where this comes from: Siemens Stiftung Academy for Impact, <i>Carbon Markets</i> course (how credits are made, who does what, 2 to 5 years to first credits); ICAO, <i>CORSIA Eligible Emissions Units</i> and CORSIA newsletters 2026 (ten programmes, letters of authorization, 2016 start date, 2021 to 2026 vintages, 31 January 2028 deadline); IATA (more than 200 million units); European Commission and EASA (EU ETS rules, 30 September deadline, end of free allowances in 2026); UK ETS Authority (end of aviation free allowances in 2026); S&amp;P Global Platts (CORSIA credit price, 29 October 2026; EU allowance price, November 2026); Fastmarkets (UK allowance price, 16 October 2026); ICVCM (Core Carbon Principles). This page is here to help you understand how the money moves. It is not legal or investment advice.</p>
   </div>
-
-  <h2>Not every credit is as good as its label</h2>
-  <p>Standards are needed. Without them there is no shared idea of what counts. But they are not perfect. Studies and news reports have found some problems:</p>
-  <ul>
-    <li>Some recipes let projects claim more tonnes than they really saved, mostly in forest and land projects.</li>
-    <li>Rules were slow to change, even when new evidence said they were too generous.</li>
-    <li>Standards earn fees on each project and credit, which can pull against being strict.</li>
-    <li>Land disputes and unfair sharing of money were not always caught early.</li>
-  </ul>
-  <p>Standards are now tightening their rules. The ICVCM's Core Carbon Principles set a shared bar, and credits that meet it can carry a label. Still, a stamp from a standard does not prove a credit is good. It is worth looking at the project itself.</p>
-
-  <p class="endnote">Where this comes from: Siemens Stiftung Academy for Impact, <i>Carbon Markets</i> course (market actors, credit life cycle, 2 to 5 years to first credits); ICAO, <i>CORSIA Eligible Emissions Units</i> and CORSIA newsletters 2026 (ten approved programmes, letters of authorization, 31 January 2028 deadline); IATA (demand of more than 200 million units); European Commission and EASA (EU ETS rules, 30 September deadline, end of free allowances in 2026); UK ETS Authority (end of aviation free allowances in 2026); S&amp;P Global Platts (CORSIA credit price, 29 October 2026; EU allowance price, November 2026); Fastmarkets (UK allowance price, 16 October 2026); ICVCM (Core Carbon Principles). This page is here to help you understand how the money moves. It is not legal or investment advice.</p>
-</main>
+</section>
 
 <section class="contactband" aria-label="Contact">
   <div class="in">
     <div>
-      <h2>Got a question about carbon rules?</h2>
-      <p>Drop me a line about what you're working on and I'll set up a quick chat. No prep needed.</p>
+      <h2>Buying credits or allowances?</h2>
+      <p>Tell me which routes you fly and I'll show you which scheme each one falls under and what it costs. No prep needed.</p>
     </div>
-    <a class="btn" href="mailto:becharjaymal@gmail.com?subject=Briefing%20request">Get in touch</a>
+    <a class="btn" href="mailto:becharjaymal@gmail.com?subject=Carbon%20costs%20question">Get in touch</a>
   </div>
 </section>
 <footer class="sitefoot">
@@ -172,199 +224,157 @@ td.k{width:30%}
 <script>
 /* ===== DATA: edit here ===== */
 const SCHEMES = [
-  {id:'all', name:'All of it'},
-  {id:'eu', name:'EU ETS', col:0, base:'gov', unit:'Permits to pollute',
-   title:'EU ETS: one allowance per tonne',
-   text:'Covers flights inside Europe. The EU sets a cap on the total number of allowances and lowers it each year. From 2026, airlines get no free allowances, so they buy every one they need. Carbon credits cannot be used here.',
-   money:'Mostly to EU governments, through auctions. A pot of allowances is also set aside to help airlines pay for clean fuel (SAF).',
-   r:[['They hand in','EU allowances (EUAs)'],['Price now','about €87 to €90 a tonne','November 2026'],['Deadline','30 September','for last year\'s flights']]},
-  {id:'uk', name:'UK ETS', col:1, base:'gov', unit:'Permits to pollute',
-   title:'UK ETS: the same idea, its own market',
-   text:'Works like the EU scheme, for UK flights and flights from the UK to Europe. Free allowances for airlines also ended in 2026. Carbon credits cannot be used here either. In November 2026 the UK and EU said they had finished talks on joining the two markets, but more legal steps are needed before it works.',
-   money:'To the UK government, through auctions.',
-   r:[['They hand in','UK allowances (UKAs)'],['Price now','about £63 a tonne','mid-October 2026'],['To watch','Joining the EU market','price gap should shrink']]},
-  {id:'corsia', name:'CORSIA', col:2, base:'credit', unit:'Carbon credits',
-   title:'CORSIA: credits, but only some of them',
-   text:'The UN scheme for international flights. Airlines only pay for growth: the CO₂ above 85% of their 2019 level. They cover it by buying carbon credits and cancelling them. Only credits from approved programmes count, and only with a letter from the host country.',
-   money:'To the project developer, after broker margins and fees for the standard, registry and auditors.',
-   r:[['They hand in','CORSIA eligible credits'],['Price now','about $12.75 a tonne','29 October 2026'],['Deadline','31 January 2028','for 2024 to 2026 flights']]},
-  {id:'vol', name:'Voluntary claims', col:3, base:'credit', unit:'Carbon credits',
-   title:'Voluntary: credits nobody forces you to buy',
-   text:'Airlines, passengers and companies buy credits because they want to, often to say a trip or a year was "offset". There is no rule on which credits to use, so quality varies a lot. A credit only backs a claim once it is retired, which takes it off the market for good.',
-   money:'To the project developer, after the same margins and fees as CORSIA.',
-   r:[['They retire','Any credit the buyer picks'],['Price now','varies widely','by project type'],['Deadline','none','but the claim must match what was retired']]}
+  {id:'all', name:'All four'},
+  {id:'eu', name:'EU ETS', col:0, base:'gov', sub:'allowances',
+   title:'EU ETS', text:'The EU sets a cap and lowers it every year. Since 2026 airlines get no free allowances, so they buy every one.',
+   money:'EU governments, through auctions. None of it reaches a project.'},
+  {id:'uk', name:'UK ETS', col:1, base:'gov', sub:'allowances',
+   title:'UK ETS', text:'Same idea, its own market and price. The UK and EU have finished talks on joining the two markets. More legal steps are needed before it works.',
+   money:'The UK government, through auctions.'},
+  {id:'corsia', name:'CORSIA', col:2, base:'credit', sub:'credits, with a gate',
+   title:'CORSIA', text:'Airlines buy credits to cover their growth above 85% of 2019. Only credits that pass the gate count: an approved programme and a letter from the host country.',
+   money:'The project, after the broker\'s cut and fees for the standard, registry and auditors.'},
+  {id:'vol', name:'Voluntary', col:3, base:'credit', sub:'credits, no gate',
+   title:'Voluntary claims', text:'Airlines, passengers and companies buy credits because they choose to. A credit only backs a claim once it is retired, so it can never be sold again.',
+   money:'The project, after the same cut and fees as CORSIA.'}
 ];
-const ALL = {title:'Two floors, two kinds of unit',
-  text:'On the left, governments make allowances and sell them. On the right, projects make credits and sell them. The top floor is where an airline hands units in. A credit can never stand in for an EU or UK allowance today.',
-  money:'Down the left side, money goes to governments. Down the right side, it goes to projects.'};
+const ALL = {title:'Two ground floors', text:'Left: governments make allowances and sell them. Right: projects make credits and sell them. A credit cannot stand in for an EU or UK allowance today.',
+  money:'Down the left, to governments. Down the right, to projects.'};
 
-const STATIONS = ['Project developer','Standard','Auditor (VVB)','Registry','Broker','Buyer'];
+const STATIONS = ['Project','Auditor','Registry','Buyer'];
 const STEPS = [
-  {name:'Idea', at:0, title:'1. Find the activity',
-   who:'Project developer',
-   text:'A business sees a way to cut pollution. For example, schools in its region still cook on wood fires, so it offers electric cooking instead. Carbon money could help keep the service cheap enough for people to afford.',
-   money:'Nothing comes in yet. This is when financiers may lend or invest against future credits.'},
-  {name:'Rules', at:1, title:'2. Pick a standard and a recipe',
-   who:'Project developer and standard',
-   text:'The developer picks a standard and one of its methodologies. A methodology is a recipe for counting tonnes. They write a design document: what the project does, what would have happened without it (the baseline), and how they will measure.',
-   money:'The developer pays to prepare documents and to list with the standard.'},
-  {name:'Check plan', at:2, title:'3. Check the plan and register it',
-   who:'Auditor, then standard',
-   text:'An independent auditor checks the plan. Is the recipe right? Is the baseline fair? Would this happen anyway without carbon money? If the auditor says yes, the standard registers the project.',
-   money:'The developer pays the auditor.'},
-  {name:'Measure', at:0, title:'4. Build it and measure it',
-   who:'Project developer',
-   text:'The equipment goes in and starts working. The developer follows the measuring plan: how many devices, how much they are used, and how much old fuel is still burned.',
-   money:'The developer pays for the kit, the people and the data.'},
-  {name:'Check results', at:2, title:'5. Check the results',
-   who:'Auditor',
-   text:'After a set time, often one or two years, the developer adds up the tonnes saved. The auditor checks the numbers, visits some sites and talks to users. If the numbers do not hold up, fewer credits are made.',
-   money:'The developer pays the auditor again.'},
-  {name:'Issue', at:3, title:'6. Make the credits',
-   who:'Standard and registry',
-   text:'If the check passes, the standard tells the registry to make the credits. Each one gets its own serial number and goes into the developer\'s account. For CORSIA, it also needs the host country\'s letter.',
+  {name:'Plan', at:0, who:'Project developer, using a standard such as Verra or Gold Standard',
+   text:'A business finds a way to cut pollution, like swapping wood fires for clean stoves. It picks a standard and one of its recipes for counting tonnes, and writes down what would have happened without the project.',
+   money:'Nothing comes in yet. Lenders and investors may fund it now, against future credits.'},
+  {name:'Check', at:1, who:'An independent auditor, approved by the standard',
+   text:'The auditor checks the plan before it starts. Would this happen anyway without carbon money? After a year or two of running, the auditor checks the results too, and visits some sites.',
+   money:'The project pays the auditor. If the numbers do not hold up, fewer credits are made.'},
+  {name:'Issue', at:2, who:'The standard\'s registry',
+   text:'If the check passes, the registry makes the credits. Each one is a tonne, with its own serial number, in the project\'s account.',
    money:'The standard and registry charge a fee per credit.'},
-  {name:'Sell', at:5, title:'7. Sell the credits',
-   who:'Broker, then buyer',
-   text:'A broker helps find a buyer who wants this kind of project. The credits move through the registry from the developer to the buyer, sometimes through a broker\'s account on the way.',
-   money:'This is where money finally flows back to the project. The broker takes a margin.'},
-  {name:'Retire', at:3, title:'8. Retire them and make the claim',
-   who:'Buyer and registry',
-   text:'When the buyer is ready to make a claim, it asks the registry to retire the credits. The registry marks them as used, with who retired them, when, and why. Now they can never be sold again. An airline under CORSIA cancels them against what it owes.',
-   money:'None. Retiring is the point where the credit stops being something to trade.'}
+  {name:'Sell', at:3, who:'A broker, then the buyer',
+   text:'A broker finds a buyer who wants this kind of project. The credits move through the registry to the buyer.',
+   money:'Money finally flows back to the project. The broker takes a margin.'},
+  {name:'Retire', at:2, who:'The buyer asks the registry',
+   text:'When the buyer makes its claim, the registry marks the credits as used: who, when and why. They can never be sold again. An airline under CORSIA cancels them against what it owes.',
+   money:'None. This is where the credit stops being something to trade.'}
 ];
 /* =========================== */
 
 const NS='http://www.w3.org/2000/svg';
 function el(tag,attrs,parent,html){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(html!=null)e.innerHTML=html;if(parent)parent.appendChild(e);return e;}
-const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const W='#FFFFFF', MIST='#8B97A5', RULE='#1B2533', AMB='#F0A443', BLU='#8DB6EA', GRN='#5FC79A', RED='#E0796B';
 
-/* ===== Two floors drawing ===== */
+/* ===== Fig. 1, drawn as a sheet on the night ground ===== */
 const F=document.getElementById('floors');
-const CX=[125,375,625,875], TOP_Y=58, TOP_H=96, BASE_Y=356, BASE_H=118;
-el('text',{x:20,y:32,'font-size':14,fill:'var(--stone)','letter-spacing':'.08em'},F,'TOP FLOOR: WHERE AIRLINES HAND UNITS IN');
-el('text',{x:20,y:524,'font-size':14,fill:'var(--stone)','letter-spacing':'.08em'},F,'GROUND FLOOR: WHERE UNITS COME FROM');
-el('line',{x1:20,x2:980,y1:BASE_Y+BASE_H+18,y2:BASE_Y+BASE_H+18,stroke:'var(--ink)','stroke-width':1.5},F);
+el('defs',{},F,`<pattern id="hz" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="#2A3646" stroke-width="1.4"/></pattern>
+<marker id="mA" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="${AMB}"/></marker>
+<marker id="mB" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="${BLU}"/></marker>`);
+const CX=[150,450,750,1050], TY=40, TH=92, BY=352, BH=110;
+el('line',{x1:0,x2:1200,y1:TY+TH+0.5,y2:TY+TH+0.5,stroke:RULE},F);
+el('line',{x1:0,x2:1200,y1:BY+BH+14,y2:BY+BH+14,stroke:W,'stroke-width':1.5},F);
+el('text',{x:300,y:TY+TH+24,'text-anchor':'middle','font-size':14,fill:MIST,'font-style':'italic'},F,'Where airlines hand units in');
+el('text',{x:300,y:BY-14,'text-anchor':'middle','font-size':14,fill:MIST,'font-style':'italic'},F,'Where units come from');
 
-// ground floor: government cap (left) and credits (right)
 const baseGov=el('g',{class:'base'},F);
-el('rect',{x:20,y:BASE_Y,width:460,height:BASE_H,fill:'url(#hatch)',stroke:'var(--gov)','stroke-width':1},baseGov);
-el('rect',{x:34,y:BASE_Y+14,width:300,height:62,fill:'var(--paper)'},baseGov);
-el('text',{x:44,y:BASE_Y+40,'font-size':21,fill:'var(--ink)'},baseGov,'Government cap');
-el('text',{x:44,y:BASE_Y+64,'font-size':14.5,fill:'var(--stone)'},baseGov,'A law sets how many allowances exist.');
-el('rect',{x:34,y:BASE_Y+84,width:330,height:24,fill:'var(--paper)'},baseGov);
-el('text',{x:44,y:BASE_Y+101,'font-size':14.5,fill:'var(--stone)'},baseGov,'Fewer each year. Sold at auction.');
+el('rect',{x:20,y:BY,width:560,height:BH,fill:'url(#hz)',stroke:'#55606E'},baseGov);
+el('rect',{x:21,y:BY+1,width:330,height:74,fill:'#060C16'},baseGov);
+el('text',{x:40,y:BY+34,'font-size':23,fill:W},baseGov,'Government cap');
+el('text',{x:40,y:BY+60,'font-size':15,fill:MIST},baseGov,'A law fixes how many allowances exist.');
+el('rect',{x:21,y:BY+75,width:270,height:30,fill:'#060C16'},baseGov);
+el('text',{x:40,y:BY+96,'font-size':15,fill:MIST},baseGov,'Fewer each year. Sold at auction.');
 
 const baseCr=el('g',{class:'base'},F);
-el('rect',{x:520,y:BASE_Y,width:460,height:BASE_H,fill:'color-mix(in srgb, var(--credit) 9%, var(--paper))',stroke:'var(--credit)','stroke-width':1},baseCr);
-el('text',{x:536,y:BASE_Y+30,'font-size':21,fill:'var(--ink)'},baseCr,'Carbon credits');
-el('text',{x:536,y:BASE_Y+52,'font-size':14.5,fill:'var(--stone)'},baseCr,'1 credit = 1 tonne cut or removed by a project');
-['Cookstoves','Forests','Solar','Methane','Mangroves'].forEach((t,i)=>{
-  const x=556+i*88;
-  el('circle',{cx:x,cy:BASE_Y+80,r:7,fill:'var(--credit)'},baseCr);
-  el('text',{x,y:BASE_Y+104,'text-anchor':'middle','font-size':13,fill:'var(--stone)'},baseCr,t);
-});
+el('rect',{x:620,y:BY,width:560,height:BH,fill:'#0B1A1A',stroke:GRN,'stroke-opacity':.6},baseCr);
+el('text',{x:640,y:BY+34,'font-size':23,fill:W},baseCr,'Carbon credits');
+el('text',{x:640,y:BY+60,'font-size':15,fill:MIST},baseCr,'One credit, one tonne cut or removed by a project.');
+['Cookstoves','Forests','Solar','Methane','Mangroves'].forEach((t,i)=>{const x=664+i*112;
+  el('circle',{cx:x-30,cy:BY+90,r:4.5,fill:GRN},baseCr);
+  el('text',{x:x-20,y:BY+95,'font-size':14,fill:'#C3CAD3'},baseCr,t);});
 
-// "not accepted" link from credits to ETS
 const nolink=el('g',{class:'nolink'},F);
-el('path',{d:'M540 350 C 500 290, 470 250, 400 210',fill:'none',stroke:'var(--crit)','stroke-width':1.4,'stroke-dasharray':'4 5'},nolink);
-el('path',{d:'M486 258 l14 14 M500 258 l-14 14',stroke:'var(--crit)','stroke-width':2},nolink);
-el('text',{x:400,y:302,'font-size':13.5,fill:'var(--crit)','font-style':'italic'},nolink,'Credits not accepted');
-el('text',{x:400,y:319,'font-size':13.5,fill:'var(--crit)','font-style':'italic'},nolink,'in EU or UK ETS');
+el('path',{d:'M640 344 C 600 280, 560 236, 482 204',fill:'none',stroke:RED,'stroke-width':1.3,'stroke-dasharray':'3 5'},nolink);
+el('path',{d:'M566 238l12 12M578 238l-12 12',stroke:RED,'stroke-width':2},nolink);
+el('text',{x:494,y:186,'font-size':14,fill:RED,'font-style':'italic'},nolink,'Credits not accepted');
+el('text',{x:494,y:204,'font-size':14,fill:RED,'font-style':'italic'},nolink,'in EU or UK ETS');
 
-// top floor columns and pipes
-const cols=[], pipes=[];
+const cols=[],pipes=[];
 SCHEMES.filter(s=>s.col!=null).forEach(s=>{
   const x=CX[s.col], g=el('g',{class:'col'},F);
-  el('rect',{x:x-102,y:TOP_Y,width:204,height:TOP_H,fill:'var(--paper-2)',stroke:'var(--ink)','stroke-width':1},g);
-  el('text',{x,y:TOP_Y+40,'text-anchor':'middle','font-size':22,fill:'var(--ink)'},g,s.name);
-  el('text',{x,y:TOP_Y+66,'text-anchor':'middle','font-size':14.5,fill:'var(--stone)'},g,s.unit);
+  el('rect',{x:x-118,y:TY,width:236,height:TH,fill:'#0A1220',stroke:W,'stroke-width':1.2},g);
+  el('text',{x,y:TY+42,'text-anchor':'middle','font-size':25,fill:W},g,s.name==='Voluntary'?'Voluntary claims':s.name);
+  el('text',{x,y:TY+68,'text-anchor':'middle','font-size':15,fill:MIST,'font-style':'italic'},g,s.sub);
   cols[s.col]=g;
-  // pipe: money down (left), units up (right)
-  const p=el('g',{class:'pipe'},F);
-  const y1=TOP_Y+TOP_H+8, y2=BASE_Y-8;
-  el('line',{x1:x-14,x2:x-14,y1:y1,y2:y2,stroke:'var(--money)','stroke-width':2.2,class:'flow','marker-end':'url(#arrM)'},p);
-  el('line',{x1:x+14,x2:x+14,y1:y2,y2:y1,stroke:'var(--prussian)','stroke-width':2.2,class:'flow up','marker-end':'url(#arrU)'},p);
+  const p=el('g',{class:'pipe'},F), y1=TY+TH+10, y2=BY-26;
+  el('line',{x1:x-13,x2:x-13,y1,y2,stroke:AMB,'stroke-width':2,class:'flow','marker-end':'url(#mA)'},p);
+  el('line',{x1:x+13,x2:x+13,y1:y2,y2:y1,stroke:BLU,'stroke-width':2,class:'flow up','marker-end':'url(#mB)'},p);
   if(s.id==='corsia'){
-    // gate: host-country letter
-    el('line',{x1:x-46,x2:x-24,y1:258,y2:258,stroke:'var(--ink)','stroke-width':3},p);
-    el('line',{x1:x+24,x2:x+46,y1:258,y2:258,stroke:'var(--ink)','stroke-width':3},p);
-    el('text',{x:x+54,y:252,'font-size':13.5,fill:'var(--ink)'},p,'Gate: approved');
-    el('text',{x:x+54,y:269,'font-size':13.5,fill:'var(--ink)'},p,'programme + country letter');
+    el('path',{d:`M${x-60} 250H${x-26} M${x+26} 250H${x+60}`,stroke:W,'stroke-width':3},p);
+    el('text',{x:x+70,y:246,'font-size':14.5,fill:W},p,'Gate: approved programme');
+    el('text',{x:x+70,y:264,'font-size':14.5,fill:W},p,'and a host-country letter');
   }
-  if(s.id==='vol'){
-    el('text',{x:x-26,y:204,'text-anchor':'end','font-size':13.5,fill:'var(--stone)','font-style':'italic'},p,'No gate.');
-    el('text',{x:x-26,y:221,'text-anchor':'end','font-size':13.5,fill:'var(--stone)','font-style':'italic'},p,'Quality varies.');
-  }
+  if(s.id==='vol') el('text',{x:x+26,y:300,'font-size':14,fill:MIST,'font-style':'italic'},p,'No gate');
   pipes[s.col]=p;
 });
+const tb=el('g',{},F), tx0=728, ty0=BY+BH+28;
+[['Sheet','Who pays for carbon'],['Unit','1 tCO₂e'],['Prices','21 Nov 2026'],['Drawn','J. Bechar']].forEach((c,i)=>{
+  const w=[170,90,110,100][i], x=tx0+[0,170,260,370][i];
+  el('rect',{x,y:ty0,width:w,height:44,fill:'none',stroke:'#3A4656'},tb);
+  el('text',{x:x+10,y:ty0+17,'font-size':11.5,fill:MIST},tb,c[0]);
+  el('text',{x:x+10,y:ty0+35,'font-size':14,fill:W},tb,c[1]);
+});
+el('text',{x:0,y:ty0+28,'font-size':14,fill:MIST},F,`<tspan fill="${AMB}">- - -</tspan>  money, down      <tspan fill="${BLU}">- - -</tspan>  units, up`);
 
 const schemesEl=document.getElementById('schemes'), schemePanel=document.getElementById('schemePanel');
 const sBtns=SCHEMES.map(s=>{const b=document.createElement('button');b.textContent=s.name;b.onclick=()=>pick(s.id);schemesEl.appendChild(b);return b;});
-function readout(k,v,s){return `<div class="readout"><div class="k">${k}</div><div class="v sm">${v}</div>${s?`<div class="s">${s}</div>`:''}</div>`;}
 function pick(id){
-  const s=SCHEMES.find(x=>x.id===id);
+  const s=SCHEMES.find(x=>x.id===id), all=id==='all';
   sBtns.forEach((b,i)=>b.setAttribute('aria-pressed',SCHEMES[i].id===id));
-  const all=id==='all';
   SCHEMES.filter(x=>x.col!=null).forEach(x=>{const on=all||x.id===id;cols[x.col].classList.toggle('dim',!on);pipes[x.col].classList.toggle('dim',!on);});
   baseGov.classList.toggle('dim',!(all||s.base==='gov'));
   baseCr.classList.toggle('dim',!(all||s.base==='credit'));
   nolink.classList.toggle('dim',!(all||s.base==='gov'));
   const d=all?ALL:s;
-  schemePanel.innerHTML=`<h3>${d.title}</h3><p>${d.text}</p><p class="money">${d.money}</p>`+(d.r?`<div class="readouts">${d.r.map(r=>readout(r[0],r[1],r[2])).join('')}</div>`:'');
+  schemePanel.innerHTML=`<h3>${d.title}</h3><div><p>${d.text}</p><p class="m"><b>Money goes to</b> ${d.money.charAt(0).toLowerCase()+d.money.slice(1)}</p></div>`;
 }
 pick('all');
 
-/* ===== Credit life cycle ===== */
-const L=document.getElementById('life');
-const SX=i=>90+i*164, SY=96;
-el('line',{x1:SX(0),x2:SX(5),y1:SY,y2:SY,stroke:'var(--rule-p)','stroke-width':2},L);
+/* ===== Fig. 2, life of a credit ===== */
+const L=document.getElementById('life'), SX=i=>120+i*320, SY=70;
+el('defs',{},L,`<marker id="mW" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#9A5B00"/></marker>`);
+el('line',{x1:SX(0),x2:SX(3),y1:SY,y2:SY,stroke:'var(--field-line)','stroke-width':1.5},L);
 const stations=STATIONS.map((n,i)=>{
-  const g=el('g',{class:'station'},L);
-  const c=el('circle',{cx:SX(i),cy:SY,r:9,fill:'var(--paper)',stroke:'var(--stone)','stroke-width':1.5},g);
-  const t=el('text',{x:SX(i),y:SY-26,'text-anchor':'middle','font-size':16,fill:'var(--stone)'},g,n);
+  const c=el('circle',{cx:SX(i),cy:SY,r:8,fill:'var(--paper-2)',stroke:'var(--stone)','stroke-width':1.5},L);
+  const t=el('text',{x:SX(i),y:SY-22,'text-anchor':'middle','font-size':18,fill:'var(--stone)'},L,n);
   return {c,t};
 });
-// money return arc (shown at the sell step)
-const moneyArc=el('path',{d:`M${SX(5)} ${SY+24} C ${SX(4)} ${SY+96}, ${SX(1)} ${SY+96}, ${SX(0)} ${SY+24}`,fill:'none',stroke:'var(--money)','stroke-width':2.2,class:'flow','marker-end':'url(#arrM)',opacity:0},L);
-moneyArc.style.transition='opacity .3s';
-const moneyLbl=el('text',{x:(SX(0)+SX(5))/2,y:SY+104,'text-anchor':'middle','font-size':14,fill:'var(--money)',opacity:0},L,'Money goes back to the project');
-moneyLbl.style.transition='opacity .3s';
-// token
+const arc=el('path',{d:`M${SX(3)} ${SY+20} C ${SX(2)} ${SY+120}, ${SX(1)} ${SY+120}, ${SX(0)} ${SY+20}`,fill:'none',stroke:'var(--warn)','stroke-width':2,class:'flow','marker-end':'url(#mW)',opacity:0},L);
+const arcL=el('text',{x:(SX(0)+SX(3))/2,y:SY+132,'text-anchor':'middle','font-size':15,fill:'var(--warn)','font-style':'italic',opacity:0},L,'money back to the project');
+[arc,arcL].forEach(e=>e.style.transition='opacity .3s');
 const token=el('g',{},L);
-const tokRect=el('rect',{x:-32,y:-13,width:64,height:26,fill:'var(--paper)',stroke:'var(--ink)','stroke-width':1.4},token);
-const tokTxt=el('text',{x:0,y:5,'text-anchor':'middle','font-size':12.5,fill:'var(--ink)'},token,'plan');
-const stamp=el('text',{x:0,y:-22,'text-anchor':'middle','font-size':13,fill:'var(--crit)','font-style':'italic',opacity:0},token,'retired');
-let tx=SX(0), anim=null;
-function moveTo(x){
-  cancelAnimationFrame(anim);
-  const x0=tx, dur=reduced?0:700, t0=performance.now();
-  (function frame(now){const t=dur?Math.min(1,(now-t0)/dur):1, e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;tx=x0+(x-x0)*e;token.setAttribute('transform',`translate(${tx} ${SY+48})`);if(t<1)anim=requestAnimationFrame(frame);})(t0);
-}
-token.setAttribute('transform',`translate(${tx} ${SY+48})`);
+const tR=el('rect',{x:-34,y:-14,width:68,height:28,fill:'var(--paper)',stroke:'var(--ink)','stroke-width':1.3},token);
+const tT=el('text',{x:0,y:5,'text-anchor':'middle','font-size':13.5,fill:'var(--ink)'},token,'plan');
+const tS=el('path',{d:'M-38 -18L38 18',stroke:'var(--crit)','stroke-width':2,opacity:0},token);
+let tx=SX(0),anim=null;
+token.setAttribute('transform',`translate(${tx} ${SY+44})`);
+function moveTo(x){cancelAnimationFrame(anim);const x0=tx,dur=reduced?0:650,t0=performance.now();
+  (function f(n){const t=dur?Math.min(1,(n-t0)/dur):1,e=1-Math.pow(1-t,4);tx=x0+(x-x0)*e;token.setAttribute('transform',`translate(${tx} ${SY+44})`);if(t<1)anim=requestAnimationFrame(f);})(t0);}
 
 const stepsEl=document.getElementById('steps'), stepPanel=document.getElementById('stepPanel');
 const pills=STEPS.map((s,i)=>{const b=document.createElement('button');b.textContent=s.name;b.onclick=()=>{stop();go(i);};stepsEl.appendChild(b);return b;});
 let cur=0;
 function go(i){
-  cur=Math.max(0,Math.min(STEPS.length-1,i));
-  const s=STEPS[cur];
+  cur=Math.max(0,Math.min(STEPS.length-1,i)); const s=STEPS[cur];
   pills.forEach((b,j)=>b.setAttribute('aria-current',j===cur));
-  stations.forEach((st,j)=>{const on=j===s.at||(cur===2&&j===1)||(cur===5&&j===1)||(cur===6&&j===4);
-    st.c.setAttribute('fill',on?'var(--prussian)':'var(--paper)');st.c.setAttribute('stroke',on?'var(--prussian)':'var(--stone)');
-    st.t.setAttribute('fill',on?'var(--ink)':'var(--stone)');});
-  const issued=cur>=5;
-  tokTxt.textContent=issued?'1 tCO₂e':'plan';
-  tokRect.setAttribute('fill',issued?'color-mix(in srgb, var(--credit) 14%, var(--paper))':'var(--paper)');
-  tokRect.setAttribute('stroke',issued?'var(--credit)':'var(--ink)');
-  stamp.setAttribute('opacity',cur===7?1:0);
-  const sell=cur===6;
-  moneyArc.setAttribute('opacity',sell?1:0);moneyLbl.setAttribute('opacity',sell?1:0);
+  stations.forEach((st,j)=>{const on=j===s.at;st.c.setAttribute('fill',on?'var(--prussian)':'var(--paper-2)');st.c.setAttribute('stroke',on?'var(--prussian)':'var(--stone)');st.t.setAttribute('fill',on?'var(--ink)':'var(--stone)');});
+  const made=cur>=2; tT.textContent=made?'1 tCO₂e':'plan'; tR.setAttribute('stroke',made?'var(--ok)':'var(--ink)');
+  tS.setAttribute('opacity',cur===4?1:0);
+  arc.setAttribute('opacity',cur===3?1:0); arcL.setAttribute('opacity',cur===3?1:0);
   moveTo(SX(s.at));
-  stepPanel.innerHTML=`<h3>${s.title}</h3><p class="who">${s.who}</p><p>${s.text}</p><p class="money">${s.money}</p>`;
+  stepPanel.innerHTML=`<div><h3>${cur+1}. ${s.name}</h3><p class="who">${s.who}</p></div><div><p>${s.text}</p><p class="m"><b>Money.</b> ${s.money}</p></div>`;
 }
-let timer=null;
-const playBtn=document.getElementById('play');
+let timer=null; const playBtn=document.getElementById('play');
 function stop(){clearInterval(timer);timer=null;playBtn.textContent='Play';}
 playBtn.onclick=()=>{if(timer){stop();return;}playBtn.textContent='Pause';if(cur===STEPS.length-1)go(0);timer=setInterval(()=>{if(cur>=STEPS.length-1){stop();return;}go(cur+1);},4200);};
 document.getElementById('prev').onclick=()=>{stop();go(cur-1);};
