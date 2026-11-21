@@ -46,9 +46,38 @@ svg text{font-family:var(--serif)}
 /* drawing states */
 .col,.base,.pipe,.nolink{transition:opacity 260ms ease}
 .dim{opacity:.16}
-.flow{stroke-dasharray:6 8;animation:flow 1.6s linear infinite}
-.flow.up{animation-direction:reverse}
-@keyframes flow{to{stroke-dashoffset:-28}}
+:root{--spring:cubic-bezier(.34,1.56,.64,1)}
+.col{transform-box:fill-box;transform-origin:50% 100%;transition:opacity 260ms ease,transform 520ms var(--spring)}
+.col.on{transform:scale(1.06) translateY(-4px)}
+.col{cursor:pointer}
+.choice button{transition:color 150ms ease,border-color 150ms ease,transform 380ms var(--spring)}
+.choice button:hover{transform:translateY(-3px)}
+.choice button:active{transform:translateY(1px) scale(.97)}
+.btn{transition:background-color 160ms ease,border-color 160ms ease,transform 380ms var(--spring)}
+.btn:hover{transform:translateY(-2px)}
+@media (prefers-reduced-motion:reduce){.col.on{transform:none}}
+
+/* Carbon bill */
+.bill-in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px 64px;margin-bottom:40px}
+@media (max-width:760px){.bill-in{grid-template-columns:1fr}}
+.bill-in .v{font-size:clamp(1.6rem,2.6vw,2.2rem);line-height:1.1;font-variant-numeric:lining-nums tabular-nums;margin:2px 0 8px}
+.presets{display:flex;flex-wrap:wrap;gap:4px 22px;margin-top:10px}
+.presets button{font:inherit;font-size:15px;background:none;border:0;border-bottom:1px solid var(--field-line);padding:4px 0;color:var(--stone);cursor:pointer;transition:color 150ms,transform 380ms var(--spring)}
+.presets button:hover{color:var(--ink);transform:translateY(-2px)}
+.billrow{display:grid;grid-template-columns:9rem minmax(0,1fr) 11rem;gap:8px 28px;align-items:center;padding:18px 0;border-bottom:1px solid var(--rule-p)}
+.billrow:first-of-type{border-top:2px solid var(--prussian)}
+.billrow .nm{font-size:22px;line-height:1.2}
+.billrow .nm small{display:block;font-size:14px;color:var(--stone)}
+.track{position:relative;height:34px}
+.track .bar{position:absolute;left:0;top:9px;height:16px;background:var(--rule-p);width:100%}
+.track .fill{position:absolute;left:0;top:9px;height:16px;transition:width 700ms var(--spring)}
+.track .coins{position:absolute;top:0;bottom:0;left:0;transition:left 700ms var(--spring);pointer-events:none}
+.track .coin{position:absolute;top:2px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:14px;color:#3B2600;background:#F0A443;box-shadow:0 2px 4px rgba(17,22,28,.25);animation:drop 700ms var(--spring) both}
+@keyframes drop{from{transform:translateY(-26px) scale(.6);opacity:0}to{transform:none;opacity:1}}
+.billrow .amt{text-align:right;font-size:clamp(1.5rem,2.4vw,2rem);font-variant-numeric:lining-nums tabular-nums;line-height:1.1}
+.billrow .amt small{display:block;font-size:14px;color:var(--stone)}
+@media (max-width:760px){.billrow{grid-template-columns:1fr auto}.billrow .track{grid-column:1/-1;order:3}}
+.bill-note{margin-top:18px;font-size:15.5px;color:var(--stone);max-width:52em}
 
 /* Cost ledger */
 .ledger th:not(:first-child),.ledger td:not(:first-child){padding-left:8px}
@@ -151,6 +180,32 @@ svg text{font-family:var(--serif)}
       </table>
     </div>
     <p class="after">CORSIA only counts the CO₂ above 85% of an airline's 2019 level, so most tonnes cost nothing under it. <a href="/aviation-emissions/corsia-calculator/">Work out what a route owes with the CORSIA calculator</a>, or see <a href="/aviation-emissions/climate-policies/">every rule and its price</a>.</p>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="h-bill" style="border-top:1px solid var(--rule-p)">
+  <div class="wrap">
+    <div class="head">
+      <h2 id="h-bill">Watch a carbon bill add up</h2>
+      <p>Pick how much CO₂ a year, and see what it would cost under each scheme at today's prices. The more coins, the bigger the bill.</p>
+    </div>
+    <div class="bill-in">
+      <div class="field">
+        <label for="tonnes">CO₂ a year</label>
+        <div class="v" id="tonnesOut">100,000 tonnes</div>
+        <input type="range" id="tonnes" min="0" max="100" step="1" value="60" aria-describedby="tonnesHint">
+        <div class="presets" id="presets"></div>
+        <p class="hint" id="tonnesHint">One A320 flying for an hour makes about 7.9 tonnes of CO₂.</p>
+      </div>
+      <div class="field">
+        <label for="growth">Share that counts under CORSIA</label>
+        <div class="v" id="growthOut">15%</div>
+        <input type="range" id="growth" min="0" max="40" step="1" value="15">
+        <p class="hint">CORSIA only charges for growth above 85% of 2019, so only part of the tonnes count. 15% is an example. Use the <a href="/aviation-emissions/corsia-calculator/">CORSIA calculator</a> for a real route.</p>
+      </div>
+    </div>
+    <div id="billRows" aria-live="polite"></div>
+    <p class="bill-note">Each row asks: what if all of these tonnes fell under this one scheme? A real airline splits its flights across schemes by route. Prices: EU €88, UK £63, CORSIA $12.75 a tonne, checked November 2026.</p>
   </div>
 </section>
 
@@ -294,12 +349,12 @@ el('text',{x:640,y:BY+60,'font-size':15,fill:MIST},baseCr,'One credit, one tonne
   el('text',{x:x-20,y:BY+95,'font-size':14,fill:'#C3CAD3'},baseCr,t);});
 
 const nolink=el('g',{class:'nolink'},F);
-el('path',{d:'M640 344 C 600 280, 560 236, 482 204',fill:'none',stroke:RED,'stroke-width':1.3,'stroke-dasharray':'3 5'},nolink);
+el('path',{d:'M640 344 C 600 280, 560 236, 482 204',fill:'none',stroke:RED,'stroke-width':1.3,'stroke-opacity':.8},nolink);
 el('path',{d:'M566 238l12 12M578 238l-12 12',stroke:RED,'stroke-width':2},nolink);
 el('text',{x:494,y:186,'font-size':14,fill:RED,'font-style':'italic'},nolink,'Credits not accepted');
 el('text',{x:494,y:204,'font-size':14,fill:RED,'font-style':'italic'},nolink,'in EU or UK ETS');
 
-const cols=[],pipes=[];
+const cols=[],pipes=[],movers=[];
 SCHEMES.filter(s=>s.col!=null).forEach(s=>{
   const x=CX[s.col], g=el('g',{class:'col'},F);
   el('rect',{x:x-118,y:TY,width:236,height:TH,fill:'#0A1220',stroke:W,'stroke-width':1.2},g);
@@ -307,8 +362,15 @@ SCHEMES.filter(s=>s.col!=null).forEach(s=>{
   el('text',{x,y:TY+68,'text-anchor':'middle','font-size':15,fill:MIST,'font-style':'italic'},g,s.sub);
   cols[s.col]=g;
   const p=el('g',{class:'pipe'},F), y1=TY+TH+10, y2=BY-26;
-  el('line',{x1:x-13,x2:x-13,y1,y2,stroke:AMB,'stroke-width':2,class:'flow','marker-end':'url(#mA)'},p);
-  el('line',{x1:x+13,x2:x+13,y1:y2,y2:y1,stroke:BLU,'stroke-width':2,class:'flow up','marker-end':'url(#mB)'},p);
+  el('line',{x1:x-13,x2:x-13,y1,y2,stroke:AMB,'stroke-width':2,'stroke-opacity':.55,'marker-end':'url(#mA)'},p);
+  el('line',{x1:x+13,x2:x+13,y1:y2,y2:y1,stroke:BLU,'stroke-width':2,'stroke-opacity':.55,'marker-end':'url(#mB)'},p);
+  const sym={eu:'€',uk:'£',corsia:'$',vol:'$'}[s.id];
+  for(let k=0;k<3;k++){
+    const c=el('g',{},p); el('circle',{r:10,fill:AMB},c); el('text',{y:4.5,'text-anchor':'middle','font-size':12.5,fill:'#3B2600'},c,sym);
+    movers.push({g:c,x:x-13,a:y1+4,b:y2-12,ph:k/3,down:true,gate:s.id==='corsia'});
+    const u=el('g',{},p); el('rect',{x:-9,y:-7,width:18,height:14,fill:BLU},u); el('text',{y:4,'text-anchor':'middle','font-size':9.5,fill:'#06203F'},u,'1t');
+    movers.push({g:u,x:x+13,a:y2-4,b:y1+12,ph:k/3+.17,down:false});
+  }
   if(s.id==='corsia'){
     el('path',{d:`M${x-60} 250H${x-26} M${x+26} 250H${x+60}`,stroke:W,'stroke-width':3},p);
     el('text',{x:x+70,y:246,'font-size':14.5,fill:W},p,'Gate: approved programme');
@@ -324,14 +386,31 @@ const tb=el('g',{},F), tx0=728, ty0=BY+BH+28;
   el('text',{x:x+10,y:ty0+17,'font-size':11.5,fill:MIST},tb,c[0]);
   el('text',{x:x+10,y:ty0+35,'font-size':14,fill:W},tb,c[1]);
 });
-el('text',{x:0,y:ty0+28,'font-size':14,fill:MIST},F,`<tspan fill="${AMB}">- - -</tspan>  money, down      <tspan fill="${BLU}">- - -</tspan>  units, up`);
+const lg=el('g',{transform:`translate(10 ${ty0+22})`},F);
+el('circle',{r:9,fill:AMB},lg); el('text',{y:4,'text-anchor':'middle','font-size':11,fill:'#3B2600'},lg,'€');
+el('text',{x:18,y:5,'font-size':14,fill:MIST},lg,'money, going down');
+el('rect',{x:160,y:-7,width:18,height:14,fill:BLU},lg); el('text',{x:169,y:4,'text-anchor':'middle','font-size':9.5,fill:'#06203F'},lg,'1t');
+el('text',{x:188,y:5,'font-size':14,fill:MIST},lg,'one tonne, going up');
+// movers: coins drop with a little bounce at the bottom, tonne blocks rise
+(function tick(now){
+  movers.forEach(m=>{
+    let t=reduced?m.ph:((now/2600)+m.ph)%1;
+    let y=m.a+(m.b-m.a)*t, sx=1;
+    if(m.down){ if(t>.86){const k=(t-.86)/.14;y=m.b-Math.abs(Math.sin(k*Math.PI))*10;} if(m.gate&&Math.abs(y-250)<12) sx=.8; }
+    const o=t<.08?t/.08:(t>.94?(1-t)/.06:1);
+    m.g.setAttribute('transform',`translate(${m.x} ${y}) scale(${sx})`); m.g.setAttribute('opacity',o);
+  });
+  if(!reduced) requestAnimationFrame(tick);
+})(performance.now());
+// click a column to pick it
+SCHEMES.filter(s=>s.col!=null).forEach(s=>cols[s.col].addEventListener('click',()=>pick(s.id)));
 
 const schemesEl=document.getElementById('schemes'), schemePanel=document.getElementById('schemePanel');
 const sBtns=SCHEMES.map(s=>{const b=document.createElement('button');b.textContent=s.name;b.onclick=()=>pick(s.id);schemesEl.appendChild(b);return b;});
 function pick(id){
   const s=SCHEMES.find(x=>x.id===id), all=id==='all';
   sBtns.forEach((b,i)=>b.setAttribute('aria-pressed',SCHEMES[i].id===id));
-  SCHEMES.filter(x=>x.col!=null).forEach(x=>{const on=all||x.id===id;cols[x.col].classList.toggle('dim',!on);pipes[x.col].classList.toggle('dim',!on);});
+  SCHEMES.filter(x=>x.col!=null).forEach(x=>{const on=all||x.id===id;cols[x.col].classList.toggle('dim',!on);cols[x.col].classList.toggle('on',!all&&x.id===id);pipes[x.col].classList.toggle('dim',!on);});
   baseGov.classList.toggle('dim',!(all||s.base==='gov'));
   baseCr.classList.toggle('dim',!(all||s.base==='credit'));
   nolink.classList.toggle('dim',!(all||s.base==='gov'));
@@ -349,7 +428,13 @@ const stations=STATIONS.map((n,i)=>{
   const t=el('text',{x:SX(i),y:SY-22,'text-anchor':'middle','font-size':18,fill:'var(--stone)'},L,n);
   return {c,t};
 });
-const arc=el('path',{d:`M${SX(3)} ${SY+20} C ${SX(2)} ${SY+120}, ${SX(1)} ${SY+120}, ${SX(0)} ${SY+20}`,fill:'none',stroke:'var(--warn)','stroke-width':2,class:'flow','marker-end':'url(#mW)',opacity:0},L);
+const arc=el('path',{d:`M${SX(3)} ${SY+20} C ${SX(2)} ${SY+120}, ${SX(1)} ${SY+120}, ${SX(0)} ${SY+20}`,fill:'none',stroke:'var(--warn)','stroke-width':2,'stroke-opacity':.6,'marker-end':'url(#mW)',opacity:0},L);
+const arcCoins=[0,1,2,3].map(k=>{const c=el('g',{opacity:0},L);el('circle',{r:10,fill:'#F0A443'},c);el('text',{y:4.5,'text-anchor':'middle','font-size':12.5,fill:'#3B2600'},c,'$');return {c,ph:k/4};});
+function arcTick(now){const on=cur===3, Ln=arc.getTotalLength();
+  arcCoins.forEach(a=>{if(!on){a.c.setAttribute('opacity',0);return;}const t=reduced?a.ph:((now/2400)+a.ph)%1;const pt=arc.getPointAtLength(t*Ln);
+    a.c.setAttribute('transform',`translate(${pt.x} ${pt.y})`);a.c.setAttribute('opacity',t<.06?t/.06:(t>.94?(1-t)/.06:1));});
+  if(!reduced)requestAnimationFrame(arcTick);}
+requestAnimationFrame(arcTick);
 const arcL=el('text',{x:(SX(0)+SX(3))/2,y:SY+132,'text-anchor':'middle','font-size':15,fill:'var(--warn)','font-style':'italic',opacity:0},L,'money back to the project');
 [arc,arcL].forEach(e=>e.style.transition='opacity .3s');
 const token=el('g',{},L);
@@ -359,7 +444,7 @@ const tS=el('path',{d:'M-38 -18L38 18',stroke:'var(--crit)','stroke-width':2,opa
 let tx=SX(0),anim=null;
 token.setAttribute('transform',`translate(${tx} ${SY+44})`);
 function moveTo(x){cancelAnimationFrame(anim);const x0=tx,dur=reduced?0:650,t0=performance.now();
-  (function f(n){const t=dur?Math.min(1,(n-t0)/dur):1,e=1-Math.pow(1-t,4);tx=x0+(x-x0)*e;token.setAttribute('transform',`translate(${tx} ${SY+44})`);if(t<1)anim=requestAnimationFrame(f);})(t0);}
+  (function f(n){const t=dur?Math.min(1,(n-t0)/dur):1,c1=1.70158,e=1+(c1+1)*Math.pow(t-1,3)+c1*Math.pow(t-1,2);tx=x0+(x-x0)*e;token.setAttribute('transform',`translate(${tx} ${SY+44})`);if(t<1)anim=requestAnimationFrame(f);})(t0);}
 
 const stepsEl=document.getElementById('steps'), stepPanel=document.getElementById('stepPanel');
 const pills=STEPS.map((s,i)=>{const b=document.createElement('button');b.textContent=s.name;b.onclick=()=>{stop();go(i);};stepsEl.appendChild(b);return b;});
@@ -380,6 +465,40 @@ playBtn.onclick=()=>{if(timer){stop();return;}playBtn.textContent='Pause';if(cur
 document.getElementById('prev').onclick=()=>{stop();go(cur-1);};
 document.getElementById('next').onclick=()=>{stop();go(cur+1);};
 go(0);
+
+/* ===== Carbon bill ===== */
+const BILL=[
+  {id:'eu',nm:'EU ETS',sub:'every tonne',cur:'€',price:88,share:()=>1,col:'#1F5FAD'},
+  {id:'uk',nm:'UK ETS',sub:'every tonne',cur:'£',price:63,share:()=>1,col:'#4D7FC2'},
+  {id:'co',nm:'CORSIA',sub:'growth only',cur:'$',price:12.75,share:()=>+gEl.value/100,col:'#1E8A5E'}
+];
+const tEl=document.getElementById('tonnes'), gEl=document.getElementById('growth'), rowsEl=document.getElementById('billRows');
+const toT=v=>Math.round(Math.pow(10,2+v/100*5)/100)*100||100; // 100 t to 10 million t, log scale
+const fromT=t=>Math.round((Math.log10(t)-2)/5*100);
+const fmt=n=>n>=1e9?(n/1e9).toFixed(2)+'bn':n>=1e6?(n/1e6).toFixed(n>=1e8?0:1)+'m':n>=1e4?Math.round(n/1e3)+'k':Math.round(n).toLocaleString('en-GB');
+[['One A320 hour, 8 t',8],['100,000 t',100000],['1 million t',1000000],['10 million t',10000000]].forEach(([n,t])=>{
+  const b=document.createElement('button');b.textContent=n;b.onclick=()=>{tEl.value=fromT(t);update(t);};document.getElementById('presets').appendChild(b);});
+rowsEl.innerHTML=BILL.map(b=>`<div class="billrow" id="r-${b.id}"><div class="nm">${b.nm}<small>${b.sub}, ${b.cur}${b.price} a tonne</small></div><div class="track"><div class="bar"></div><div class="fill" style="background:${b.col}"></div><div class="coins"></div></div><div class="amt"><span class="n">0</span><small>a year</small></div></div>`).join('');
+const shown={eu:0,uk:0,co:0}, lastCoins={eu:0,uk:0,co:0};
+function update(forceT){
+  const T=forceT||toT(+tEl.value);
+  document.getElementById('tonnesOut').textContent=T.toLocaleString('en-GB')+' tonnes';
+  document.getElementById('growthOut').textContent=gEl.value+'%';
+  BILL.forEach(b=>{
+    const r=document.getElementById('r-'+b.id), sh=b.share(), cost=T*sh*b.price;
+    r.querySelector('.fill').style.width=(sh*100)+'%';
+    // coins: one per order of magnitude step, max 10
+    const n=cost<=0?0:Math.max(1,Math.min(10,Math.round(Math.log10(cost)*1.6-1)));
+    const box=r.querySelector('.coins');
+    const w=n*20+12;
+    box.style.left=`clamp(0px, calc(${sh*100}% - ${w}px), calc(100% - ${w}px))`;
+    if(n!==lastCoins[b.id]){box.innerHTML='';for(let i=0;i<n;i++){const c=document.createElement('span');c.className='coin';c.textContent=b.cur;c.style.left=(i*20)+'px';c.style.animationDelay=(reduced?0:i*45)+'ms';box.appendChild(c);}lastCoins[b.id]=n;}
+    const el2=r.querySelector('.n'), from=shown[b.id], t0=performance.now(), dur=reduced?0:600;
+    (function f(now){const t=dur?Math.min(1,(now-t0)/dur):1,e=1-Math.pow(1-t,3),v=from+(cost-from)*e;el2.textContent=b.cur+fmt(v);if(t<1)requestAnimationFrame(f);else shown[b.id]=cost;})(t0);
+  });
+}
+tEl.addEventListener('input',()=>update()); gEl.addEventListener('input',()=>update());
+update();
 </script>
 </body>
 </html>
