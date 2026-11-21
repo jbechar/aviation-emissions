@@ -57,6 +57,18 @@ svg text{font-family:var(--serif)}
 .btn:hover{transform:translateY(-2px)}
 @media (prefers-reduced-motion:reduce){.col.on{transform:none}}
 
+/* Money map */
+.node{cursor:pointer}
+.node rect.hit{transition:none}
+.node rect{transition:transform 420ms var(--spring),fill 200ms}
+.node rect{transform-box:fill-box;transform-origin:center}
+.node:hover rect:not(.hit){transform:scaleX(1.6)}
+.node:focus{outline:none}
+.node:focus-visible rect:not(.hit){fill:#F0A443}
+.node text{paint-order:stroke;stroke:#060C16;stroke-width:5px;stroke-linejoin:round}
+.node,.rib{transition:opacity 260ms ease}
+.mapnote{font-size:14.5px;color:var(--mist);margin-top:14px;max-width:60em}
+
 /* Carbon bill */
 .bill-in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px 64px;margin-bottom:40px}
 @media (max-width:760px){.bill-in{grid-template-columns:1fr}}
@@ -143,7 +155,26 @@ svg text{font-family:var(--serif)}
   </div>
 </header>
 
-<section class="band night" aria-labelledby="h-floors">
+<section class="band night" aria-labelledby="h-map">
+  <div class="wrap">
+    <div class="head">
+      <h2 id="h-map">Follow the money, from ticket to tree</h2>
+      <p>The money starts with the people who fly. It passes through the airline and into one of four schemes. Then it ends up with governments or with real projects. Tap any stop to light up its path.</p>
+    </div>
+    <div class="picker">
+      <span class="label">Show</span>
+      <div class="choice" id="mapPick" role="group" aria-label="Pick a path"></div>
+    </div>
+    <p class="fig">Fig. 1. Where the money starts, who issues the units, and where the money ends up.</p>
+    <div class="scroll">
+      <svg id="map" viewBox="0 0 1200 600" role="img" aria-label="Money map. Passengers' fares and the airline's own profit pay the airline. The airline pays into EU ETS, UK ETS, CORSIA and voluntary credits. EU ETS money goes through auctions to national climate spending, the EU Innovation Fund and clean-fuel support. UK ETS money goes to the UK Treasury. CORSIA and voluntary money goes through brokers and registries to fees and to projects: forests, cookstoves and methane leak repair."></svg>
+    </div>
+    <div class="readline" id="mapPanel" aria-live="polite"></div>
+    <p class="mapnote">Not to scale: line widths do not show amounts. Project examples are ones whose credits have been approved or used for CORSIA so far.</p>
+  </div>
+</section>
+
+<section class="band night" aria-labelledby="h-floors" style="background:var(--night-2);border-top:1px solid var(--rule-n)">
   <div class="wrap">
     <div class="head">
       <h2 id="h-floors">A permit and a credit are both one tonne. They point opposite ways.</h2>
@@ -154,7 +185,7 @@ svg text{font-family:var(--serif)}
       <span class="label">Follow the money for</span>
       <div class="choice" id="schemes" role="group" aria-label="Pick a scheme"></div>
     </div>
-    <p class="fig">Fig. 1. Where each scheme gets its units. Money goes down, units come up.</p>
+    <p class="fig">Fig. 2. Where each scheme gets its units. Money goes down, units come up.</p>
     <div class="scroll">
       <svg id="floors" viewBox="0 0 1200 560" role="img" aria-label="Drawing in two levels. Top: EU ETS, UK ETS, CORSIA and voluntary claims. The EU and UK schemes draw allowances from a government cap. CORSIA and voluntary claims draw carbon credits from projects. CORSIA has a gate: approved programme and a host-country letter."></svg>
     </div>
@@ -215,7 +246,7 @@ svg text{font-family:var(--serif)}
       <h2 id="h-life">How one credit is made, sold and used up</h2>
       <p>The same five steps, whoever buys it. From first idea to first credit usually takes 2 to 5 years, so projects need money long before they earn any.</p>
     </div>
-    <p class="fig">Fig. 2. The life of one credit.</p>
+    <p class="fig">Fig. 3. The life of one credit.</p>
     <div class="scroll"><svg id="life" viewBox="0 0 1200 220" role="img" aria-label="The life of a carbon credit: project, auditor, registry, buyer"></svg></div>
     <div class="controls">
       <div class="choice" id="steps"></div>
@@ -251,7 +282,7 @@ svg text{font-family:var(--serif)}
       </div>
     </div>
 
-    <p class="endnote">Where this comes from: Siemens Stiftung Academy for Impact, <i>Carbon Markets</i> course (how credits are made, who does what, 2 to 5 years to first credits); ICAO, <i>CORSIA Eligible Emissions Units</i> and CORSIA newsletters 2026 (ten programmes, letters of authorization, 2016 start date, 2021 to 2026 vintages, 31 January 2028 deadline); IATA (more than 200 million units); European Commission and EASA (EU ETS rules, 30 September deadline, end of free allowances in 2026); UK ETS Authority (end of aviation free allowances in 2026); S&amp;P Global Platts (CORSIA credit price, 29 October 2026; EU allowance price, November 2026); Fastmarkets (UK allowance price, 16 October 2026); ICVCM (Core Carbon Principles). This page is here to help you understand how the money moves. It is not legal or investment advice.</p>
+    <p class="endnote">Where this comes from: Siemens Stiftung Academy for Impact, <i>Carbon Markets</i> course (how credits are made, who does what, 2 to 5 years to first credits); ICAO, <i>CORSIA Eligible Emissions Units</i> and CORSIA newsletters 2026 (ten programmes, letters of authorization, 2016 start date, 2021 to 2026 vintages, 31 January 2028 deadline); IATA (more than 200 million units); European Commission and EASA (EU ETS rules, 30 September deadline, end of free allowances in 2026); UK ETS Authority (end of aviation free allowances in 2026); S&amp;P Global Platts (CORSIA credit price, 29 October 2026; EU allowance price, November 2026); Fastmarkets (UK allowance price, 16 October 2026); ICVCM (Core Carbon Principles); European Environment Agency and European Commission (use of EU ETS auction revenues); National Audit Office and UK legislation (UK ETS auction revenue to HM Treasury); Lufthansa Group (environmental cost surcharge); S&amp;P Global Platts (CORSIA projects in Guyana, Malawi, Rwanda and Uzbekistan). This page is here to help you understand how the money moves. It is not legal or investment advice.</p>
   </div>
 </section>
 
@@ -334,10 +365,10 @@ el('text',{x:300,y:BY-14,'text-anchor':'middle','font-size':14,fill:MIST,'font-s
 
 const baseGov=el('g',{class:'base'},F);
 el('rect',{x:20,y:BY,width:560,height:BH,fill:'url(#hz)',stroke:'#55606E'},baseGov);
-el('rect',{x:21,y:BY+1,width:330,height:74,fill:'#060C16'},baseGov);
+el('rect',{x:21,y:BY+1,width:330,height:74,fill:'#0A1220'},baseGov);
 el('text',{x:40,y:BY+34,'font-size':23,fill:W},baseGov,'Government cap');
 el('text',{x:40,y:BY+60,'font-size':15,fill:MIST},baseGov,'A law fixes how many allowances exist.');
-el('rect',{x:21,y:BY+75,width:270,height:30,fill:'#060C16'},baseGov);
+el('rect',{x:21,y:BY+75,width:270,height:30,fill:'#0A1220'},baseGov);
 el('text',{x:40,y:BY+96,'font-size':15,fill:MIST},baseGov,'Fewer each year. Sold at auction.');
 
 const baseCr=el('g',{class:'base'},F);
@@ -357,7 +388,7 @@ el('text',{x:494,y:204,'font-size':14,fill:RED,'font-style':'italic'},nolink,'in
 const cols=[],pipes=[],movers=[];
 SCHEMES.filter(s=>s.col!=null).forEach(s=>{
   const x=CX[s.col], g=el('g',{class:'col'},F);
-  el('rect',{x:x-118,y:TY,width:236,height:TH,fill:'#0A1220',stroke:W,'stroke-width':1.2},g);
+  el('rect',{x:x-118,y:TY,width:236,height:TH,fill:'#111B2B',stroke:W,'stroke-width':1.2},g);
   el('text',{x,y:TY+42,'text-anchor':'middle','font-size':25,fill:W},g,s.name==='Voluntary'?'Voluntary claims':s.name);
   el('text',{x,y:TY+68,'text-anchor':'middle','font-size':15,fill:MIST,'font-style':'italic'},g,s.sub);
   cols[s.col]=g;
@@ -497,6 +528,90 @@ function update(forceT){
     (function f(now){const t=dur?Math.min(1,(now-t0)/dur):1,e=1-Math.pow(1-t,3),v=from+(cost-from)*e;el2.textContent=b.cur+fmt(v);if(t<1)requestAnimationFrame(f);else shown[b.id]=cost;})(t0);
   });
 }
+/* ===== Fig. 1, money map ===== */
+const MAPN={
+ fares:{c:0,y:190,h:120,l:['Passengers','fares and surcharges'],sym:'€',t:'Where it starts',d:'Most of the money starts with the people who fly. Airlines pass carbon costs into fares. Lufthansa Group, for example, adds an environmental surcharge of €1 to €72 a ticket.'},
+ profit:{c:0,y:400,h:90,l:['The airline\'s','own profit'],t:'Where it starts',d:'Whatever the airline cannot pass on to passengers comes out of its own profit. On thin short-haul margins, this is the part investors watch.'},
+ airline:{c:1,y:300,h:300,l:['Airline'],t:'The airline',d:'One airline can pay into all four at once, route by route. Flights inside Europe go to the EU or UK scheme. Most other international flights go to CORSIA.'},
+ eu:{c:2,y:95,h:70,l:['EU ETS','issued by the EU'],t:'EU ETS',d:'Allowances are issued by the EU and sold at auction. Since 2026 airlines buy every one.'},
+ uk:{c:2,y:225,h:70,l:['UK ETS','issued by the UK'],t:'UK ETS',d:'Allowances are issued by the UK government and sold at auction.'},
+ corsia:{c:2,y:365,h:70,l:['CORSIA','credits from registries'],t:'CORSIA',d:'Credits are issued by programme registries such as ART, Gold Standard and Verra, then cancelled by the airline.'},
+ vol:{c:2,y:495,h:70,l:['Voluntary','credits from registries'],t:'Voluntary credits',d:'Same credits, bought by choice. Some airlines sell them to passengers as an "offset" add-on.'},
+ euA:{c:3,y:95,h:70,l:['Auctions','EU and member states'],t:'EU auctions',d:'Most auction money goes to EU member states. The rest feeds EU funds such as the Innovation Fund and the Modernisation Fund.'},
+ ukA:{c:3,y:225,h:70,l:['Auctions','UK government'],t:'UK auctions',d:'Auction money goes straight to the UK Treasury.'},
+ mkt:{c:3,y:430,h:200,l:['Brokers','and registries'],t:'The credit market',d:'Credits are bought from developers, often through a broker. The money passes through registry accounts on its way to the project.'},
+ nat:{c:4,y:40,h:44,l:['Climate and energy','spending, by law'],t:'Member states',d:'Since 2023, member states must spend all of their ETS auction money, or the same amount, on climate and energy.'},
+ inno:{c:4,y:102,h:44,l:['EU Innovation Fund','new clean tech'],t:'EU Innovation Fund',d:'Funds first-of-a-kind clean technology in Europe. It is paid for by selling ETS allowances.'},
+ saf:{c:4,y:164,h:44,l:['Clean-fuel support','for airlines'],t:'Clean-fuel support',d:'Up to 20 million allowances are set aside to help airlines pay for sustainable aviation fuel. Some of the money comes back to aviation.'},
+ tre:{c:4,y:236,h:44,l:['UK Treasury','general budget'],t:'UK Treasury',d:'The money joins the government\'s general budget. There is no rule that it must be spent on climate.'},
+ fees:{c:4,y:330,h:44,l:['Fees and margins','standards, auditors, brokers'],t:'Fees and margins',d:'Part of every credit sale pays the people who write the rules, check the numbers and match buyers with sellers.'},
+ forest:{c:4,y:400,h:44,l:['Forests','e.g. Guyana'],t:'Forests',d:'Guyana was the first country to supply CORSIA credits for 2024 to 2026, from protecting its forests across the whole country.'},
+ stoves:{c:4,y:470,h:44,l:['Clean cookstoves','e.g. Malawi, Rwanda'],t:'Clean cookstoves',d:'Stoves that burn less wood. Airlines have already used credits from projects in Malawi and Rwanda for CORSIA.'},
+ meth:{c:4,y:540,h:44,l:['Methane leak repair','e.g. Uzbekistan'],t:'Methane leak repair',d:'Finding and fixing gas leaks. Methane warms far more than CO₂, so each fix saves many tonnes.'}
+};
+const MAPE=[['fares','airline',''],['profit','airline',''],['airline','eu','€'],['airline','uk','£'],['airline','corsia','$'],['airline','vol','$'],
+ ['eu','euA','€'],['uk','ukA','£'],['corsia','mkt','$'],['vol','mkt','$'],['euA','nat','€'],['euA','inno','€'],['euA','saf','€'],['ukA','tre','£'],
+ ['mkt','fees','$'],['mkt','forest','$'],['mkt','stoves','$'],['mkt','meth','$']];
+const MX=[30,290,530,760,970];
+const M=document.getElementById('map');
+const mRibs=[], mNodes={};
+MAPE.forEach(([a,b,sym])=>{
+  const A=MAPN[a],B=MAPN[b], x1=MX[A.c]+10, x2=MX[B.c], mid=(x1+x2)/2;
+  const outs=MAPE.filter(e=>e[0]===a), ins=MAPE.filter(e=>e[1]===b);
+  const y1=A.y+(outs.length>1?(outs.findIndex(e=>e[1]===b)-(outs.length-1)/2)*Math.min(18,A.h/outs.length):0);
+  const y2=B.y+(ins.length>1?(ins.findIndex(e=>e[0]===a)-(ins.length-1)/2)*Math.min(18,B.h/ins.length):0);
+  const col=sym==='€'?'#8DB6EA':sym==='£'?'#B6A6E8':sym==='$'?'#5FC79A':'#C3CAD3';
+  const path=el('path',{d:`M${x1} ${y1} C ${mid} ${y1}, ${mid} ${y2}, ${x2} ${y2}`,fill:'none',stroke:col,'stroke-width':3,'stroke-opacity':.45,class:'rib'},M);
+  const coins=[0,1].map(k=>{const g=el('g',{opacity:0},M);el('circle',{r:8,fill:'#F0A443'},g);if(sym)el('text',{y:4,'text-anchor':'middle','font-size':10.5,fill:'#3B2600'},g,sym);return {g,ph:k/2+Math.random()*.2};});
+  mRibs.push({a,b,path,coins,len:0});
+});
+Object.entries(MAPN).forEach(([id,n])=>{
+  const g=el('g',{class:'node',tabindex:0,role:'button','aria-label':n.l.join(', ')},M);
+  el('rect',{x:MX[n.c]-8,y:n.y-n.h/2-(n.c===4?0:34),width:200,height:n.h+(n.c===4?0:34),fill:'transparent','pointer-events':'all',class:'hit'},g);
+  el('rect',{x:MX[n.c],y:n.y-n.h/2,width:10,height:n.h,fill:'#FFFFFF'},g);
+  const right=n.c===4, tx=right?MX[n.c]+20:MX[n.c], top=n.y-n.h/2;
+  const y0=right?n.y+(n.l.length>1?-3:6):top-(n.l[1]?26:10);
+  el('text',{x:tx,y:y0,'font-size':n.c===1?22:17,fill:'#FFFFFF'},g,n.l[0]);
+  if(n.l[1]) el('text',{x:tx,y:right?n.y+16:top-9,'font-size':13.5,fill:'#8B97A5','font-style':'italic'},g,n.l[1]);
+  g.addEventListener('click',()=>mapPick(id)); g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();mapPick(id);}});
+  mNodes[id]=g;
+});
+// column heads
+['Where it starts','Who pays','Which scheme, who issues','Who takes it first','Where it ends up'].forEach((t,i)=>el('text',{x:MX[i],y:-2,'font-size':13,fill:'#8B97A5','letter-spacing':'.04em'},M,t));
+M.setAttribute('viewBox','0 -24 1200 610');
+mRibs.forEach(r=>r.len=r.path.getTotalLength());
+function rel(id){ // nodes upstream and downstream of id
+  const up=new Set(),dn=new Set();
+  (function u(x){MAPE.filter(e=>e[1]===x).forEach(e=>{if(!up.has(e[0])){up.add(e[0]);u(e[0]);}});})(id);
+  (function d(x){MAPE.filter(e=>e[0]===x).forEach(e=>{if(!dn.has(e[1])){dn.add(e[1]);d(e[1]);}});})(id);
+  return {up,dn};
+}
+let mapSel=null;
+const PATHS=[['all','Everything'],['eu','EU ETS'],['uk','UK ETS'],['corsia','CORSIA'],['vol','Voluntary']];
+const mapPickEl=document.getElementById('mapPick'), mapPanel=document.getElementById('mapPanel');
+const mpBtns=PATHS.map(([id,n])=>{const b=document.createElement('button');b.textContent=n;b.onclick=()=>mapPick(id);mapPickEl.appendChild(b);return b;});
+function mapPick(id){
+  mapSel=id==='all'?null:id;
+  mpBtns.forEach((b,i)=>b.setAttribute('aria-pressed',PATHS[i][0]===id));
+  let onN=null;
+  if(mapSel){const {up,dn}=rel(mapSel);onN=new Set([mapSel,...up,...dn]);
+    mRibs.forEach(r=>{r.on=(up.has(r.a)&&(up.has(r.b)||r.b===mapSel))||((r.a===mapSel||dn.has(r.a))&&dn.has(r.b));});
+  } else mRibs.forEach(r=>r.on=true);
+  Object.entries(mNodes).forEach(([k,g])=>g.style.opacity=(!onN||onN.has(k))?1:.22);
+  mRibs.forEach(r=>{r.path.style.opacity=r.on?1:.12;r.path.setAttribute('stroke-width',r.on&&mapSel?4:3);});
+  const n=mapSel?MAPN[mapSel]:{t:'The whole picture',d:'Left to right: who pays, which scheme, who takes the money first, and where it ends up. EU money must be spent on climate. UK money goes into the general budget. Credit money ends up with projects, minus fees.'};
+  mapPanel.innerHTML=`<h3>${n.t}</h3><div><p>${n.d}</p></div>`;
+}
+(function mapTick(now){
+  mRibs.forEach(r=>r.coins.forEach(c=>{
+    if(!r.on){c.g.setAttribute('opacity',0);return;}
+    const t=reduced?c.ph:((now/3200)+c.ph)%1, pt=r.path.getPointAtLength(t*r.len);
+    c.g.setAttribute('transform',`translate(${pt.x} ${pt.y})`);c.g.setAttribute('opacity',t<.08?t/.08:(t>.92?(1-t)/.08:1));
+  }));
+  if(!reduced)requestAnimationFrame(mapTick);
+})(performance.now());
+mapPick('all');
+
 tEl.addEventListener('input',()=>update()); gEl.addEventListener('input',()=>update());
 update();
 </script>
